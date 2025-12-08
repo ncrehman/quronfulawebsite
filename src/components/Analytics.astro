@@ -1,5 +1,9 @@
 ---
-const { id } = Astro.props; // Example: "G-XXXXXXX"
+interface Props {
+    id: string;
+}
+
+const { id } = Astro.props;
 if (!id) throw new Error("Google Analytics ID is required.");
 ---
 
@@ -14,5 +18,5 @@ if (!id) throw new Error("Google Analytics ID is required.");
     }
 
     gtag("js", new Date());
-    gtag("config", id);
+    gtag("config", "{id}");
 </script>
