@@ -1,0 +1,9 @@
+/* src/styles/global.css */
+:root {
+    --content-max-width: 780px;
+}
+
+html[dir="rtl"] {
+    direction: rtl;
+    /* adjust typographic rules for Arabic if needed */
+}

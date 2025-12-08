@@ -1,0 +1,82 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  url: string;
+  lang: string;
+  canonical?: string;
+  noindex?: boolean;
+  type: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  jsonLd: Array<any>;
+}
+const p = Astro.props;
+
+const alternateAr = p.url.replace("/en/", "/");
+const alternateEn =
+  p.lang === "en"
+    ? p.url
+    : `https://quronfula.com/en${new URL(p.url).pathname}`;
+
+const siteName = "Quronfula";
+---
+
+<head>
+  <!-- BASIC -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{p.title}</title>
+  <meta name="description" content={p.description} />
+  {p.canonical && <link rel="canonical" href={p.canonical} />}
+
+  {p.noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
+
+  <!-- HREFLANG -->
+  <link rel="alternate" hreflang="ar" href={alternateAr} />
+  <link rel="alternate" hreflang="en" href={alternateEn} />
+  <link rel="alternate" hreflang="x-default" href={alternateAr} />
+
+  <!-- FAVICON -->
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#CC4144" />
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:title" content={p.title} />
+  <meta property="og:description" content={p.description} />
+  <meta property="og:type" content={p.type} />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:url" content={p.url} />
+  <meta property="og:locale" content={p.lang === "ar" ? "ar_AR" : "en_US"} />
+  {p.image && <meta property="og:image" content={p.image} />}
+  {
+    p.type === "article" && p.publishedTime && (
+      <meta property="article:published_time" content={p.publishedTime} />
+    )
+  }
+  {
+    p.type === "article" && p.modifiedTime && (
+      <meta property="article:modified_time" content={p.modifiedTime} />
+    )
+  }
+
+  <!-- TWITTER -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={p.title} />
+  <meta name="twitter:description" content={p.description} />
+  {p.image && <meta name="twitter:image" content={p.image} />}
+  <meta name="twitter:site" content="@thestorycircuit" />
+
+  <!-- STRUCTURED DATA (JSON-LD) -->
+  {
+    p.jsonLd &&
+      p.jsonLd.length > 0 &&
+      p.jsonLd.map((schema) => (
+        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+  }
+
+  <!-- OPTIONAL: RSS FEED -->
+  <!-- <link rel="alternate" type="application/rss+xml" title="Quronfula RSS" href="https://quronfula.com/rss.xml" /> -->
+</head>

@@ -1,0 +1,13 @@
+---
+import CommonQuizAmp from "@components/commonquiz/CommonQuizAmp.astro";
+
+
+// Props passed from getStaticPaths/getStaticProps
+const currentPath = Astro.url.pathname;
+const { slug } = Astro.params;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+
+
+---
+
+<CommonQuizAmp {slug} {lang} />

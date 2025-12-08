@@ -1,0 +1,46 @@
+import { FaqSchema } from './FaqSchema';
+import { BackLinks } from './BackLinks';
+import { HowToSchema } from './HowToSchema';
+
+export class FeedContentResponse {
+    public id: string;
+    public title: string;
+    public subTitle: string;
+    public description: string;
+    public metaTitle: string;
+    public metaDescription: string;
+    public lang: string;
+    public slug: string;
+    public keywords: string;
+    public likeCounts: number = 0;
+    public commentCount: number = 0;
+    public readCounts: number = 0;
+    public viewCounts: number = 0;
+    public readingTime: number = 0;
+    public wordsCount: number = 0;
+    public bannerImage: string;
+    public squareBanner: string;
+    public landScapeBanner: string;
+    public imageAlt: string;
+    public caption: string;
+    public sub_catId: string;
+    public sub_catTitle: string;
+    public sub_catBanner: string;
+    public sub_catslug: string;
+    public cat_name: string;
+    public cat_id: string;
+    public cat_slug: string;
+    public cat_banner: string;
+    public author_id: string;
+    public author_name: string;
+    public author_profile: string;
+    public author_slug: string;
+    public canonicalUrl: string;
+    public ampUrl: string;
+    public backlink: string;
+    public faqSchema: Array<FaqSchema>;
+    public backLinks: Array<BackLinks>;
+    public howToSchema: HowToSchema;
+    public publishDate: Date;
+    public updatedAt: Date;
+}

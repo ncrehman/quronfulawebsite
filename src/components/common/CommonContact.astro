@@ -1,0 +1,322 @@
+---
+import { metaConfig } from "@components/metaConfig";
+import SEO from "@components/SEO.astro";
+import Layout from "@layouts/Layout.astro";
+import { getAppConfig } from "@lib/AppConfig";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { ContactMessage } from "@lib/pojo/models/ContactMessage";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import {
+    getLangPrefix,
+    generateBreadcrumb,
+    buildLangUrl,
+    apiCalls,
+} from "@lib/postmethodService";
+
+interface Props {
+    lang: string;
+}
+
+const { lang = "ar" } = Astro.props;
+
+const baseUrl = await buildLangUrl(lang);
+const apiServer = getAppConfig();
+const canonicalUrl = baseUrl + "contact/";
+
+const siteName = metaConfig.siteName[lang];
+
+const title = lang === "ar" ? "اتصل بنا - قرنفلة" : "Contact Us - Quronfula";
+
+const description =
+    lang === "ar"
+        ? "تواصل مع فريق قرنفلة لأي استفسارات، اقتراحات، شكاوى أو تعاون. يسعدنا سماعك."
+        : "Get in touch with the Quronfula team for inquiries, suggestions, feedback, or collaboration.";
+
+const ogBanner = apiServer.websiteUrl + "contactog.jpg";
+
+const breadCrumb = generateBreadcrumb("Contact Page Breadcrumbs", [
+    { name: siteName, url: baseUrl },
+    { name: lang === "ar" ? "اتصل بنا" : "Contact Us", url: canonicalUrl },
+]);
+
+const contactJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: title,
+    description: description,
+    url: canonicalUrl,
+    inLanguage: lang,
+    publisher: {
+        "@type": "Organization",
+        name: siteName,
+        url: apiServer.websiteUrl,
+        email: "contact@quronfula.com",
+        logo: apiServer.websiteUrl + "logo.png",
+    },
+};
+
+const countries = [
+    "India",
+    "Pakistan",
+    "Bangladesh",
+    "Saudi Arabia",
+    "UAE",
+    "Qatar",
+    "Kuwait",
+    "Egypt",
+    "Iraq",
+    "Jordan",
+    "Yemen",
+    "Sudan",
+    "Morocco",
+    "Oman",
+    "Turkey",
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "France",
+    "Germany",
+    "Other",
+];
+
+let statusMessage = "";
+if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    const formBody = {
+        name: formData.get("name"),
+        mobile: formData.get("mobile"),
+        email: formData.get("email"),
+        country: formData.get("country"),
+        message: formData.get("message"),
+    };
+
+    try {
+        const request = new RequestModel();
+        request.lang = "en";
+        request.reqObject = formBody;
+        const responseResult: ApiResponse = await apiCalls(
+            request,
+            EndPointPaths.postcontactus,
+        );
+        if (responseResult.status === 0) {
+            const response: ResponseModel = responseResult.data;
+            if (response.statusCode === 0) {
+                statusMessage =
+                    lang === "ar"
+                        ? "✔ تم إرسال رسالتك بنجاح"
+                        : "✔ Message sent successfully!";
+            } else {
+                statusMessage =
+                    lang === "ar"
+                        ? "❌ فشل في إرسال الرسالة"
+                        : "❌ Failed to send message.";
+            }
+        } else {
+            statusMessage =
+                lang === "ar"
+                    ? "❌ فشل في إرسال الرسالة"
+                    : "❌ Failed to send message.";
+        }
+    } catch (err) {
+        statusMessage =
+            lang === "ar" ? "⚠ حدث خطأ غير متوقع" : "⚠ Something went wrong.";
+    }
+}
+---
+
+<SEO
+    title={title}
+    description={description}
+    image={ogBanner}
+    url={canonicalUrl}
+    lang={lang}
+    canonical={canonicalUrl}
+    noindex={false}
+    type={"about"}
+    jsonLd={[]}
+/>
+
+<Layout>
+    <main
+        class="container"
+        style="max-width: 900px; margin: 0 auto; padding: 2rem;"
+        {...lang === "ar" ? { dir: "rtl" } : {}}
+    >
+        <h1>{title}</h1>
+        <p>{description}</p>
+
+        <form method="POST" class="space-y-4 mt-6">
+            <div>
+                <label>{lang === "ar" ? "الاسم الكامل" : "Full Name"}</label>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                    class="w-full border rounded p-2"
+                />
+            </div>
+
+            <div>
+                <label>{lang === "ar" ? "رقم الهاتف" : "Mobile Number"}</label>
+                <input
+                    type="tel"
+                    name="mobile"
+                    required
+                    class="w-full border rounded p-2"
+                />
+            </div>
+
+            <div>
+                <label>{lang === "ar" ? "البريد الإلكتروني" : "Email"}</label>
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    class="w-full border rounded p-2"
+                />
+            </div>
+
+            <div>
+                <label>{lang === "ar" ? "الدولة" : "Country"}</label>
+                <select
+                    name="country"
+                    required
+                    class="w-full border rounded p-2"
+                >
+                    <option value="">
+                        {lang === "ar" ? "اختر دولتك" : "Select your country"}
+                    </option>
+                    {countries.map((c) => <option value={c}>{c}</option>)}
+                </select>
+            </div>
+
+            <div>
+                <label>{lang === "ar" ? "رسالتك" : "Your Message"}</label>
+                <textarea
+                    name="message"
+                    rows="5"
+                    required
+                    class="w-full border rounded p-2"></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded"
+            >
+                {lang === "ar" ? "إرسال الرسالة" : "Send Message"}
+            </button>
+        </form>
+
+        {
+            statusMessage && (
+                <p style="margin-top: 1rem; font-weight: bold;">
+                    {statusMessage}
+                </p>
+            )
+        }
+    </main>
+    <style>
+        /* ---- WRAPPER ---- */
+        .container {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            padding: 3rem 2rem;
+            border-radius: 22px;
+            color: #fff;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* ---- HEADING ---- */
+        .container h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .container p {
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* ---- FORM ---- */
+        .container form {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(6px);
+        }
+
+        /* ---- LABEL ---- */
+        .container label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fdfdfd;
+        }
+
+        /* ---- INPUTS ---- */
+        .container input,
+        .container select,
+        .container textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #333;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        .container input:focus,
+        .container select:focus,
+        .container textarea:focus {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+            background: #fff;
+        }
+
+        /* ---- BUTTON ---- */
+        .container button {
+            width: 100%;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            padding: 14px;
+            color: #fff;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+
+        .container button:hover {
+            background: linear-gradient(90deg, #009efd, #2af598);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ---- STATUS MESSAGE ---- */
+        .status-message {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* ---- RTL SUPPORT ---- */
+        [dir="rtl"] .container input,
+        [dir="rtl"] .container select,
+        [dir="rtl"] .container textarea {
+            text-align: right;
+        }
+    </style>
+</Layout>

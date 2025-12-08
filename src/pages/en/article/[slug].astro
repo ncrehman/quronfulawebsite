@@ -1,0 +1,12 @@
+---
+import CommonArticlePage from "@components/commonarticle/CommonArticlePage.astro";
+
+// Props passed from getStaticPaths/getStaticProps
+const currentPath = Astro.url.pathname;
+const { slug } = Astro.params;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+
+
+---
+
+<CommonArticlePage {slug} {lang} />

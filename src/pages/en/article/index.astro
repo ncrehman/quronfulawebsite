@@ -1,0 +1,8 @@
+---
+import CommonArticleList from "@components/commonarticle/CommonArticleList.astro";
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonArticleList {lang} />

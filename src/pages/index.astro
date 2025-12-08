@@ -1,0 +1,9 @@
+---
+import CommonHome from "@components/commonHome/CommonHome.astro";
+
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
+---
+
+<>
+	<CommonHome lang={lang} />
+</>

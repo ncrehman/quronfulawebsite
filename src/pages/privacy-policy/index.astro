@@ -1,0 +1,8 @@
+---
+import CommonPrivacy from "@components/common/CommonPrivacy.astro";
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonPrivacy {lang}/>

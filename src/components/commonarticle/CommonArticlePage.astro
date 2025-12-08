@@ -1,0 +1,290 @@
+---
+import SEO from "@components/SEO.astro";
+import Layout from "@layouts/Layout.astro";
+import { getAppConfig } from "@lib/AppConfig";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { getLangPrefix } from "@lib/postmethodService";
+import {
+    apiCalls,
+    checkForDecode,
+    generateBreadcrumb,
+    getLocalizedAmpUrl,
+    generateFAQJsonLd,
+    buildLangUrl,
+} from "@lib/postmethodService";
+
+interface Props {
+    slug: string;
+    lang: string;
+}
+
+const { slug = "", lang = "ar" } = Astro.props;
+// Props passed from getStaticPaths/getStaticProps
+
+const articleCache: Map<string, FeedContentResponse> = new Map();
+
+async function getArticles(
+    language: string,
+    articleSlug: string,
+): Promise<FeedContentResponse | null> {
+    const cacheKey = `${language}_home_${"article"}`;
+    if (articleCache.has(cacheKey)) {
+        return articleCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.slug = articleSlug;
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getarticlebyslug,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const article: FeedContentResponse = response.respObject;
+        if (article) {
+            articleCache.set(cacheKey, article);
+        }
+        return article;
+    } else {
+        return null;
+    }
+}
+
+const langPrefix = getLangPrefix(lang);
+const baseUrl = await buildLangUrl(lang);
+
+const decodedSlug = await checkForDecode(slug);
+const apiServer = getAppConfig();
+const article: FeedContentResponse = await getArticles(lang, slug);
+const canonicalUrl = baseUrl + "article/" + decodedSlug;
+const keywords = article.keywords?.split(",").map((k) => k.trim()) || [];
+
+const siteName = "Quronfula";
+const jsonLd = [];
+const breadCrumb = generateBreadcrumb("Article Page Breadcrumbs", [
+    {
+        name: siteName,
+        url: baseUrl,
+    },
+    {
+        name: "Articles",
+        url: baseUrl + "artcile/",
+    },
+     {
+        name: article.title,
+        url: baseUrl + "artcile/"+article.slug,
+    }
+]);
+const about = [...new Set(keywords.map((k) => k.trim()))].map((keyword) => ({
+    "@type": "Thing",
+    name: keyword,
+}));
+const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": canonicalUrl,
+    },
+    ...(article.ampUrl && {
+        potentialAction: [
+            {
+                "@type": "ViewAction",
+                target: getLocalizedAmpUrl(article.ampUrl, lang),
+                name: "View Web Story",
+            },
+        ],
+    }),
+    headline: article.title,
+    alternativeHeadline: article.metaTitle,
+    description: article.metaDescription,
+    image: [article.landScapeBanner, article.bannerImage, article.squareBanner].filter(Boolean),
+    author: {
+        "@type": "Person",
+        name: article.author_name,
+        url: baseUrl + "author/" + article.author_slug,
+    },
+    publisher: {
+        "@type": "Organization",
+        name: "Quronfula",
+        logo: {
+            "@type": "ImageObject",
+            url: apiServer.websiteUrl+"logo.png",
+        },
+    },
+    keywords: keywords,
+    about: about,
+    datePublished: article.publishDate,
+    dateModified: article.updatedAt || article.publishDate,
+};
+
+let howToSchema: any = null;
+if (article.howToSchema != null) {
+    howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: article.howToSchema.name,
+        description: article.howToSchema.description,
+        image: article.landScapeBanner,
+        step: article.howToSchema.step.map((s) => ({
+            "@type": "HowToStep",
+            name: s.name,
+            text: s.text,
+        })),
+    };
+} else {
+    howToSchema = null;
+}
+let faqSchema: any = null;
+if (article.faqSchema != null) {
+    faqSchema = generateFAQJsonLd(article.faqSchema);
+} else {
+    faqSchema = null;
+}
+
+jsonLd.push(articleJsonLd);
+jsonLd.push(breadCrumb);
+
+if (faqSchema) jsonLd.push(faqSchema);
+if (howToSchema) jsonLd.push(howToSchema);
+---
+
+<SEO
+    title={article.title}
+    description={article.metaDescription}
+    image={article.landScapeBanner}
+    url={canonicalUrl}
+    lang={lang}
+    canonical={canonicalUrl}
+    noindex={false}
+    type={"article"}
+    jsonLd={jsonLd}
+/>
+<Layout>
+    <main class="article-container">
+        <h1 class="title">{article.title}</h1>
+
+        {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
+
+        <div class="meta">
+            <span>By {article.author_name}</span> •
+            <span>{new Date(article.publishDate).toLocaleDateString(lang)}</span
+            >
+        </div>
+
+        <!-- HERO IMAGE -->
+        {
+            article.landScapeBanner && (
+                <figure class="hero-figure">
+                    <img
+                        src={article.landScapeBanner}
+                        alt={article.imageAlt}
+                        class="hero-image"
+                        loading="lazy"
+                    />
+                    {article.caption && (
+                        <figcaption class="hero-caption">
+                            {article.caption}
+                        </figcaption>
+                    )}
+                </figure>
+            )
+        }
+        <article class="content" set:html={article.description} />
+
+        <!-- SOCIAL SHARE -->
+        <div class="share-box">
+            Share:
+            <a
+                href={`https://facebook.com/sharer/sharer.php?u=https://quronfula.com/article/${article.slug}`}
+                >FB</a
+            >
+            <a
+                href={`https://x.com/share?url=https://quronfula.com/article/${article.slug}`}
+                >X</a
+            >
+        </div>
+
+        <!-- RELATED ARTICLES -->
+        <slot name="related" />
+    </main>
+</Layout>
+
+<style>
+    .hero-figure {
+        margin: 20px 0;
+        text-align: center; /* centers the caption */
+    }
+
+    .hero-caption {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 8px;
+        line-height: 1.4;
+    }
+    .article-container {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.3;
+        margin-bottom: 12px;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .meta {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .hero-image {
+        width: 100%;
+        border-radius: 6px;
+        margin: 20px 0;
+    }
+
+    .content {
+        font-size: 1.1rem;
+        line-height: 1.75;
+        color: #333;
+    }
+
+    .share-box {
+        margin-top: 40px;
+        font-size: 1rem;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .title {
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+        }
+
+        .content {
+            font-size: 1rem;
+        }
+    }
+</style>

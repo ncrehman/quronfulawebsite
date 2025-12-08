@@ -1,0 +1,210 @@
+---
+import { metaConfig } from "@components/metaConfig";
+import SEO from "@components/SEO.astro";
+import Layout from "@layouts/Layout.astro";
+import { getAppConfig } from "@lib/AppConfig";
+import { getLangPrefix, generateBreadcrumb, buildLangUrl } from "@lib/postmethodService";
+
+interface Props {
+    lang: string;
+}
+
+const { lang = "ar" } = Astro.props;
+
+const baseUrl = await buildLangUrl(lang);
+const apiServer = getAppConfig();
+const canonicalUrl = baseUrl + "terms-and-conditions/";
+
+const siteName = metaConfig.siteName[lang];
+const jsonLd = [];
+
+const breadCrumb = generateBreadcrumb("Terms & Conditions Page Breadcrumbs", [
+    { name: siteName, url: baseUrl },
+    { name: lang === "ar" ? "الشروط والأحكام" : "Terms & Conditions", url: canonicalUrl },
+]);
+
+const title =
+    lang === "ar" ? "الشروط والأحكام - قرنفلة" : "Terms & Conditions - Quronfula";
+
+const description =
+    lang === "ar"
+        ? "تعرف على شروط وأحكام استخدام موقع قرنفلة، بما في ذلك القواعد والسياسات، ومسؤوليات المستخدم."
+        : "Read the Terms & Conditions for using Quronfula, including usage rules, policies, and user responsibilities.";
+
+const entity =
+    lang === "ar"
+        ? '"الشروط والأحكام الخاصة بموقع قرنفلة"'
+        : '"Terms & Conditions for Quronfula"';
+
+const audience = lang === "ar" ? "المستخدمون العامون" : "General Users";
+
+const ogBanner = apiServer.websiteUrl + "termsog.jpg";
+
+const termsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    url: canonicalUrl,
+    description: description,
+    inLanguage: lang,
+    publisher: {
+        "@type": "Organization",
+        name: siteName,
+        url: apiServer.websiteUrl,
+        logo: {
+            "@type": "ImageObject",
+            url: apiServer.websiteUrl + "logo.png",
+        },
+        email: "contact@quronfula.com",
+    },
+    mainEntity: {
+        "@type": "WebContent",
+        about: entity,
+        audience: {
+            "@type": "Audience",
+            audienceType: audience,
+        },
+    },
+};
+
+jsonLd.push(termsJsonLd);
+jsonLd.push(breadCrumb);
+---
+
+<SEO
+    title={title}
+    description={description}
+    image={ogBanner}
+    url={canonicalUrl}
+    lang={lang}
+    canonical={canonicalUrl}
+    noindex={false}
+    type={"terms"}
+    jsonLd={jsonLd}
+/>
+
+<Layout>
+    {
+        lang === "en" ? (
+            <!-- ENGLISH CONTENT -->
+            <main class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+                <h1>Terms & Conditions - Quronfula</h1>
+                <p><strong>Last Updated:</strong> January 2025</p>
+
+                <p>
+                    Welcome to <strong>Quronfula</strong>. By accessing or using our website
+                    (<strong>quronfula.com</strong>), you agree to comply with the following Terms & Conditions.
+                    Please read them carefully.
+                </p>
+
+                <h2>1. Acceptance of Terms</h2>
+                <p>
+                    By using our website, you confirm that you are at least 13 years old and legally capable
+                    of accepting these Terms.
+                </p>
+
+                <h2>2. Use of Content</h2>
+                <p>
+                    All articles, stories, quizzes, media, and other content on Quronfula are protected by
+                    copyright. You may not copy, republish, or redistribute content without permission.
+                </p>
+
+                <h2>3. User Responsibilities</h2>
+                <ul>
+                    <li>Do not misuse or attempt to harm the website.</li>
+                    <li>Do not publish harmful, illegal, or abusive content.</li>
+                    <li>Provide accurate information when contacting us.</li>
+                </ul>
+
+                <h2>4. Third-Party Services</h2>
+                <p>
+                    Quronfula may use embedded content (videos, social posts), analytics, and ads. These
+                    third-party services follow their own Terms & Policies.
+                </p>
+
+                <h2>5. Disclaimer</h2>
+                <p>
+                    Our content is for informational and entertainment purposes. We do not guarantee
+                    accuracy or completeness of any information.
+                </p>
+
+                <h2>6. Limitation of Liability</h2>
+                <p>
+                    Quronfula is not responsible for any damages resulting from your use of the website,
+                    including technical issues or misinformation.
+                </p>
+
+                <h2>7. Changes to These Terms</h2>
+                <p>
+                    We may update these Terms occasionally. The "Last Updated" date will reflect the latest version.
+                </p>
+
+                <h2>8. Contact Us</h2>
+                <p>For questions regarding these Terms, contact us:</p>
+                <ul>
+                    <li>Email: <a href="mailto:contact@quronfula.com">contact@quronfula.com</a></li>
+                    <li>Email: <a href="mailto:info@quronfula.com">info@quronfula.com</a></li>
+                </ul>
+            </main>
+        ) : (
+            <!-- ARABIC CONTENT -->
+            <main class="container" dir="rtl" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+                <h1>الشروط والأحكام — قرنفلة</h1>
+                <p><strong>آخر تحديث:</strong> يناير 2025</p>
+
+                <p>
+                    مرحبًا بك في <strong>قرنفلة</strong>. باستخدامك لموقعنا
+                    (<strong>quronfula.com</strong>) فإنك توافق على الالتزام بالشروط والأحكام التالية.
+                </p>
+
+                <h2>1. قبول الشروط</h2>
+                <p>
+                    باستخدام الموقع، فإنك تؤكد أنك تبلغ 13 عامًا على الأقل وقادر قانونيًا على قبول هذه الشروط.
+                </p>
+
+                <h2>2. استخدام المحتوى</h2>
+                <p>
+                    جميع المقالات والقصص والاختبارات والوسائط محمية بحقوق النشر. لا يجوز نسخ أو إعادة نشر
+                    المحتوى دون إذن مسبق.
+                </p>
+
+                <h2>3. مسؤوليات المستخدم</h2>
+                <ul>
+                    <li>عدم إساءة استخدام الموقع أو محاولة الإضرار به.</li>
+                    <li>عدم نشر محتوى ضار أو غير قانوني أو مسيء.</li>
+                    <li>تقديم معلومات صحيحة عند التواصل معنا.</li>
+                </ul>
+
+                <h2>4. خدمات الأطراف الثالثة</h2>
+                <p>
+                    قد يستخدم الموقع محتوى مضمّنًا مثل الفيديوهات، بالإضافة إلى خدمات التحليل والإعلانات.
+                    هذه الخدمات لديها شروط وسياسات مستقلة.
+                </p>
+
+                <h2>5. إخلاء المسؤولية</h2>
+                <p>
+                    المحتوى الموجود على قرنفلة يُقدّم لأغراض معلوماتية وترفيهية فقط. لا نضمن دقة أو اكتمال
+                    أي معلومة.
+                </p>
+
+                <h2>6. حدود المسؤولية</h2>
+                <p>
+                    لا تتحمل قرنفلة أي مسؤولية عن الأضرار الناتجة عن استخدام الموقع، بما في ذلك الأعطال
+                    التقنية أو المعلومات غير الدقيقة.
+                </p>
+
+                <h2>7. تحديث الشروط</h2>
+                <p>
+                    قد نقوم بتحديث هذه الشروط من وقت لآخر. سيتم تغيير تاريخ "آخر تحديث" عند تعديلها.
+                </p>
+
+                <h2>8. تواصل معنا</h2>
+                <p>لأي استفسار حول هذه الشروط، يمكن التواصل معنا على:</p>
+                <ul>
+                    <li>البريد الإلكتروني: <a href="mailto:contact@quronfula.com">contact@quronfula.com</a></li>
+                    <li>البريد الإلكتروني: <a href="mailto:info@quronfula.com">info@quronfula.com</a></li>
+                </ul>
+            </main>
+        )
+    }
+</Layout>

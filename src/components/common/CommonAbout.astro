@@ -1,0 +1,206 @@
+---
+import { metaConfig } from "@components/metaConfig";
+import SEO from "@components/SEO.astro";
+import Layout from "@layouts/Layout.astro";
+import { getAppConfig } from "@lib/AppConfig";
+import { generateBreadcrumb, buildLangUrl } from "@lib/postmethodService";
+
+interface Props {
+    lang: string;
+}
+
+const { lang = "ar" } = Astro.props;
+
+const baseUrl = await buildLangUrl(lang);
+const apiServer = getAppConfig();
+const canonicalUrl = baseUrl + "about/";
+
+const siteName = metaConfig.siteName[lang];
+const jsonLd = [];
+const breadCrumb = generateBreadcrumb("About Page Breadcrumbs", [
+    {
+        name: siteName,
+        url: baseUrl,
+    },
+    {
+        name: lang === "ar" ? "من نحن" : "About Us",
+        url: canonicalUrl,
+    },
+]);
+
+const title = lang === "ar" ? "من نحن - قرنفلة" : "About Us - Quronfula";
+
+const description =
+    lang === "ar"
+        ? "تعرف على قرنفلة: منصة محتوى تقدّم مقالات وقصص وموضوعات يومية في أسلوب الحياة، الصحة، الجمال، الثقافة، الأخبار الخفيفة، الاختبارات، وقصص الويب."
+        : "Learn about Quronfula: A content platform offering daily articles, stories, lifestyle insights, beauty, health, culture, trending news, quizzes, and AMP web stories.";
+
+const ogBanner = apiServer.websiteUrl + "aboutog.jpg";
+
+const aboutJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: title,
+    description: description,
+    url: canonicalUrl,
+    inLanguage: lang,
+    publisher: {
+        "@type": "Organization",
+        name: siteName,
+        url: apiServer.websiteUrl,
+        logo: {
+            "@type": "ImageObject",
+            url: apiServer.websiteUrl + "logo.png",
+        },
+        email: "contact@quronfula.com",
+    },
+};
+
+jsonLd.push(aboutJsonLd);
+jsonLd.push(breadCrumb);
+---
+
+<SEO
+    title={title}
+    description={description}
+    image={ogBanner}
+    url={canonicalUrl}
+    lang={lang}
+    canonical={canonicalUrl}
+    noindex={false}
+    type={"about"}
+    jsonLd={jsonLd}
+/>
+
+<Layout>
+    {
+        lang === "en" ? (
+            <main
+                class="container"
+                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
+            >
+                <h1>About Us - Quronfula</h1>
+
+                <p>
+                    <strong>Quronfula</strong> is a modern digital content
+                    platform created to deliver meaningful and engaging
+                    information for general audiences. We focus on a wide range
+                    of topics such as lifestyle, beauty, health, culture,
+                    travel, self-improvement, trending topics, quizzes, daily
+                    insights, and AMP web stories.
+                </p>
+
+                <h2>Our Mission</h2>
+                <p>
+                    Our mission is to provide well-researched, easy-to-read, and
+                    value-driven content that informs, inspires, and entertains
+                    people in their everyday lives.
+                </p>
+
+                <h2>What We Publish</h2>
+                <ul>
+                    <li>Daily lifestyle articles</li>
+                    <li>Health and wellness guides</li>
+                    <li>Beauty and fashion tips</li>
+                    <li>Food & recipe posts</li>
+                    <li>Travel and culture stories</li>
+                    <li>Trending news and information</li>
+                    <li>Quiz challenges and fun tests</li>
+                    <li>AMP web stories for fast mobile browsing</li>
+                </ul>
+
+                <h2>Our Vision</h2>
+                <p>
+                    To become a trusted content destination for readers seeking
+                    updated, helpful, and enjoyable information across multiple
+                    categories and languages.
+                </p>
+
+                <h2>Why Quronfula?</h2>
+                <p>
+                    We focus on simplicity, accuracy, and creativity. Every
+                    piece of content is prepared with care to ensure a smooth
+                    reading experience whether you're browsing on mobile or
+                    desktop.
+                </p>
+
+                <h2>Contact Us</h2>
+                <p>For inquiries, suggestions, or collaboration:</p>
+
+                <ul>
+                    <li>
+                        <a href="mailto:contact@quronfula.com">
+                            contact@quronfula.com
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@quronfula.com">
+                            info@quronfula.com
+                        </a>
+                    </li>
+                </ul>
+            </main>
+        ) : (
+            <main
+                class="container"
+                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
+                dir="rtl"
+            >
+                <h1>من نحن — قرنفلة</h1>
+
+                <p>
+                    <strong>قرنفلة</strong> هي منصة محتوى حديثة تهدف إلى تقديم
+                    معلومات مفيدة وممتعة للجمهور العام. نهتم بنشر محتوى متنوع
+                    يشمل أسلوب الحياة، الجمال، الصحة، الثقافة، السفر، تطوير
+                    الذات، الأخبار الخفيفة، الاختبارات، وقصص الويب (AMP).
+                </p>
+
+                <h2>رسالتنا</h2>
+                <p>
+                    رسالتنا هي تقديم محتوى بسيط، موثوق، وسهل القراءة يُساعد
+                    القرّاء في حياتهم اليومية ويمنحهم المعرفة والإلهام.
+                </p>
+
+                <h2>المحتوى الذي نقدمه</h2>
+                <ul>
+                    <li>مقالات يومية في أسلوب الحياة</li>
+                    <li>دليل الصحة والعافية</li>
+                    <li>نصائح الجمال والموضة</li>
+                    <li>مقالات الطعام والوصفات</li>
+                    <li>قصص السفر والثقافة</li>
+                    <li>معلومات وأخبار رائجة</li>
+                    <li>اختبارات ترفيهية وتحديات</li>
+                    <li>قصص ويب AMP لتصفح سريع على الهاتف</li>
+                </ul>
+
+                <h2>رؤيتنا</h2>
+                <p>
+                    أن نكون وجهة موثوقة للقراء الباحثين عن محتوى مفيد وجذاب
+                    وحديث في مختلف المجالات.
+                </p>
+
+                <h2>لماذا قرنفلة؟</h2>
+                <p>
+                    نركز على البساطة والدقة والإبداع. كل مقال يتم إعداده بعناية
+                    ليمنحك تجربة قراءة سلسة ومريحة على أي جهاز.
+                </p>
+
+                <h2>تواصل معنا</h2>
+                <p>للاستفسارات أو الاقتراحات أو التعاون:</p>
+
+                <ul>
+                    <li>
+                        <a href="mailto:contact@quronfula.com">
+                            contact@quronfula.com
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@quronfula.com">
+                            info@quronfula.com
+                        </a>
+                    </li>
+                </ul>
+            </main>
+        )
+    }
+</Layout>

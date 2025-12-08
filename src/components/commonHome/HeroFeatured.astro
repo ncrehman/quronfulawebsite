@@ -1,0 +1,176 @@
+---
+import type { ArticleResponse } from '@lib/pojo/responsemodel/ArticleResponse';
+import { getLangPrefix } from '@lib/postmethodService';
+
+interface Props {
+  articles: ArticleResponse[];
+  lang: string;
+}
+
+const { articles = [], lang = "ar" } = Astro.props;
+const langPrefix = getLangPrefix(lang);
+// Extract first 3 articles safely
+const main: ArticleResponse | undefined = articles[0];
+const side1: ArticleResponse | undefined = articles[1];
+const side2: ArticleResponse | undefined = articles[2];
+---
+
+{articles.length >= 3 && (
+  <section class={`hero-featured ${lang === "ar" ? "rtl" : ""}`}>
+    <div class="hero-grid">
+      <a href={`/${langPrefix}article/${main.slug}`} class="hero-main">
+        <div class="img-wrapper">
+          <img
+            src={main.landScapeBanner || main.bannerImage}
+            alt={main.imageAlt}
+            loading="lazy"
+          />
+        </div>
+        <div class="hero-text">
+        </div>
+      </a>
+      <div class="hero-side">
+        <a href={`/${langPrefix}article/${side1.slug}`} class="side-card">
+          <div class="img-wrapper small">
+            <img
+              src={side1.landScapeBanner || side1.bannerImage}
+              alt={side1.imageAlt}
+              loading="lazy"
+            />
+          </div>
+        </a>
+        <a href={`/${langPrefix}article/${side2.slug}`} class="side-card">
+          <div class="img-wrapper small">
+            <img
+              src={side2.landScapeBanner || side2.bannerImage}
+              alt={side2.imageAlt}
+              loading="lazy"
+            />
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+.hero-featured {
+  width: 100%;
+  margin: 30px auto;
+  padding: 0 0px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Main large card */
+.hero-main {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: #000;
+}
+
+.hero-main .img-wrapper {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.hero-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.35s ease;
+}
+
+.hero-main:hover img {
+  transform: scale(1.05);
+}
+
+.hero-main .hero-text {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  padding: 12px 14px;
+  background: linear-gradient(to top, rgba(0,0,0,.6), transparent);
+  border-radius: 12px;
+}
+
+.hero-main h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
+
+.hero-main p {
+  margin-top: 6px;
+  color: #e8e8e8;
+  font-size: 0.95rem;
+}
+
+/* Right side cards */
+.hero-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-card {
+  display: block;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.side-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+.side-card .img-wrapper.small {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.side-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.side-card h3 {
+  padding: 12px 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* RTL Support */
+.hero-featured.rtl h2,
+.hero-featured.rtl h3,
+.hero-featured.rtl p {
+  text-align: right;
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

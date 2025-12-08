@@ -1,0 +1,19 @@
+{
+  "name": "website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/image": "^0.18.0",
+    "@astrojs/node": "^9.5.1",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.16.4",
+    "axios": "^1.13.2"
+  }
+}

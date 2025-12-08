@@ -1,0 +1,42 @@
+---
+/**
+ * FINAL MULTILINGUAL LANGUAGE SWITCHER FOR ASTRO
+ * Auto-detects language from URL
+ * Generates correct switch URL for AR <-> EN
+ */
+
+const currentPath = Astro.url.pathname;
+
+// Detect current language based on URL
+let currentLang = currentPath.startsWith("/en") ? "en" : "ar";
+const isArabic = currentLang === "ar";
+
+// Build SWITCH URL
+// AR → EN: /en + same path
+// EN → AR: remove /en prefix
+const switchTo = isArabic
+	? `/en${currentPath}`
+	: currentPath.replace(/^\/en/, "") || "/";
+
+---
+
+<style>
+	.lang-switch {
+		background: #f4f4f4;
+		padding: 6px 14px;
+		border-radius: 8px;
+		font-size: 14px;
+		text-decoration: none;
+		color: #333;
+		white-space: nowrap;
+		transition: background 0.2s ease;
+	}
+
+	.lang-switch:hover {
+		background: #e8e8e8;
+	}
+</style>
+
+<a href={switchTo} class="lang-switch">
+	{isArabic ? "English" : "العربية"}
+</a>

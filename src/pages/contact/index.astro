@@ -1,0 +1,8 @@
+---
+import CommonContact from "@components/common/CommonContact.astro";
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonContact {lang} />

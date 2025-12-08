@@ -1,0 +1,25 @@
+{
+    "runLocalService": false,
+    "useLanguage": false,
+    "localWebServicesUrl": "http://localhost:8080/quronfula/portal/",
+    "webServicesUrl": "https://www.quronfula.com/quronfula/portal/",
+    "clientName": "Batoolan Media",
+    "title": "Quronfula",
+    "hostName": "quronfula.com",
+    "websiteUrl": "https://www.quronfula.com/",
+    "website": "https://www.quronfula.com/",
+    "currency": "$",
+    "countryCode": "91",
+    "timeZone": "UTC+06:00",
+    "defaultLanguage": "en",
+    "supportedLang": [
+        "en",
+        "ar",
+        "fr",
+        "hi"
+    ],
+    "isConsole": true,
+    "multipleLanguage": false,
+    "companyName": "Batoolan Media",
+    "tokenTopic": "Quronfula"
+}

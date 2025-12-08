@@ -1,0 +1,8 @@
+---
+import CommonAbout from "@components/common/CommonAbout.astro";
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonAbout {lang} />

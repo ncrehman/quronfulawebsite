@@ -1,0 +1,416 @@
+---
+import {
+	apiCalls,
+	buildLangUrl,
+	generateBreadcrumb,
+	generateItemList,
+} from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+import HeroFeatured from "@components/commonHome/HeroFeatured.astro";
+import Layout from "@layouts/Layout.astro";
+import SEO from "@components/SEO.astro";
+import { metaConfig } from "@components/metaConfig";
+import { getAppConfig } from "@lib/AppConfig";
+import { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
+import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
+import { checkForDecode } from "@lib/postmethodService";
+import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { getLangPrefix } from "@lib/postmethodService";
+
+// const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
+const { lang } = Astro.props;
+
+// Fetch homepage data or articles specific to home page
+
+const articleCache: Map<string, ArticleResponse[]> = new Map();
+const webStoryCache = new Map<string, Array<WebStoryResponse>>();
+const quizCache = new Map<string, Array<QuizStoryResponse>>();
+async function getArticle(language: string): Promise<ArticleResponse[] | null> {
+	const cacheKey = `${language}_home_${"article"}`;
+	if (articleCache.has(cacheKey)) {
+		return articleCache.get(cacheKey)!;
+	}
+	const request = new RequestModel();
+	request.lang = language;
+	request.offset = 0;
+	request.limit = 12;
+	const response = await apiCalls(request, EndPointPaths.getlatestarticle);
+	if (response.status !== 0) return null;
+	const articleList = response.data?.respList;
+	if (articleList) {
+		articleCache.set(cacheKey, articleList);
+	}
+	return articleList as ArticleResponse[];
+}
+async function getStories(
+	lang: string,
+	catslug: string,
+	subCatSlug: string,
+): Promise<WebStoryResponse[] | null> {
+	const cacheKey = `${lang}_home_${"webstories"}`;
+	if (webStoryCache.has(cacheKey)) return webStoryCache.get(cacheKey)!;
+
+	const request = new RequestModel();
+	request.lang = lang;
+	request.limit = 12;
+	request.offset = 0;
+	if (catslug) {
+		request.slug = await checkForDecode(catslug);
+	}
+	if (subCatSlug) {
+		request.extraVariable = await checkForDecode(subCatSlug);
+	}
+	try {
+		const response: ApiResponse = await apiCalls(
+			request,
+			EndPointPaths.getstoriesbycategoryslug,
+		);
+
+		if (response.status !== 0) return null;
+
+		const resp: ResponseModel = response.data;
+		return resp.statusCode === 0 ? resp.respList : null;
+	} catch (error) {
+		console.error("Error fetching webstory:", error);
+		return null;
+	}
+}
+
+async function getQuizStories(
+	lang: string,
+	catslug: string,
+	subCatSlug: string,
+): Promise<QuizStoryResponse[] | null> {
+	const cacheKey = `${lang}_home_${"quizstories"}`;
+	if (quizCache.has(cacheKey)) return quizCache.get(cacheKey)!;
+
+	const request = new RequestModel();
+	request.lang = lang;
+	request.limit = 12;
+	request.offset = 0;
+	if (catslug) {
+		request.slug = await checkForDecode(catslug);
+	}
+	if (subCatSlug) {
+		request.extraVariable = await checkForDecode(subCatSlug);
+	}
+	try {
+		const response: ApiResponse = await apiCalls(
+			request,
+			EndPointPaths.getquizbycategoryslug,
+		);
+
+		if (response.status !== 0) return null;
+
+		const resp: ResponseModel = response.data;
+		webStoryCache.set(
+			cacheKey,
+			resp.statusCode === 0 ? resp.respList : null,
+		); // ✅ cache the result
+		return resp.statusCode === 0 ? resp.respList : null;
+	} catch (error) {
+		console.error("Error fetching quizlist:", error);
+		return null;
+	}
+}
+
+const articles: Array<ArticleResponse> = await getArticle(lang);
+const stories: Array<WebStoryResponse> = await getStories(lang, null, null);
+const quizzes: Array<QuizStoryResponse> = await getQuizStories(
+	lang,
+	null,
+	null,
+);
+const langPrefix = getLangPrefix(lang);
+const apiServer = getAppConfig();
+const baseUrl = await buildLangUrl(lang);
+const canonicalUrl = baseUrl;
+const siteName = metaConfig.siteName[lang];
+const title = metaConfig.title[lang];
+const description = metaConfig.description[lang];
+const jsonLd = [];
+const webSiteSchema = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"@id": apiServer.websiteUrl + "#website",
+	name: siteName,
+	url: baseUrl,
+	publisher: {
+		"@id": apiServer.websiteUrl + "#organization",
+	},
+	potentialAction: {
+		"@type": "SearchAction",
+		target: baseUrl + "search?q={search_term_string}",
+		"query-input": "required name=search_term_string",
+	},
+};
+
+const organizationSchema = {
+	"@context": "https://schema.org",
+	"@type": "Organization",
+	"@id": apiServer.websiteUrl + "#organization",
+	name: siteName,
+	url: baseUrl,
+	logo: apiServer.websiteUrl + "logo.png",
+	sameAs: [
+		"https://www.facebook.com/storycircuit",
+		"https://x.com/thestorycircuit",
+		"https://in.pinterest.com/ncrehman/",
+		"https://benable.com/ncrehman",
+		"https://substack.com/@ncrehman",
+	],
+};
+
+const itemListJson = generateItemList({
+	name: "Quronfula Article Collection",
+	description:
+		"Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+	baseUrl: baseUrl + "article/",
+	listUrl: baseUrl + "article/",
+	items: articles.map((a) => ({
+		title: a.title,
+		slug: a.slug,
+		image: a.landScapeBanner,
+		authorName: a.authorName,
+		authorSlug: a.authorSlug,
+		type: "Article",
+	})),
+	creatorName: siteName,
+	creatorUrl: apiServer.websiteUrl,
+});
+
+const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
+	{
+		name: lang === "ar" ? "الرئيسية" : "Home",
+		url: baseUrl,
+	},
+]);
+
+jsonLd.push(webSiteSchema);
+jsonLd.push(organizationSchema);
+jsonLd.push(breadCrumb);
+jsonLd.push(itemListJson);
+---
+
+<SEO
+	title={title}
+	description={description}
+	image={baseUrl + "ogimage.jpg"}
+	url={canonicalUrl}
+	lang={lang}
+	canonical={canonicalUrl}
+	noindex={false}
+	type={"WebSite"}
+	jsonLd={jsonLd}
+/>
+<Layout>
+	<main>
+		<>
+			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
+
+			<section>
+				<h1>{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}</h1>
+				<section class="articles-grid">
+					{
+						articles?.length ? (
+							articles.map((item) => (
+								<article class="article-card">
+									<a
+										href={`/${langPrefix}article/${item.slug}`}
+										class="card-link"
+									>
+										<div class="card-image">
+											<img
+												src={item.landScapeBanner}
+												alt={
+													item.imageAlt || item.title
+												}
+												loading="lazy"
+												width="400"
+												height="225"
+											/>
+										</div>
+										<div class="card-content">
+											<h2>{item.title}</h2>
+										</div>
+									</a>
+								</article>
+							))
+						) : (
+							<p class="no-articles">
+								{lang === "ar"
+									? "لا توجد مقالات."
+									: "No articles available."}
+							</p>
+						)
+					}
+				</section>
+			</section>
+			<section>
+				<h2>
+					{lang === "ar" ? "أحدث قصص الويب" : "Latest Web stories"}
+				</h2>
+				<section class="articles-grid">
+					{
+						stories?.length ? (
+							stories.map((item) => (
+								<stories class="article-card">
+									<a
+										href={`/${langPrefix}stories/${item.slug}`}
+										class="card-link"
+									>
+										<div class="card-image">
+											<img
+												src={item.landScapeBanner}
+												alt={
+													item.imageAlt || item.title
+												}
+												loading="lazy"
+												width="400"
+												height="225"
+											/>
+										</div>
+										<div class="card-content">
+											<h2>{item.title}</h2>
+										</div>
+									</a>
+								</stories>
+							))
+						) : (
+							<p class="no-articles">
+								{lang === "ar"
+									? "لا توجد قصص متاحة."
+									: "No stories available."}
+							</p>
+						)
+					}
+				</section>
+			</section>
+			<section>
+				<h2>
+					{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}
+				</h2>
+				<section class="articles-grid">
+					{
+						quizzes?.length ? (
+							quizzes.map((item) => (
+								<quiz class="article-card">
+									<a
+										href={`/${langPrefix}quiz/${item.slug}`}
+										class="card-link"
+									>
+										<div class="card-image">
+											<img
+												src={item.landScapeBanner}
+												alt={
+													item.imageAlt || item.title
+												}
+												loading="lazy"
+												width="400"
+												height="225"
+											/>
+										</div>
+										<div class="card-content">
+											<h2>{item.title}</h2>
+										</div>
+									</a>
+								</quiz>
+							))
+						) : (
+							<p class="no-articles">
+								{lang === "ar"
+									? "لا يوجد اختبار متاح."
+									: "No quiz available."}
+							</p>
+						)
+					}
+				</section>
+			</section>
+			<style>
+				.articles-grid {
+					display: grid;
+					grid-template-columns: repeat(
+						auto-fill,
+						minmax(300px, 1fr)
+					);
+					gap: 20px;
+					padding: 16px;
+				}
+
+				.article-card {
+					background: #fff;
+					border-radius: 12px;
+					overflow: hidden;
+					box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+					transition:
+						transform 0.3s ease,
+						box-shadow 0.3s ease;
+				}
+
+				.article-card:hover {
+					transform: translateY(-6px);
+					box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+				}
+
+				.card-link {
+					display: block;
+					color: inherit;
+					text-decoration: none;
+				}
+
+				.card-image {
+					overflow: hidden;
+					height: 0;
+					padding-top: 56.25%; /* 16:9 aspect ratio */
+					position: relative;
+				}
+
+				.card-image img {
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					transition: transform 0.5s ease;
+				}
+
+				.article-card:hover .card-image img {
+					transform: scale(1.05);
+				}
+
+				.card-content {
+					padding: 12px 16px;
+				}
+
+				.card-content h2 {
+					font-size: 18px;
+					margin: 0 0 8px;
+					line-height: 1.3;
+				}
+
+				.card-content p {
+					font-size: 14px;
+					color: #555;
+					margin: 0;
+				}
+
+				.no-articles {
+					text-align: center;
+					font-size: 16px;
+					padding: 20px;
+					color: #777;
+				}
+
+				/* RTL support */
+				html[lang="ar"] .card-content h2,
+				html[lang="ar"] .card-content p {
+					text-align: right;
+				}
+			</style>
+		</>
+	</main>
+</Layout>

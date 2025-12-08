@@ -1,0 +1,130 @@
+---
+import Footer from "@components/Footer.astro";
+import Header from "../components/Header.astro";
+import "../styles/fonts.css";
+
+const currentPath = Astro.url.pathname;
+let lang = currentPath.startsWith("/en") ? "en" : "ar";
+
+const { title, description, image } = Astro.props;
+
+// Fallback OG if page does not provide them
+const ogTitle = title ?? "Quronfula — Trusted News & Articles";
+const ogDesc =
+	description ??
+	"Latest articles in news, economy, jobs, migration, prices and lifestyle.";
+const ogImage = image ?? "/ogimage.jpg";
+---
+
+<!doctype html>
+<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+
+		<!-- <title>{ogTitle}</title> -->
+		<!-- <meta name="description" content={ogDesc} /> -->
+
+		<!-- <meta property="og:title" content={ogTitle} /> -->
+		<!-- <meta property="og:description" content={ogDesc} /> -->
+		<!-- <meta property="og:image" content={ogImage} /> -->
+		<!-- Font preload -->
+		<link
+			rel="preload"
+			href="/fonts/Almarai-Regular.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			href="/fonts/Almarai-Bold.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+
+		<link rel="stylesheet" href="/src/styles/fonts.css" />
+	</head>
+
+	<body>
+		<Header lang={lang} currentPath={Astro.url.pathname} />
+
+		<main class="layout-grid">
+			<!-- LEFT AD (Desktop only) -->
+			<aside class="ad-left">
+				<div class="ad-placeholder">Ad 300x600</div>
+			</aside>
+
+			<!-- MAIN CONTENT -->
+			<section class="content">
+				<slot />
+			</section>
+
+			<!-- RIGHT AD (Desktop only) -->
+			<aside class="ad-right">
+				<div class="ad-placeholder">Ad 300x600</div>
+			</aside>
+		</main>
+
+		<Footer lang={lang} currentPath={Astro.url.pathname} />
+	</body>
+
+	<script>
+		document.fonts.ready.then(() => {
+			document.documentElement.classList.add("font-ready");
+		});
+	</script>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Desktop Grid: 2 - 8 - 2 */
+	.layout-grid {
+		display: grid;
+		grid-template-columns: 2fr 8fr 2fr;
+		gap: 16px;
+		width: 100%;
+		padding: 0;
+	}
+
+	/* Sticky Sidebars */
+	.ad-left,
+	.ad-right {
+		position: sticky;
+		top: 80px; /* Distance from top while scrolling (adjust as needed) */
+		height: fit-content;
+	}
+
+	/* Hide ads completely on mobile */
+	@media (max-width: 768px) {
+		.layout-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.ad-left,
+		.ad-right {
+			display: none !important;
+		}
+	}
+
+	/* CLS-safe placeholder */
+	.ad-placeholder {
+		width: 100%;
+		aspect-ratio: 300 / 600;
+		background: #f0f0f0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #999;
+		font-size: 14px;
+	}
+</style>

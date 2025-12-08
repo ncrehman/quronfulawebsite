@@ -1,0 +1,10 @@
+---
+import CommonStoriesAmp from "@components/commonstories/CommonStoriesAmp.astro";
+
+// Props passed from getStaticPaths/getStaticProps
+const currentPath = Astro.url.pathname;
+const { slug } = Astro.params;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonStoriesAmp {slug} {lang} />

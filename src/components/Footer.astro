@@ -1,0 +1,274 @@
+---
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
+import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { apiCalls } from "@lib/postmethodService";
+
+const { lang } = Astro.props;
+const isArabic = lang === "ar";
+
+// ---------------- Fetch Categories ----------------
+const categoryCache = new Map<string, Array<CatResponse>>();
+const categorySlugCache = new Map<string, Array<CatResponse>>();
+
+async function getCategory(lang: string) {
+    const cacheKey = `${lang}_footer_cat`;
+    if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey);
+
+    const req = new RequestModel();
+    req.lang = lang;
+
+    const response: ApiResponse = await apiCalls(
+        req,
+        EndPointPaths.getallcategories,
+    );
+    if (response.status !== 0) return [];
+
+    const list: ResponseModel = response.data;
+    categoryCache.set(cacheKey, list.respList);
+    return list.respList;
+}
+
+async function getSlugList(lang: string) {
+    const cacheKey = `${lang}_footer_slug`;
+    if (categorySlugCache.has(cacheKey)) return categorySlugCache.get(cacheKey);
+
+    const req = new RequestModel();
+    req.lang = lang;
+
+    const response: ApiResponse = await apiCalls(
+        req,
+        EndPointPaths.getallcategoriesslug,
+    );
+    if (response.status !== 0) return [];
+
+    const list: ResponseModel = response.data;
+    categorySlugCache.set(cacheKey, list.respList);
+    return list.respList;
+}
+
+const categoryList = await getCategory(lang);
+const slugList = await getSlugList(lang);
+
+// ---------------- Translations ----------------
+const t = {
+    footerDesc: isArabic
+        ? "مقالات موثوقة تغطي الاقتصاد، الهجرة، الصحة، الجمال، ونمط الحياة."
+        : "Trusted articles covering economy, migration, health, beauty, and lifestyle.",
+    quickLinks: isArabic ? "روابط سريعة" : "Quick Links",
+    home: isArabic ? "الرئيسية" : "Home",
+    article: isArabic ? "المقالات" : "Articles",
+    quotes: isArabic ? "اقتباسات" : "Quotes",
+    webstories: isArabic ? "قصص الويب" : "Web Stories",
+    quizChallenge: isArabic ? "اختبارات" : "Quiz",
+    tools: isArabic ? "الأدوات" : "Tools",
+    books: isArabic ? "الكتب" : "Books",
+    about: isArabic ? "من نحن" : "About",
+    contact: isArabic ? "اتصل بنا" : "Contact",
+    privacyPolicy: isArabic ? "سياسة الخصوصية" : "Privacy Policy",
+    termsConditions: isArabic ? "الشروط والأحكام" : "Terms & Conditions",
+    explore: isArabic ? "اكتشف الأقسام" : "Explore Categories",
+    tags: isArabic ? "المواضيع" : "Topics",
+    followUs: isArabic ? "تابعنا" : "Follow Us",
+};
+---
+
+<footer class="footer">
+    <div class="footer-container">
+        <!-- Logo Section -->
+        <div
+            class="footer-section logo-sec"
+            style={isArabic ? "text-align:right" : ""}
+        >
+            <a href={lang === "ar" ? "/" : `/${lang}`} class="logo">
+                <img src="/footerlogo.png" alt="Quronfula logo" />
+            </a>
+            <h3>Quronfula</h3>
+            <p>{t.footerDesc}</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+            <h4>{t.quickLinks}</h4>
+            <ul>
+                <li><a href={lang === "ar" ? "/" : `/${lang}`}>{t.home}</a></li>
+                <li>
+                    <a href={lang === "ar" ? "/article" : `/${lang}/article`}
+                        >{t.article}</a
+                    >
+                </li>
+
+                <li>
+                    <a href={lang === "ar" ? "/stories" : `/${lang}/stories`}
+                        >{t.webstories}</a
+                    >
+                </li>
+                <li>
+                    <a href={lang === "ar" ? "/quiz" : `/${lang}/quiz`}
+                        >{t.quizChallenge}</a
+                    >
+                </li>
+
+                <li>
+                    <a href={lang === "ar" ? "/about" : `/${lang}/about`}
+                        >{t.about}</a
+                    >
+                </li>
+                <li>
+                    <a href={lang === "ar" ? "/contact" : `/${lang}/contact`}
+                        >{t.contact}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/privacy-policy"
+                            : `/${lang}/privacy-policy`}>{t.privacyPolicy}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/terms-and-conditions"
+                            : `/${lang}/terms-and-conditions`}
+                        >{t.termsConditions}</a
+                    >
+                </li>
+            </ul>
+        </div>
+
+        <!-- Categories -->
+        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+            <h4>{t.explore}</h4>
+            <ul>
+                {
+                    categoryList?.map((cat) => (
+                        <li>
+                            <a
+                                href={`${lang === "ar" ? "" : `/${lang}`}/category/${cat.slug}`}
+                            >
+                                {cat.title}
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </div>
+
+        <!-- Tags & Social -->
+        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+            <h4>{t.tags}</h4>
+            <div class="tags">
+                {
+                    slugList?.map((slug) => (
+                        <a href={`/category/${slug.slug}`}>{slug.title}</a>
+                    ))
+                }
+            </div>
+
+            <h4 style="margin-top:20px">{t.followUs}</h4>
+            <div class="social">
+                <a
+                    href="https://facebook.com/storycircuit"
+                    aria-label="Facebook">F</a
+                >
+                <a href="https://x.com/thestorycircuit" aria-label="X">X</a>
+                <a
+                    href="https://instagram.com/batoolanmedia"
+                    aria-label="Instagram">IG</a
+                >
+                <a href="https://medium.com/@nc.rehman" aria-label="Medium">M</a
+                >
+            </div>
+        </div>
+    </div>
+
+    <div class="copyright">
+        © {new Date().getFullYear()} Quronfula — All Rights Reserved.
+    </div>
+</footer>
+
+<style>
+    .footer {
+        background: linear-gradient(to right, #707a7f, #75868f);
+        color: #fff;
+        margin-top: 40px;
+        padding-top: 40px;
+        font-size: 0.95rem;
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 0 20px 40px;
+        display: grid;
+        gap: 30px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .footer-section h4 {
+        border-bottom: 1px solid #ffffff49;
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .logo-sec img {
+        width: 140px;
+        height: 140px;
+        object-fit: contain;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin: 8px 0;
+    }
+
+    .footer-section a {
+        color: #fff;
+        opacity: 0.9;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .footer-section a:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tags a {
+        font-size: 0.85rem;
+    }
+
+    .social a {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-right: 12px;
+        opacity: 0.9;
+    }
+
+    .social a:hover {
+        opacity: 1;
+    }
+
+    .copyright {
+        text-align: center;
+        padding: 12px 0;
+        border-top: 1px solid #ffffff40;
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+</style>

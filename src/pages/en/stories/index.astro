@@ -1,0 +1,9 @@
+---
+import CommonStoryList from "@components/commonstories/CommonStoryList.astro";
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonStoryList {lang}/>

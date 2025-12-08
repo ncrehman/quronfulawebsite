@@ -1,0 +1,48 @@
+import { Category } from './Category';
+
+export class SubCategory {
+    public id: string;
+    public en_title: string;
+    public ar_title: string;
+    public hi_title: string;
+    public fr_title: string;
+    public en_description: string;
+    public ar_description: string;
+    public hi_description: string;
+    public fr_description: string;
+    public en_metaTitle: string;
+    public ar_metaTitle: string;
+    public hi_metaTitle: string;
+    public fr_metaTitle: string;
+    public en_metaDescription: string;
+    public ar_metaDescription: string;
+    public hi_metaDescription: string;
+    public fr_metaDescription: string;
+    public en_slug: string;
+    public ar_slug: string;
+    public hi_slug: string;
+    public fr_slug: string;
+    public en_keyword: string;
+    public ar_keyword: string;
+    public hi_keyword: string;
+    public fr_keyword: string;
+    public thumbnailImage: string;
+    public bannerImage: string;
+    public en_imageAlt: string;
+    public ar_imageAlt: string;
+    public hi_imageAlt: string;
+    public fr_imageAlt: string;
+    public contentCount: number = 0;
+    public quizCount: number = 0;
+    public storyCount: number = 0;
+    public quotesCount: number = 0;
+    public showOnArticle: Boolean;
+    public showOnStory: Boolean;
+    public showOnQuiz: Boolean;
+    public showOnQuotes: Boolean;
+    public active: Boolean;
+    public order: number = 0;
+    public categoryObj: Category;
+    public createdDate: Date;
+    public updatedDate: Date;
+}

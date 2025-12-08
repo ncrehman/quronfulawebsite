@@ -1,0 +1,188 @@
+---
+import LanguageSwitcher from "@components/LanguageSwitcher.astro";
+
+const currentPath = Astro.url.pathname;
+
+// Detect current language based on URL
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const isArabic = lang === "ar";
+
+// Build language switch URL
+const switchTo = isArabic
+  ? `/en${currentPath}`
+  : currentPath.replace(/^\/en/, "") || "/";
+
+const navItems = [
+  { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
+  { labelAr: "مقالات", labelEn: "Articles", href: "/article" },
+  { labelAr: "اختبارات", labelEn: "Quiz", href: "/quiz" },
+  { labelAr: "قصص الويب", labelEn: "Web Stories", href: "/stories" },
+  { labelAr: "اتصل بنا", labelEn: "Contact", href: "/contact" },
+  { labelAr: "من نحن", labelEn: "About", href: "/about" },
+];
+---
+
+<style>
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #eee;
+
+    position: sticky;
+    top: 0; /* REQUIRED */
+    z-index: 1000; /* Keeps it above content */
+    background: #fff; /* Prevents content from showing behind */
+  }
+
+  .logo img {
+    height: 50px;
+    width: auto;
+  }
+
+  /* Desktop Nav */
+  nav.desktop {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  nav.desktop a {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .lang-switch {
+    background: #f4f4f4;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 28px;
+    padding: 4px;
+  }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    transform: translateX(var(--menu-pos));
+    transition: transform 0.3s ease;
+    display: none; /* hidden by default */
+    flex-direction: column;
+    gap: 18px;
+    z-index: 1001;
+  }
+
+  .mobile-menu a {
+    text-decoration: none;
+    font-size: 17px;
+    color: #333;
+    padding: 8px 0;
+  }
+
+  .close-btn {
+    font-size: 32px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    nav.desktop {
+      display: none;
+    }
+    .hamburger {
+      display: block;
+    }
+    .mobile-menu {
+      display: flex;
+    }
+  }
+
+  /* Slide open/close */
+  body.menu-open .mobile-menu {
+    transform: translateX(0);
+  }
+</style>
+
+<header dir={isArabic ? "rtl" : "ltr"}>
+  <div class="logo">
+    <a href={isArabic ? "/" : "/en"}>
+      <img src="/logo.png" alt="Quronfula Logo" width="120" height="40" />
+    </a>
+  </div>
+
+  <!-- Desktop Navigation -->
+  <nav class="desktop">
+    {
+      navItems.map((item) => (
+        <a href={isArabic ? `${item.href}` : `/en${item.href}`}>
+          {isArabic ? item.labelAr : item.labelEn}
+        </a>
+      ))
+    }
+    <LanguageSwitcher lang={lang} currentPath={currentPath} />
+  </nav>
+
+  <!-- Hamburger for Mobile -->
+  <div class="hamburger">☰</div>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" style={`--menu-pos: ${isArabic ? "100%" : "-100%"};`}>
+  <span class="close-btn">×</span>
+
+  {
+    navItems.map((item) => (
+      <a href={isArabic ? `${item.href}` : `/en${item.href}`}>
+        {isArabic ? item.labelAr : item.labelEn}
+      </a>
+    ))
+  }
+  <LanguageSwitcher lang={lang} currentPath={currentPath} />
+</div>
+
+<script>
+  // Open mobile menu
+  document.querySelector(".hamburger")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.body.classList.add("menu-open");
+  });
+
+  // Close mobile menu
+  document.querySelector(".close-btn")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.body.classList.remove("menu-open");
+  });
+
+  // Prevent menu close on menu click
+  document.querySelector(".mobile-menu")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  // Close menu if clicking outside
+  document.addEventListener("click", () => {
+    document.body.classList.remove("menu-open");
+  });
+</script>
