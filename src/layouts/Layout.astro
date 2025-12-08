@@ -2,6 +2,7 @@
 import Footer from "@components/Footer.astro";
 import Header from "../components/Header.astro";
 import "../styles/fonts.css";
+import Analytics from "@components/Analytics.astro";
 
 const currentPath = Astro.url.pathname;
 let lang = currentPath.startsWith("/en") ? "en" : "ar";
@@ -47,6 +48,7 @@ const ogImage = image ?? "/ogimage.jpg";
 		/>
 
 		<link rel="stylesheet" href="/src/styles/fonts.css" />
+		 <Analytics id="G-KSSCTHQE28" />
 	</head>
 
 	<body>

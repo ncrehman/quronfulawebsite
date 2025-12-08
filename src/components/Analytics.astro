@@ -1,0 +1,18 @@
+---
+const { id } = Astro.props; // Example: "G-XXXXXXX"
+if (!id) throw new Error("Google Analytics ID is required.");
+---
+
+<!-- Google Analytics -->
+<script async src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
+></script>
+
+<script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        window.dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+    gtag("config", id);
+</script>
