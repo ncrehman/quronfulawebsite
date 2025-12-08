@@ -22,15 +22,81 @@ const ogImage = image ?? "/ogimage.jpg";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
+		<meta name="generator" content="Quronfula" />
 
-		<!-- <title>{ogTitle}</title> -->
-		<!-- <meta name="description" content={ogDesc} /> -->
-
-		<!-- <meta property="og:title" content={ogTitle} /> -->
-		<!-- <meta property="og:description" content={ogDesc} /> -->
-		<!-- <meta property="og:image" content={ogImage} /> -->
+		<link
+			rel="apple-touch-icon"
+			sizes="57x57"
+			href="/icons/apple-icon-57x57.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="60x60"
+			href="/icons/apple-icon-60x60.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="72x72"
+			href="/icons/apple-icon-72x72.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="76x76"
+			href="/icons/apple-icon-76x76.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="114x114"
+			href="/icons/apple-icon-114x114.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="120x120"
+			href="/icons/apple-icon-120x120.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="144x144"
+			href="/icons/apple-icon-144x144.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="152x152"
+			href="/icons/apple-icon-152x152.png"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="/icons/apple-icon-180x180.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="192x192"
+			href="/icons/android-icon-192x192.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/icons/favicon-32x32.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="96x96"
+			href="/icons/favicon-96x96.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="/icons/favicon-16x16.png"
+		/>
+		<link rel="manifest" href="/icons//manifest.json" />
+		<meta name="msapplication-TileColor" content="#ffffff" />
+		<meta name="msapplication-TileImage" content="/icons//ms-icon-144x144.png" />
+		<meta name="theme-color" content="#ffffff" />
 		<!-- Font preload -->
 		<link
 			rel="preload"
@@ -48,7 +114,7 @@ const ogImage = image ?? "/ogimage.jpg";
 		/>
 
 		<!-- <link rel="stylesheet" href="/src/styles/fonts.css" /> -->
-		 <Analytics id="G-KSSCTHQE28" />
+		<Analytics id="G-KSSCTHQE28" />
 	</head>
 
 	<body>
@@ -72,9 +138,7 @@ const ogImage = image ?? "/ogimage.jpg";
 		</main>
 
 		<Footer lang={lang} currentPath={Astro.url.pathname} />
-	</body>
-
-	<script>
+	</body><script>
 		document.fonts.ready.then(() => {
 			document.documentElement.classList.add("font-ready");
 		});
