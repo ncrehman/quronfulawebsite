@@ -7,3 +7,10 @@ html[dir="rtl"] {
     direction: rtl;
     /* adjust typographic rules for Arabic if needed */
 }
+
+h1 {
+    font-size: 2rem;
+    /* or your preferred size */
+    margin: 0;
+    line-height: 1.3;
+}
