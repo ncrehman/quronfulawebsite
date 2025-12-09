@@ -147,6 +147,7 @@ const webSiteSchema = {
 		"query-input": "required name=search_term_string",
 	},
 };
+jsonLd.push(webSiteSchema);
 
 const organizationSchema = {
 	"@context": "https://schema.org",
@@ -163,24 +164,7 @@ const organizationSchema = {
 		"https://substack.com/@ncrehman",
 	],
 };
-
-const itemListJson = generateItemList({
-	name: "Quronfula Article Collection",
-	description:
-		"Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
-	baseUrl: baseUrl + "article/",
-	listUrl: baseUrl + "article/",
-	items: articles.map((a) => ({
-		title: a.title,
-		slug: a.slug,
-		image: a.landScapeBanner,
-		authorName: a.authorName,
-		authorSlug: a.authorSlug,
-		type: "Article",
-	})),
-	creatorName: siteName,
-	creatorUrl: apiServer.websiteUrl,
-});
+jsonLd.push(organizationSchema);
 
 const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 	{
@@ -188,11 +172,28 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 		url: baseUrl,
 	},
 ]);
-
-jsonLd.push(webSiteSchema);
-jsonLd.push(organizationSchema);
 jsonLd.push(breadCrumb);
-jsonLd.push(itemListJson);
+
+if (articles) {
+	const itemListJson = generateItemList({
+		name: "Quronfula Article Collection",
+		description:
+			"Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+		baseUrl: baseUrl + "article/",
+		listUrl: baseUrl + "article/",
+		items: articles.map((a) => ({
+			title: a.title,
+			slug: a.slug,
+			image: a.landScapeBanner,
+			authorName: a.authorName,
+			authorSlug: a.authorSlug,
+			type: "Article",
+		})),
+		creatorName: siteName,
+		creatorUrl: apiServer.websiteUrl,
+	});
+	jsonLd.push(itemListJson);
+}
 ---
 
 <SEO
@@ -210,125 +211,136 @@ jsonLd.push(itemListJson);
 	<main>
 		<>
 			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
+			{
+				articles ? (
+					<section>
+						<h1>
+							{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}
+						</h1>
+						<section class="articles-grid">
+							{articles?.length ? (
+								articles.map((item) => (
+									<article class="article-card">
+										<a
+											href={`/${langPrefix}article/${item.slug}`}
+											class="card-link"
+										>
+											<div class="card-image">
+												<img
+													src={item.landScapeBanner}
+													alt={
+														item.imageAlt ||
+														item.title
+													}
+													loading="lazy"
+													width="400"
+													height="225"
+												/>
+											</div>
+											<div class="card-content">
+												<h2>{item.title}</h2>
+											</div>
+										</a>
+									</article>
+								))
+							) : (
+								<p class="no-articles">
+									{lang === "ar"
+										? "لا توجد مقالات."
+										: "No articles available."}
+								</p>
+							)}
+						</section>
+					</section>
+				) : null
+			}
+			{
+				stories ? (
+					<section>
+						<h2>
+							{lang === "ar"
+								? "أحدث قصص الويب"
+								: "Latest Web stories"}
+						</h2>
+						<section class="articles-grid">
+							{stories?.length ? (
+								stories.map((item) => (
+									<stories class="article-card">
+										<a
+											href={`/${langPrefix}stories/${item.slug}`}
+											class="card-link"
+										>
+											<div class="card-image">
+												<img
+													src={item.landScapeBanner}
+													alt={
+														item.imageAlt ||
+														item.title
+													}
+													loading="lazy"
+													width="400"
+													height="225"
+												/>
+											</div>
+											<div class="card-content">
+												<h2>{item.title}</h2>
+											</div>
+										</a>
+									</stories>
+								))
+							) : (
+								<p class="no-articles">
+									{lang === "ar"
+										? "لا توجد قصص متاحة."
+										: "No stories available."}
+								</p>
+							)}
+						</section>
+					</section>
+				) : null
+			}
+			{
+				quizzes ? (
+					<section>
+						<h2>{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}</h2>
+						<section class="articles-grid">
+							{quizzes?.length ? (
+								quizzes.map((item) => (
+									<quiz class="article-card">
+										<a
+											href={`/${langPrefix}quiz/${item.slug}`}
+											class="card-link"
+										>
+											<div class="card-image">
+												<img
+													src={item.landScapeBanner}
+													alt={
+														item.imageAlt ||
+														item.title
+													}
+													loading="lazy"
+													width="400"
+													height="225"
+												/>
+											</div>
+											<div class="card-content">
+												<h2>{item.title}</h2>
+											</div>
+										</a>
+									</quiz>
+								))
+							) : (
+								<p class="no-articles">
+									{lang === "ar"
+										? "لا يوجد اختبار متاح."
+										: "No quiz available."}
+								</p>
+							)}
+						</section>
+					</section>
+				) : null
+			}
 
-			<section>
-				<h1>{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}</h1>
-				<section class="articles-grid">
-					{
-						articles?.length ? (
-							articles.map((item) => (
-								<article class="article-card">
-									<a
-										href={`/${langPrefix}article/${item.slug}`}
-										class="card-link"
-									>
-										<div class="card-image">
-											<img
-												src={item.landScapeBanner}
-												alt={
-													item.imageAlt || item.title
-												}
-												loading="lazy"
-												width="400"
-												height="225"
-											/>
-										</div>
-										<div class="card-content">
-											<h2>{item.title}</h2>
-										</div>
-									</a>
-								</article>
-							))
-						) : (
-							<p class="no-articles">
-								{lang === "ar"
-									? "لا توجد مقالات."
-									: "No articles available."}
-							</p>
-						)
-					}
-				</section>
-			</section>
-			<section>
-				<h2>
-					{lang === "ar" ? "أحدث قصص الويب" : "Latest Web stories"}
-				</h2>
-				<section class="articles-grid">
-					{
-						stories?.length ? (
-							stories.map((item) => (
-								<stories class="article-card">
-									<a
-										href={`/${langPrefix}stories/${item.slug}`}
-										class="card-link"
-									>
-										<div class="card-image">
-											<img
-												src={item.landScapeBanner}
-												alt={
-													item.imageAlt || item.title
-												}
-												loading="lazy"
-												width="400"
-												height="225"
-											/>
-										</div>
-										<div class="card-content">
-											<h2>{item.title}</h2>
-										</div>
-									</a>
-								</stories>
-							))
-						) : (
-							<p class="no-articles">
-								{lang === "ar"
-									? "لا توجد قصص متاحة."
-									: "No stories available."}
-							</p>
-						)
-					}
-				</section>
-			</section>
-			<section>
-				<h2>
-					{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}
-				</h2>
-				<section class="articles-grid">
-					{
-						quizzes?.length ? (
-							quizzes.map((item) => (
-								<quiz class="article-card">
-									<a
-										href={`/${langPrefix}quiz/${item.slug}`}
-										class="card-link"
-									>
-										<div class="card-image">
-											<img
-												src={item.landScapeBanner}
-												alt={
-													item.imageAlt || item.title
-												}
-												loading="lazy"
-												width="400"
-												height="225"
-											/>
-										</div>
-										<div class="card-content">
-											<h2>{item.title}</h2>
-										</div>
-									</a>
-								</quiz>
-							))
-						) : (
-							<p class="no-articles">
-								{lang === "ar"
-									? "لا يوجد اختبار متاح."
-									: "No quiz available."}
-							</p>
-						)
-					}
-				</section>
-			</section>
 			<style>
 				.articles-grid {
 					display: grid;

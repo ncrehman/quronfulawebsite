@@ -69,6 +69,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     };
 
     // Logging
+    // console.log("console per: "+appConfig.isConsole)
     if (appConfig.isConsole) {
       printConsole(`URL: ${uri}`);
       printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
@@ -85,11 +86,11 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     };
 
     // Logging
-    if (appConfig.isConsole) {
+    // if (appConfig.isConsole) {
       printConsole(`URL: ${uri}`);
       printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
       printConsole(`Error Response: ${url} -> ${JSON.stringify(resultResponse)}`);
-    }
+    // }
 
     return resultResponse;
   }

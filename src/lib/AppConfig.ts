@@ -14,9 +14,9 @@ export async function loadAppConfig(): Promise<AppConfigModel> {
     const isLocal = hostName.includes("localhost") || hostName.includes("192.168.1");
     if (config.runLocalService && isLocal) {
         config.webServicesUrl = config.localWebServicesUrl;
-        config.isConsole = false;
+        // config.isConsole = false;
     } else if (!config.runLocalService && isLocal) {
-        config.isConsole = false;
+        // config.isConsole = false;
     } else {
         config.isConsole = false;
     }

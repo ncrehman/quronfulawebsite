@@ -1,8 +1,8 @@
 ---
 import Footer from "@components/Footer.astro";
 import Header from "../components/Header.astro";
-import "../styles/fonts.css";
-import "../styles/global.css";
+// import "/styles/fonts.css";
+// import "/styles/global.css";
 import Analytics from "@components/Analytics.astro";
 
 const currentPath = Astro.url.pathname;
@@ -11,11 +11,11 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 const { title, description, image } = Astro.props;
 
 // Fallback OG if page does not provide them
-const ogTitle = title ?? "Quronfula — Trusted News & Articles";
-const ogDesc =
-	description ??
-	"Latest articles in news, economy, jobs, migration, prices and lifestyle.";
-const ogImage = image ?? "/ogimage.jpg";
+// const ogTitle = title ?? "Quronfula — Trusted News & Articles";
+// const ogDesc =
+// 	description ??
+// 	"Latest articles in news, economy, jobs, migration, prices and lifestyle.";
+// const ogImage = image ?? "/ogimage.jpg";
 ---
 
 <!doctype html>
@@ -114,7 +114,8 @@ const ogImage = image ?? "/ogimage.jpg";
 			crossorigin
 		/>
 
-		<link rel="stylesheet" href="/src/styles/fonts.css" />
+		<link rel="stylesheet" href="/styles/fonts.css" />
+		<link rel="stylesheet" href="/styles/global.css" />
 		<Analytics id="G-KSSCTHQE28" />
 	</head>
 
@@ -124,7 +125,7 @@ const ogImage = image ?? "/ogimage.jpg";
 		<main class="layout-grid">
 			<!-- LEFT AD (Desktop only) -->
 			<aside class="ad-left">
-				<div class="ad-placeholder">Ad 300x600</div>
+				<div class="ad-placeholder"></div>
 			</aside>
 
 			<!-- MAIN CONTENT -->
@@ -134,7 +135,7 @@ const ogImage = image ?? "/ogimage.jpg";
 
 			<!-- RIGHT AD (Desktop only) -->
 			<aside class="ad-right">
-				<div class="ad-placeholder">Ad 300x600</div>
+				<div class="ad-placeholder"></div>
 			</aside>
 		</main>
 
@@ -187,7 +188,7 @@ const ogImage = image ?? "/ogimage.jpg";
 	.ad-placeholder {
 		width: 100%;
 		aspect-ratio: 300 / 600;
-		background: #f0f0f0;
+		background: #fff;
 		display: flex;
 		align-items: center;
 		justify-content: center;

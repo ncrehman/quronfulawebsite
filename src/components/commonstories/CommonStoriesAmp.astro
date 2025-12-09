@@ -22,7 +22,6 @@ const story: WebStoryResponse | null = await (async () => {
     if (result.status === 0) {
       const resp: ResponseModel = result.data;
       if (resp.statusCode === 0) {
-        console.log(resp.respObject)
         return resp.respObject as WebStoryResponse;
       }
     }

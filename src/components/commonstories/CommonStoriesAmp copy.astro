@@ -42,7 +42,6 @@ export async function getWebStory(
 
 const story: WebStoryResponse | null = await getWebStory(lang, slug);
 if (!story) throw new Error("Story not found");
-console.log('storie:',story)
 const animations = [
     "fade-in",
     "fly-in-left",
