@@ -21,7 +21,6 @@ export async function GET({ url }) {
   const resp = await apiCalls(request, EndPointPaths.generatesitemap);
   const items: Array<SiteMapData> = resp?.data?.respList || [];
 
-  const website = "https://www.quronfula.com";
 
   // Build ALL URLs — each item gives us both Arabic + English
   const allUrlEntries = items.flatMap((item: any) => {

@@ -1,0 +1,10 @@
+---
+import CommonCategory from "@components/commoncategory/CommonCategory.astro";
+
+// Props passed from getStaticPaths/getStaticProps
+const currentPath = Astro.url.pathname;
+const { catslug } = Astro.params;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonCategory {catslug} {lang} />

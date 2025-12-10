@@ -1,0 +1,9 @@
+---
+import CategoryIndexPage from "@components/commoncategory/CategoryIndexPage.astro";
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CategoryIndexPage {lang}/>

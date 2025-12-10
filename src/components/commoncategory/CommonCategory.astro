@@ -1,0 +1,442 @@
+---
+import {
+    apiCalls,
+    buildLangUrl,
+    generateBreadcrumb,
+    generateItemList,
+} from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+import Layout from "@layouts/Layout.astro";
+import SEO from "@components/SEO.astro";
+import { metaConfig } from "@components/metaConfig";
+import { getAppConfig } from "@lib/AppConfig";
+import { checkForDecode } from "@lib/postmethodService";
+import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { getLangPrefix } from "@lib/postmethodService";
+import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
+import type { CategoryResponse } from "@lib/pojo/responsemodel/CategoryResponse";
+import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryResponse";
+
+interface Props {
+    catslug: string;
+    lang: string;
+}
+const { catslug = "", lang = "ar" } = Astro.props;
+// const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
+console.log("LLLLLLLLLLLLL: " + lang);
+// Fetch homepage data or articles specific to home page
+
+const categoryCache: Map<string, CatResponse[]> = new Map();
+
+async function getCategory(
+    lang: string,
+    catslug: string,
+): Promise<CategoryResponse | null> {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.slug = await checkForDecode(catslug);
+    try {
+        const response: ApiResponse = await apiCalls(
+            request,
+            EndPointPaths.getcategorybyslug,
+        );
+        if (response.status !== 0) return null;
+        const resp: ResponseModel = response.data;
+        return resp.statusCode === 0 ? resp.respObject : null;
+    } catch (error) {
+        console.error("Error fetching category:", error);
+        return null;
+    }
+}
+
+async function getArticleList(
+    lang: string,
+    catslug: string,
+): Promise<ArticleResponse[]> {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.limit = 5;
+    request.offset = 0;
+    request.slug = await checkForDecode(catslug);
+    const response = await apiCalls(
+        request,
+        EndPointPaths.getarticlesbycategoryslug,
+    );
+    if (response.status === 0 && response.data.statusCode === 0) {
+        return response.data.respList || [];
+    }
+    return [];
+}
+async function getSubCategories(
+    lang: string,
+    catslug: string,
+): Promise<SubCategoryResponse[]> {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "article";
+    request.slug = await checkForDecode(catslug);
+    const response = await apiCalls(
+        request,
+        EndPointPaths.getallsubcategorybycategoryslugtopic,
+    );
+    if (response.status === 0 && response.data.statusCode === 0) {
+        return response.data.respList || [];
+    }
+    return [];
+}
+const langPrefix = getLangPrefix(lang);
+const apiServer = getAppConfig();
+const baseUrl = await buildLangUrl(lang);
+const siteName = metaConfig.siteName[lang];
+const jsonLd = [];
+
+const categoryObj: CategoryResponse = await getCategory(lang, catslug);
+const subCatList: Array<SubCategoryResponse> = await getSubCategories(
+    lang,
+    catslug,
+);
+const articles: Array<ArticleResponse> = await getArticleList(lang, catslug);
+let canonicalUrl: string = null;
+if (!!categoryObj) {
+    canonicalUrl = baseUrl + "category/" + categoryObj.slug;
+    const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
+        {
+            name: lang === "ar" ? "الرئيسية" : "Home",
+            url: baseUrl,
+        },
+        {
+            name: lang === "ar" ? "فئة" : "Category",
+            url: baseUrl + "category/",
+        },
+        {
+            name: categoryObj.title,
+            url: baseUrl + "category/" + catslug,
+        },
+    ]);
+    jsonLd.push(breadCrumb);
+}
+if (articles) {
+    const itemListJson = generateItemList({
+        name: categoryObj.title + " Article Collection",
+        description:
+            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+        baseUrl: baseUrl + "article/",
+        listUrl: baseUrl + "article/",
+        items: articles.map((a:ArticleResponse) => ({
+            title: a.title,
+            slug: a.slug,
+            image: a.landScapeBanner,
+            authorName: a.authorName,
+            authorSlug: a.authorSlug,
+            type: "Article",
+        })),
+        creatorName: siteName,
+        creatorUrl: apiServer.websiteUrl,
+    });
+    jsonLd.push(itemListJson);
+}
+if (subCatList) {
+    const itemListJson = generateItemList({
+        name: categoryObj.title + " Sub Category Collection",
+        description:
+            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+        baseUrl: baseUrl + "category/"+categoryObj.slug,
+        listUrl: baseUrl + "category/"+categoryObj.slug,
+        items: subCatList.map((a:SubCategoryResponse) => ({
+            title: a.title,
+            slug:'category/'+ categoryObj.slug+'/'+a.slug,
+            image: a.bannerImage,
+            type: "Category",
+        })),
+        creatorName: siteName,
+        creatorUrl: apiServer.websiteUrl,
+    });
+    jsonLd.push(itemListJson);
+}
+---
+
+{
+    categoryObj && (
+        <SEO
+            title={categoryObj.metaTitle}
+            description={categoryObj.metaDescription}
+            image={categoryObj.bannerImage}
+            url={canonicalUrl}
+            lang={lang}
+            canonical={canonicalUrl}
+            noindex={false}
+            type={"WebSite"}
+            jsonLd={jsonLd}
+        />
+    )
+}
+
+<Layout>
+    <main>
+        <>
+            <!-- HERO BANNER – Pure Inline CSS (Arabic Version) -->
+            <section
+                style="
+    position: relative;
+    min-height: 70vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  "
+            >
+                <!-- Background Image + Dark Overlay -->
+                <div
+                    style={`
+      position: absolute;
+      inset: 0;
+      background-image: url('${categoryObj.bannerImage}');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.4);
+                   `}
+                >
+                </div>
+
+                <!-- Content -->
+                <div
+                    style="position: relative; z-index: 2; max-width: 900px; padding: 2rem;"
+                >
+                    <h1
+                        style="
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        line-height: 1.1;
+        letter-spacing: -1px;
+      "
+                    >
+                        {categoryObj.title}
+                    </h1>
+
+                    <p
+                        style="
+        font-size: 1.5rem;
+        opacity: 0.95;
+        max-width: 700px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.7;
+        font-weight: 300;
+      "
+                    >
+                        {categoryObj.description}
+                    </p>
+
+                    <!-- Badges -->
+                    <div
+                        style="
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+  padding: 0 1rem;
+"
+                    >
+                        {
+                            subCatList?.length > 0
+                                ? subCatList.map((item) => (
+                                      <a
+                                          href={`/${langPrefix}category/${categoryObj.slug}/${item.slug}`}
+                                          class="subcat-pill"
+                                          style="
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1.5px solid rgba(255, 255, 255, 0.3);
+          border-radius: 9999px;
+          padding: 0.85rem 1.8rem;
+          font-size: 1.05rem;
+          font-weight: 600;
+          color: white !important;
+          text-decoration: none;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        "
+                                          onmouseover="this.style.transform='translateY(-4px) scale(1.05)'; this.style.background='rgba(255,255,255,0.35)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.4)'"
+                                          onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.background='rgba(255,255,255,255,0.22)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.25)'"
+                                      >
+                                          <span>{item.title}</span>
+
+                                          {/* Shine effect on hover */}
+                                          <div
+                                              style="
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 30%;
+          height: 200%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          transform: rotate(30deg);
+          transition: all 0.6s;
+          opacity: 0;
+        "
+                                              class="shine"
+                                          />
+                                      </a>
+                                  ))
+                                : null
+                        }
+                    </div>
+                </div>
+
+                <!-- Optional subtle wave at bottom -->
+                <div
+                    style="
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      background: white;
+      clip-path: ellipse(150% 100% at 50% 100%);
+    "
+                >
+                </div>
+            </section>
+
+            <section>
+                {
+				articles ? (
+					<section>
+						<section class="articles-grid">
+							{articles?.length ? (
+								articles.map((item) => (
+									<article class="article-card">
+										<a
+											href={`/${langPrefix}article/${item.slug}`}
+											class="card-link"
+										>
+											<div class="card-image">
+												<img
+													src={item.landScapeBanner}
+													alt={
+														item.imageAlt ||
+														item.title
+													}
+													loading="lazy"
+													width="400"
+													height="225"
+												/>
+											</div>
+											<div class="card-content">
+												<h2>{item.title}</h2>
+											</div>
+										</a>
+									</article>
+								))
+							) : (
+								<p class="no-articles">
+									{lang === "ar"
+										? "لا توجد مقالات."
+										: "No articles available."}
+								</p>
+							)}
+						</section>
+					</section>
+				) : null
+			}
+            </section>
+            <style>
+				.articles-grid {
+					display: grid;
+					grid-template-columns: repeat(
+						auto-fill,
+						minmax(300px, 1fr)
+					);
+					gap: 20px;
+					padding: 16px;
+				}
+
+				.article-card {
+					background: #fff;
+					border-radius: 12px;
+					overflow: hidden;
+					box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+					transition:
+						transform 0.3s ease,
+						box-shadow 0.3s ease;
+				}
+
+				.article-card:hover {
+					transform: translateY(-6px);
+					box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+				}
+
+				.card-link {
+					display: block;
+					color: inherit;
+					text-decoration: none;
+				}
+
+				.card-image {
+					overflow: hidden;
+					height: 0;
+					padding-top: 56.25%; /* 16:9 aspect ratio */
+					position: relative;
+				}
+
+				.card-image img {
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					transition: transform 0.5s ease;
+				}
+
+				.article-card:hover .card-image img {
+					transform: scale(1.05);
+				}
+
+				.card-content {
+					padding: 12px 16px;
+				}
+
+				.card-content h2 {
+					font-size: 18px;
+					margin: 0 0 8px;
+					line-height: 1.3;
+				}
+
+				.card-content p {
+					font-size: 14px;
+					color: #555;
+					margin: 0;
+				}
+
+				.no-articles {
+					text-align: center;
+					font-size: 16px;
+					padding: 20px;
+					color: #777;
+				}
+
+				/* RTL support */
+				html[lang="ar"] .card-content h2,
+				html[lang="ar"] .card-content p {
+					text-align: right;
+				}
+			</style>
+        </>
+    </main>
+</Layout>
