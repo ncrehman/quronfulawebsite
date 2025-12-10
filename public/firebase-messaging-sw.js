@@ -19,7 +19,7 @@ messaging.onBackgroundMessage((payload) => {
     // console.log('[SW] Received background message: ', payload);
 
     // Prefer data payload if notification is missing
-    const title = payload.notification?.title || payload.data.title || "Story Circuit";
+    const title = payload.notification?.title || payload.data.title || "Quronfula";
     const body = payload.notification?.body || payload.data.body || "New notification";
     const icon = payload.data.icon || "/icons/android-icon-192x192.png";
     const clickUrl = payload.data.url || "/";
@@ -28,7 +28,7 @@ messaging.onBackgroundMessage((payload) => {
     const imageMobile = payload.data.image_mobile;
     const imageSquare = payload.data.image_square;
     const imageDesktop = payload.data.image_desktop;
-    let selectedImage = payload.data.image || '/category_og.jpg'; // fallback
+    let selectedImage = payload.data.image || '/categoryog.jpg'; // fallback
 
     try {
         // Detect approximate screen shape

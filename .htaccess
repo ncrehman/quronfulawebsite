@@ -1,75 +1,70 @@
 # --- START SEO REDIRECTS ---
 RewriteEngine On
 
-# 1. Force HTTPS + WWW on all requests (cleanest way)
+# Force HTTPS + WWW in one clean rule
 RewriteCond %{HTTP_HOST} ^quronfula\.com$ [NC,OR]
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://www.quronfula.com/$1 [R=301,L]
 
-# 2. Optional: Remove trailing slashes (clean URLs)
-# RewriteRule ^(.+)/$ /$1 [R=301,L]
-
-# --- END SEO REDIRECTS ---
+ --- END SEO REDIRECTS ---
 
 # =============================================
-# 2025-OPTIMIZED COMPRESSION + CACHING
-# Works perfectly on DigitalOcean + Apache 2.4
+# 2025 FINAL OPTIMIZED CONFIG – EXPIRES + COMPRESSION + CACHING
+# Works perfectly on DigitalOcean Apache 2.4
 # =============================================
 
-# -----------------------------
-# 1. GZIP COMPRESSION (now covers 100% of your assets)
-# -----------------------------
+# 1. GZIP COMPRESSION (all text-based assets + fonts)
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html
-  AddOutputFilterByType DEFLATE text/css
-  AddOutputFilterByType DEFLATE text/plain
-  AddOutputFilterByType DEFLATE text/xml
-  AddOutputFilterByType DEFLATE text/x-component
-
-  AddOutputFilterByType DEFLATE application/javascript
-  AddOutputFilterByType DEFLATE application/x-javascript
-  AddOutputFilterByType DEFLATE application/json
-  AddOutputFilterByType DEFLATE application/ld+json
-  AddOutputFilterByType DEFLATE application/manifest+json
-  AddOutputFilterByType DEFLATE application/rss+xml
-  AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
-  AddOutputFilterByType DEFLATE application/x-font-ttf
-  AddOutputFilterByType DEFLATE application/xml
-  AddOutputFilterByType DEFLATE font/woff
-  AddOutputFilterByType DEFLATE font/woff2
-  AddOutputFilterByType DEFLATE image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml text/x-component
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json application/ld+json application/manifest+json
+  AddOutputFilterByType DEFLATE application/rss+xml application/xml
+  AddOutputFilterByType DEFLATE font/woff font/woff2 image/svg+xml
 </IfModule>
 
-# -----------------------------
-# 2. LONG-TERM CACHING
-# -----------------------------
+# 2. EXPIRES HEADERS – this is exactly what Google/Lighthouse wants
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault "access plus 1 month"
 
+  # Images – 1 year
   ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
   ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
   ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/avif "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
   ExpiresByType image/x-icon "access plus 1 year"
+
+  # Fonts – 1 year
   ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType font/woff "access plus 1 year"
   ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+
+  # CSS & JavaScript – 1 year (Astro uses hashed filenames → safe!)
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType application/x-javascript "access plus 1 year"
+
+  # Other
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType video/mp4 "access plus 1 year"
 </IfModule>
 
+# 3. CACHE-CONTROL HEADERS (adds the "immutable" flag – 2025 best practice)
 <IfModule mod_headers.c>
-  # Immutable static assets – 1 year cache + immutable flag
-  <FilesMatch "\.(woff2|woff|woff|ttf|jpg|jpeg|png|webp|svg|ico|js|css)$">
+  # 1-year immutable cache for all static assets
+  <FilesMatch "\.(css|js|woff2|woff|ttf|jpg|jpeg|png|gif|webp|avif|svg|ico|pdf|mp4)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  # HTML – short cache (safe for Astro static sites)
+  # HTML – short cache (can be longer if you use service worker or CDN)
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=600, stale-while-revalidate=60"
   </FilesMatch>
 
-  # Required for compression to work properly
+  # Tell proxies/CDNs to respect compression
   Header set Vary "Accept-Encoding"
 </IfModule>

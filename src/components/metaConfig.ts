@@ -32,7 +32,7 @@ export const metaConfig = {
     },
 
     description: {
-        en: "Discover the latest articles and stories in health, beauty, lifestyle, economy, migration, travel, and daily life. Updated daily with meaningful and engaging content.",
-        ar: "اكتشف أحدث المقالات والقصص في الصحة والجمال ونمط الحياة والاقتصاد والهجرة والسفر والمعلومات اليومية. محتوى محدث يوميًا يقدم لك الفائدة والمتعة."
+        en: "Explore daily updates on health, beauty, lifestyle, economy, migration, travel, and everyday life with meaningful insights and engaging, useful stories.",
+        ar: "اكتشف أحدث المقالات والقصص في الصحة والجمال ونمط الحياة والاقتصاد والهجرة والسفر واليوميات، مع محتوى محدث يوميًا يقدم لك الفائدة والمتعة بأسلوب شيق وموثوق."
     }
 };

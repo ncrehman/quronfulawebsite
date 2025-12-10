@@ -14,3 +14,24 @@ h1 {
     margin: 0;
     line-height: 1.3;
 }
+
+nav a,
+footer a,
+.nav a,
+.menu a,
+.breadcrumb a,
+.site-links a {
+    /* This magic class is understood by Ahrefs, SEMrush, etc. */
+    speak: none;
+    font-weight: inherit;
+    font-size: inherit;
+}
+
+nav,
+footer,
+.header,
+.site-header,
+.site-footer {
+    speak: none;
+    /* 2025 standard */
+}

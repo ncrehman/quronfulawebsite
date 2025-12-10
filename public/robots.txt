@@ -1,3 +1,20 @@
 User-agent: *
-Sitemap: https://quronfula.com/sitemap.xml
 Allow: /
+
+# Allow all normal content
+Allow: /articles/
+Allow: /category/
+Allow: /tags/
+Allow: /author/
+
+# Block only junk/technical folders (these should never be indexed)
+Disallow: /search
+Disallow: /admin
+Disallow: /backend-panel
+Disallow: /cgi-bin/
+Disallow: /wp-*
+Disallow: /*?*                 # optional: blocks URLs with ? parameters (if you don't use them)
+Disallow: /*.php$
+
+# Sitemap (very important – helps Google find all your articles fast)
+Sitemap: https://www.quronfula.com/sitemap.xml

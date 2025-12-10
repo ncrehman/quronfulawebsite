@@ -1,0 +1,144 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const title =
+    lang === "en"
+        ? "Page not found | Quronfula"
+        : "الصفحة غير موجودة | قورونفولا";
+const errorPara =
+    lang === "en"
+        ? "The page you are looking for does not exist."
+        : "الصفحة التي تبحث عنها غير موجودة";
+const backToHome = lang === "en" ? "Back to main page" : "العودة إلى الرئيسية";
+const errorNum=lang==='en'?'404':'٤٠٤';
+---
+
+<Layout title="الصفحة غير موجودة – قورونفولا">
+    <!-- Floating particles background (pure CSS) -->
+    <head>
+        <title>{title}</title>
+    </head>
+    <div class="particles" aria-hidden="true">
+        {
+            [...Array(12)].map((_, i) => (
+                <div
+                    style={`
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            animation-delay: ${i * 1.5}s;
+            left: ${Math.random() * 100}%;
+            top: -20px;
+          `}
+                />
+            ))
+        }
+    </div>
+
+    <div class="container">
+        <h1 class="error-code">{errorNum}</h1>
+        <p class="message">{errorPara}</p>
+        <a href="/" class="home-link">
+            {backToHome}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                ></path>
+            </svg>
+        </a>
+    </div>
+
+    <style>
+        @keyframes float {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+    </style>
+
+    <!-- Optional: astro-icon if you want real icons -->
+    <!-- Or just keep the inline SVG above -->
+</Layout>
+<style is:global>
+    @import url("/styles/fonts.css");
+    @import url("/styles/global.css");
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Almarai", system-ui, sans-serif;
+        color: white;
+        overflow-x: hidden;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .error-code {
+        font-size: clamp(6rem, 20vw, 12rem);
+        font-weight: 700;
+        margin: 0;
+        opacity: 0;
+        animation: fadeInUp 1s forwards 0.3s;
+    }
+
+    .message {
+        font-size: 1.8rem;
+        margin: 1rem 0 2rem;
+        opacity: 0;
+        animation: fadeInUp 1s forwards 0.6s;
+    }
+
+    .home-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        color: #667eea;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        opacity: 0;
+        animation: fadeInUp 1s forwards 0.9s;
+    }
+
+    .home-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.3;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
