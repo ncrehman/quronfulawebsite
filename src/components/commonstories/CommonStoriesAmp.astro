@@ -1,5 +1,6 @@
 ---
 // src/pages/stories/[slug].astro
+import { metaConfig } from "@components/metaConfig";
 import { getAppConfig } from "@lib/AppConfig";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
@@ -39,7 +40,10 @@ const toSeconds = (sec: number) => `${sec}s`;
 const firstSlideBg = `url(${story.landScapeBanner})`;
 
 // Generate full URLs for related stories
-const baseUrl = Astro.url.origin;
+// const baseUrl = Astro.url.origin;
+const baseUrl = await buildLangUrl(lang);
+const canonicalUrl = baseUrl + "story/" + story.slug;
+const siteName = metaConfig.siteName[lang];
 const relatedItems = story.relatedStories.map(rel => ({
   title: rel.title,
   url: `${baseUrl}/stories/${rel.slug}`,
@@ -50,12 +54,54 @@ const relatedItems = story.relatedStories.map(rel => ({
 <!doctype html>
 <html ⚡ lang={lang}>
   <head>
-    <meta charset="utf-8" />
-    <title>{story.metaTitle}</title>
-    <meta name="description" content={story.metaDescription} />
-    <meta name="keywords" content={story.keywords} />
-    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
-    <link rel="canonical" href={story.canonicalUrl} />
+     <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width,minimum-scale=1,initial-scale=1"
+        />
+        <title>{story.metaTitle || story.title}</title>
+        <meta name="description" content={story.metaDescription || story.title} />
+        <meta name="robots" content="max-image-preview:large" />
+        <meta property="title" content={story.metaTitle} />
+        <meta property="keywords" name={story.keywords} />
+        <meta property="quiz_keywords" name={story.keywords} />
+        <meta property="og:title" content={story.metaTitle} />
+        <meta property="og:image" content={story.landScapeBanner} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="quiz" />
+        <meta property="og:description" content={story.metaDescription} />
+        <meta property="og:published_time" content={new Date(story.publishDate).toISOString()} />
+        <meta property="og:modified_time" content={new Date(story.publishDate).toISOString()} />
+        <meta property="og:site_name" content={siteName} />
+        <meta name="twitter:title" content={story.metaTitle} />
+        <meta name="twitter:description" content={story.metaDescription} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:image" content={story.landScapeBanner} />
+        <meta name="amp-story-generator-name" content={siteName} />
+        <meta name="amp-story-generator-version" content="0.1" />
+        <link rel="canonical" href={canonicalUrl} />
+        <link href={story.bannerImage} rel="preload" as="image" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="https://www.quronfula.com/icons/favicon-32x32.png"
+        />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="https://www.quronfula.com/icons/apple-icon-180x180.png"
+        />
+        <link
+            rel="shortcut icon"
+            href="https://www.quronfula.com/icons/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+
 
     <!-- JSON-LD -->
     <script type="application/ld+json">
@@ -67,7 +113,7 @@ const relatedItems = story.relatedStories.map(rel => ({
         "datePublished": {JSON.stringify(story.publishDate)},
         "publisher": {
           "@type": "Organization",
-          "name": "The Story Circuit",
+          "name": "Quronfula",
           "logo": {
             "@type": "ImageObject",
             "url": "https://www.quronfula.com/logo.png",

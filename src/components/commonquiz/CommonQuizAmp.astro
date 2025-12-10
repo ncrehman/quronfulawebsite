@@ -5,8 +5,9 @@ import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls } from "@lib/postmethodService";
+import { apiCalls, buildLangUrl } from "@lib/postmethodService";
 import { checkForDecode } from "@lib/postmethodService";
+import { metaConfig } from "@components/metaConfig";
 
 const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
@@ -18,7 +19,7 @@ export async function getQuizStory(
     try {
         const request = new RequestModel();
         request.lang = lang;
-        request.slug =  await checkForDecode(slug);
+        request.slug = await checkForDecode(slug);
         const responseResult: ApiResponse = await apiCalls(
             request,
             EndPointPaths.getquizbyslug,
@@ -40,7 +41,9 @@ const quiz: QuizStoryResponse | null = await getQuizStory(lang, slug);
 if (!quiz) {
     throw new Error("Quiz not found");
 }
-
+const baseUrl = await buildLangUrl(lang);
+const canonicalUrl = baseUrl + "quiz/" + quiz.slug;
+const siteName = metaConfig.siteName[lang];
 const gradients = [
     ["#f3633fff", "#ef9b5bff"],
     ["#6A11CB", "#2575FC"],
@@ -175,8 +178,11 @@ function generateSlidesHtml(quiz: QuizStoryResponse) {
         .join("\n");
 
     const commonBg = `/api/gradient?c1=${encodeURIComponent("#FF7E5F")}&c2=${encodeURIComponent("#FEB47B")}`;
-const resltTxt=lang==='en'?'Result':'نتيجتك';
-const resultAct=lang==='en'?'Share your result or try again to find out more.':'شارك نتيجتك أو أعد المحاولة لمعرفة المزيد.';
+    const resltTxt = lang === "en" ? "Result" : "نتيجتك";
+    const resultAct =
+        lang === "en"
+            ? "Share your result or try again to find out more."
+            : "شارك نتيجتك أو أعد المحاولة لمعرفة المزيد.";
     html += `
 <amp-story-page id="results-page">
   <amp-story-grid-layer template="fill">
@@ -219,13 +225,53 @@ const slidesHtml = generateSlidesHtml(quiz);
 <html ⚡ lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
     <head>
         <meta charset="utf-8" />
-        <title>{quiz.metaTitle || quiz.title}</title>
-        <meta name="description" content={quiz.metaDescription || quiz.title} />
-        <link rel="canonical" href={quiz.canonicalUrl} />
         <meta
             name="viewport"
             content="width=device-width,minimum-scale=1,initial-scale=1"
         />
+        <title>{quiz.metaTitle || quiz.title}</title>
+        <meta name="description" content={quiz.metaDescription || quiz.title} />
+        <meta name="robots" content="max-image-preview:large" />
+        <meta property="title" content={quiz.metaTitle} />
+        <meta property="keywords" name={quiz.keywords} />
+        <meta property="quiz_keywords" name={quiz.keywords} />
+        <meta property="og:title" content={quiz.metaTitle} />
+        <meta property="og:image" content={quiz.landScapeBanner} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="quiz" />
+        <meta property="og:description" content={quiz.metaDescription} />
+        <meta property="og:published_time" content={new Date(quiz.publishDate).toISOString()} />
+        <meta property="og:modified_time" content={new Date(quiz.publishDate).toISOString()} />
+        <meta property="og:site_name" content={siteName} />
+        <meta name="twitter:title" content={quiz.metaTitle} />
+        <meta name="twitter:description" content={quiz.metaDescription} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:image" content={quiz.landScapeBanner} />
+        <meta name="amp-story-generator-name" content={siteName} />
+        <meta name="amp-story-generator-version" content="0.1" />
+        <link rel="canonical" href={canonicalUrl} />
+        <link href={quiz.bannerImage} rel="preload" as="image" />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="https://www.quronfula.com/icons/favicon-32x32.png"
+        />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="https://www.quronfula.com/icons/apple-icon-180x180.png"
+        />
+        <link
+            rel="shortcut icon"
+            href="https://www.quronfula.com/icons/favicon.ico"
+            type="image/x-icon"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+
         <!-- AMP core + story + interactive -->
         <script async src="https://cdn.ampproject.org/v0.js"></script>
         <script
