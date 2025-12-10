@@ -1,73 +1,75 @@
 # --- START SEO REDIRECTS ---
-
 RewriteEngine On
 
-# 1. Exclude /en/sitemap.xml
-RewriteRule ^en/sitemap\.xml$ - [L]
-
-# 2. Redirect /en/* to remove /en and force HTTPS + WWW
-RewriteCond %{HTTP_HOST} ^thestorycircuit\.com$ [NC,OR]
+# 1. Force HTTPS + WWW on all requests (cleanest way)
+RewriteCond %{HTTP_HOST} ^quronfula\.com$ [NC,OR]
 RewriteCond %{HTTPS} off
-RewriteRule ^en/(.*)$ https://www.thestorycircuit.com/$1 [R=301,L]
+RewriteRule ^(.*)$ https://www.quronfula.com/$1 [R=301,L]
 
-# 3. Redirect root /en to WWW root
-RewriteRule ^en/?$ https://www.thestorycircuit.com/ [R=301,L]
-
-# 4. Redirect non-WWW root paths to WWW + HTTPS
-RewriteCond %{HTTP_HOST} ^thestorycircuit\.com$ [NC]
-RewriteRule ^(.*)$ https://www.thestorycircuit.com/$1 [R=301,L]
+# 2. Optional: Remove trailing slashes (clean URLs)
+# RewriteRule ^(.+)/$ /$1 [R=301,L]
 
 # --- END SEO REDIRECTS ---
 
+# =============================================
+# 2025-OPTIMIZED COMPRESSION + CACHING
+# Works perfectly on DigitalOcean + Apache 2.4
+# =============================================
+
+# -----------------------------
+# 1. GZIP COMPRESSION (now covers 100% of your assets)
+# -----------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/x-component
+
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/ld+json
+  AddOutputFilterByType DEFLATE application/manifest+json
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+  AddOutputFilterByType DEFLATE application/x-font-ttf
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE font/woff
+  AddOutputFilterByType DEFLATE font/woff2
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# -----------------------------
+# 2. LONG-TERM CACHING
+# -----------------------------
 <IfModule mod_expires.c>
   ExpiresActive On
+  ExpiresDefault "access plus 1 month"
 
-  # Images
-  ExpiresByType image/jpg "access plus 1 year"
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/gif "access plus 1 year"
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
   ExpiresByType image/x-icon "access plus 1 year"
-
-  # Fonts
   ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType font/woff "access plus 1 year"
   ExpiresByType font/ttf "access plus 1 year"
-
-  # CSS, JS
-  ExpiresByType text/css "access plus 1 month"
-  ExpiresByType application/javascript "access plus 1 month"
-  ExpiresByType application/x-javascript "access plus 1 month"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
 </IfModule>
+
 <IfModule mod_headers.c>
-  # Long cache for static assets
-  <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+  # Immutable static assets – 1 year cache + immutable flag
+  <FilesMatch "\.(woff2|woff|woff|ttf|jpg|jpeg|png|webp|svg|ico|js|css)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "\.(css|js)$">
-    Header set Cache-Control "public, max-age=2592000"
+  # HTML – short cache (safe for Astro static sites)
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=600, stale-while-revalidate=60"
   </FilesMatch>
 
-  <FilesMatch "\.(woff2|woff|ttf)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
-
-  # Short cache for HTML
-  <FilesMatch "\.(html)$">
-    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
-  </FilesMatch>
-</IfModule>
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml
-  AddOutputFilterByType DEFLATE text/css text/javascript application/javascript
-  AddOutputFilterByType DEFLATE application/json application/xml
-  AddOutputFilterByType DEFLATE application/xhtml+xml application/rss+xml
-  AddOutputFilterByType DEFLATE image/svg+xml
-  # Remove old browsers that may have trouble
-  BrowserMatch ^Mozilla/4 gzip-only-text/html
-  BrowserMatch ^Mozilla/4\.0[678] no-gzip
-  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+  # Required for compression to work properly
+  Header set Vary "Accept-Encoding"
 </IfModule>
