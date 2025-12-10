@@ -2,13 +2,12 @@ importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js")
 importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js");
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc",
-    authDomain: "storycircuit-29da8.firebaseapp.com",
-    projectId: "storycircuit-29da8",
-    storageBucket: "storycircuit-29da8.firebasestorage.app",
-    messagingSenderId: "356670003718",
-    appId: "1:356670003718:web:16e3938a55af3c029ec187",
-    measurementId: "G-69RM05BC6P"
+    apiKey: 'AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc',
+    authDomain: 'storycircuit-29da8.firebaseapp.com',
+    projectId: 'storycircuit-29da8',
+    storageBucket: 'storycircuit-29da8.firebasestorage.app',
+    messagingSenderId: '356670003718',
+    appId: '1:356670003718:web:391b53017231c3e69ec187',
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -19,7 +18,7 @@ messaging.onBackgroundMessage((payload) => {
     // console.log('[SW] Received background message: ', payload);
 
     // Prefer data payload if notification is missing
-    const title = payload.notification?.title || payload.data.title || "Quronfula";
+    const title = payload.notification?.title || payload.data.title || "Story Circuit";
     const body = payload.notification?.body || payload.data.body || "New notification";
     const icon = payload.data.icon || "/icons/android-icon-192x192.png";
     const clickUrl = payload.data.url || "/";
@@ -28,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
     const imageMobile = payload.data.image_mobile;
     const imageSquare = payload.data.image_square;
     const imageDesktop = payload.data.image_desktop;
-    let selectedImage = payload.data.image || '/categoryog.jpg'; // fallback
+    let selectedImage = payload.data.image || '/category_og.jpg'; // fallback
 
     try {
         // Detect approximate screen shape
@@ -73,3 +72,24 @@ self.addEventListener('notificationclick', (event) => {
         })
     );
 });
+
+// importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js");
+// importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js");
+
+// firebase.initializeApp({
+//     apiKey: "AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc",
+//     authDomain: "storycircuit-29da8.firebaseapp.com",
+//     projectId: "storycircuit-29da8",
+//     storageBucket: "storycircuit-29da8.firebasestorage.app",
+//     messagingSenderId: "356670003718",
+//     appId: "1:356670003718:web:16e3938a55af3c029ec187",
+// });
+
+// const messaging = firebase.messaging();
+
+// messaging.onBackgroundMessage((payload) => {
+//     self.registration.showNotification(payload.notification.title, {
+//         body: payload.notification.body,
+//         icon: "/icons/android-icon-72x72.png.png",
+//     });
+// });

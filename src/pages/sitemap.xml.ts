@@ -22,7 +22,7 @@ export async function GET({ url }) {
   const items: Array<SiteMapData> = resp?.data?.respList || [];
 
 
-  // Build ALL URLs — each item gives us both Arabic + English
+  // Build ALL URLs - each item gives us both Arabic + English
   const allUrlEntries = items.flatMap((item: any) => {
     const arUrl = (item.defaultUrl || item.url).replace(/\/$/, "");
     const enUrl = item.url.replace(/\/$/, "");

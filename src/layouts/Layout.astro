@@ -3,6 +3,7 @@ import Footer from "@components/Footer.astro";
 import Header from "../components/Header.astro";
 
 import Analytics from "@components/Analytics.astro";
+import NotificationRequest from "@components/common/NotificationRequest.astro";
 
 const currentPath = Astro.url.pathname;
 let lang = currentPath.startsWith("/en") ? "en" : "ar";
@@ -10,7 +11,7 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 const { title, description, image } = Astro.props;
 
 // Fallback OG if page does not provide them
-// const ogTitle = title ?? "Quronfula — Trusted News & Articles";
+// const ogTitle = title ?? "Quronfula - Trusted News & Articles";
 // const ogDesc =
 // 	description ??
 // 	"Latest articles in news, economy, jobs, migration, prices and lifestyle.";
@@ -110,11 +111,23 @@ const { title, description, image } = Astro.props;
 			sizes="16x16"
 			href="/icons/favicon-16x16.png"
 		/>
-		<link rel="manifest" href="/icons//manifest.json" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="144x144"
+			href="/icons/android-icon-144x144.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="192x192"
+			href="/icons/android-icon-192x192.png"
+		/>
+		<link rel="manifest" href="/icons/manifest.json" />
 		<meta name="msapplication-TileColor" content="#ffffff" />
 		<meta
 			name="msapplication-TileImage"
-			content="/icons//ms-icon-144x144.png"
+			content="/icons/ms-icon-144x144.png"
 		/>
 		<meta name="theme-color" content="#ffffff" />
 		<meta
@@ -146,6 +159,7 @@ const { title, description, image } = Astro.props;
 		</main>
 
 		<Footer lang={lang} currentPath={Astro.url.pathname} />
+		<NotificationRequest />
 	</body><script>
 		document.fonts.ready.then(() => {
 			document.documentElement.classList.add("font-ready");

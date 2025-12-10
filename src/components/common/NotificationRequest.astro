@@ -1,0 +1,89 @@
+---
+// import { messaging, getToken } from "../lib/firebase.js";
+---
+
+<script>
+    import { getAppConfig } from "@lib/AppConfig";
+    import { EndPointPaths } from "@lib/EndPointPaths";
+    import { getToken, messaging } from "@lib/firebase";
+    import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+    import { apiCalls } from "@lib/postmethodService";
+
+    async function checkSubscription(token) {
+        const today = new Date().toISOString().split("T")[0];
+        const lastSubscribedDate = localStorage.getItem("fcmSubscribedDate");
+        const cachedToken = localStorage.getItem("quronfulafcmToken");
+        if (cachedToken !== token) {
+            await sendTokenToServer(token, today);
+            localStorage.setItem("quronfulafcmToken", token);
+        } else if (lastSubscribedDate !== today) {
+            await sendTokenToServer(token, today);
+        }
+    }
+
+    async function requestPermission() {
+        // Prevent duplicate trigger
+        if (localStorage.getItem("fcmDenied") === "true") return;
+
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+            localStorage.setItem("fcmDenied", "true");
+            return;
+        }
+
+        // Register SW
+        const registration = await navigator.serviceWorker.register(
+            "/firebase-messaging-sw.js",
+        );
+
+        const token = await getToken(messaging, {
+            vapidKey:
+                "BE12IbD3qfK2oBGmfkltFm0NYdoT6Uq5Tib7x4tF48JpDoOwFZyCPk2j_lFU5ikCjLHX1k8bGXmiwcw-FvGpRvk",
+            serviceWorkerRegistration: registration,
+        });
+
+        if (!token) return;
+
+        checkSubscription(token);
+    }
+
+    // ❌ remove auto-execution on page load
+    // window.addEventListener("DOMContentLoaded", () => requestPermission());
+
+    // Instead, run permission only once per browser
+    window.addEventListener("DOMContentLoaded", () => {
+        if (!localStorage.getItem("fcmSetupDone")) {
+            // Ask permission only first visit
+            requestPermission();
+            localStorage.setItem("fcmSetupDone", "true");
+        }
+    });
+
+    const sendTokenToServer = async (token, date) => {
+        try {
+            const topic = "Quronfula";
+            const request = new RequestModel();
+            request.lang = "en";
+            request.extraVariable = topic;
+            request.authToken = token;
+            const response = await apiCalls(
+                request,
+                EndPointPaths.subscribetotopic,
+            );
+
+            if (response.status === 0) {
+                const res = response.data;
+                if (res.statusCode === 0) {
+                    localStorage.setItem("fcmSubscribedDate", date);
+                } else {
+                    localStorage.removeItem("quronfulafcmToken");
+                }
+            }
+        } catch (err) {
+            localStorage.removeItem("quronfulafcmToken");
+        }
+    };
+</script>
+
+<!-- <button onclick="requestPermission()"> Allow Notifications </button> -->

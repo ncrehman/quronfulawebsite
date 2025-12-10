@@ -26,7 +26,6 @@ interface Props {
 }
 const { catslug = "", lang = "ar" } = Astro.props;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
-console.log("LLLLLLLLLLLLL: " + lang);
 // Fetch homepage data or articles specific to home page
 
 const categoryCache: Map<string, CatResponse[]> = new Map();
