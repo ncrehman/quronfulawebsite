@@ -6,7 +6,8 @@ import node from "@astrojs/node";
 
 export default defineConfig({
     site: "https://www.quronfula.com",
-    integrations: [image(), sitemap()],
+    // integrations: [image(), sitemap()],
+    integrations: [sitemap()],
     output: 'server',
     adapter: node({
         mode: "standalone",  // bundles everything for deployment
