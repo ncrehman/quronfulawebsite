@@ -1,12 +1,10 @@
 import { defineConfig } from "astro/config";
-import image from "@astrojs/image";
 import sitemap from "@astrojs/sitemap";
 import node from "@astrojs/node";
 
 
 export default defineConfig({
     site: "https://www.quronfula.com",
-    // integrations: [image(), sitemap()],
     integrations: [sitemap()],
     output: 'server',
     adapter: node({
