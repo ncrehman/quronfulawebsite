@@ -1,8 +1,9 @@
 
 import axios, { type AxiosRequestConfig } from 'axios';
-import type { ApiResponse } from './pojo/responsemodel/ApiResponse';
+import { ApiResponse } from './pojo/responsemodel/ApiResponse';
 import { getAppConfig, loadAppConfig } from './AppConfig';
-import type { FaqSchema } from './pojo/responsemodel/FaqSchema';
+import { FaqSchema } from './pojo/responsemodel/FaqSchema';
+import he from 'he';
 const printConsole = async (input: any) => {
   console.log(input);
 }
@@ -87,9 +88,9 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
 
     // Logging
     // if (appConfig.isConsole) {
-      printConsole(`URL: ${uri}`);
-      printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
-      printConsole(`Error Response: ${url} -> ${JSON.stringify(resultResponse)}`);
+    printConsole(`URL: ${uri}`);
+    printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
+    printConsole(`Error Response: ${url} -> ${JSON.stringify(resultResponse)}`);
     // }
 
     return resultResponse;
@@ -146,7 +147,7 @@ export function generateItemList({
     },
 
     "itemListElement": items.map((item, index) => {
-      const itemUrl = baseUrl + item.slug+'/';
+      const itemUrl = baseUrl + item.slug + '/';
 
       return {
         "@type": "ListItem",
@@ -169,7 +170,7 @@ export function generateItemList({
               : creatorUrl + "#defaultAuthor",
             "name": item.authorName || "Quronfula",
             "url": item.authorSlug
-              ? creatorUrl+`author/${item.authorSlug}`
+              ? creatorUrl + `author/${item.authorSlug}`
               : creatorUrl
           }
         }
@@ -217,6 +218,108 @@ export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
     console.error("Invalid AMP URL:", err);
     return null;
   }
+}
+
+export function cleanHtmlString(input: string) {
+  if (!input) return '';
+
+  let cleanedHtml = input
+    // === Your Existing Rules (unchanged) ===
+    .replace(/(?<!<br\/?>)\s*(?=<p>\s*<strong>(?:(?!<\/strong>.*<strong>).)*<\/strong>\s*<\/p>)/g, '<br/>')
+    .replace(/<p[^>]*>\s*<\/p>/g, '<br/>')
+    .replace(/(<br\s*\/?>\s*){2,}/g, '<br/>')
+    .replace(/ class="[^"]*"/g, '')
+    .replace(/style="[^"]*"/g, '')
+    .replace(/width="\d+"/g, 'width="100%"')
+    .replace(/height="\d+"/g, '')
+    .replace(/<span[^>]*>/g, '')
+    .replace(/<\/span>/g, '')
+    .replace(/&nbsp;/g, ' ')
+
+    // === Fix <a> tags ===
+    .replace(/<strong>\s*<a([^>]+)>(.*?)<\/a>\s*<\/strong>/g, '<a$1 class="backlink underline"><strong>$2</strong></a>')
+    .replace(/<a\s+(?![^>]*style=)([^>]+)>/g, '<a class="backlink underline" $1>')
+    .replace(/<a\s+([^>]*?)style="[^"]*"(.*?)>/g, '<a class="backlink underline" $1$2>')
+
+    // === Heading Fix ===
+    .replace(/<h1[^>]*>/g, '<h2>')
+    .replace(/<\/h1>/g, '</h2>')
+    .replace(/<h2[^>]*>/g, '<h3>')
+    .replace(/<\/h2>/g, '</h3>')
+    .replace(/<h3[^>]*>/g, '<h4>')
+    .replace(/<\/h3>/g, '</h4>')
+    .replace(/<h4[^>]*>/g, '<h5>')
+    .replace(/<\/h4>/g, '</h5>')
+    .replace(/<h5[^>]*>/g, '<p class="font-bold text-lg">')
+    .replace(/<\/h5>/g, '</p>')
+    .replace(/<h6[^>]*>/g, '<p class="font-semibold">')
+    .replace(/<\/h6>/g, '</p>')
+
+    // === Remove empty tags ===
+    .replace(/<div[^>]*>\s*<\/div>/g, '')
+    .replace(/<strong>\s*<\/strong>/g, '')
+    .replace(/<em>\s*<\/em>/g, '')
+    .replace(/<b>\s*<\/b>/g, '')
+    .replace(/<i>\s*<\/i>/g, '')
+
+    // === Remove Microsoft Word junk ===
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<\?xml[^>]*>/g, '')
+    .replace(/<\/?o:[^>]*>/g, '')
+    .replace(/style="[^"]*(mso-|Calibri|Arial)[^"]*"/g, '')
+    .replace(/[\u00AD]/g, "")      // soft hyphen
+    .replace(/[\u200B]/g, "")      // zero-width space
+    .replace(/[\u200C]/g, "")      // ZWNJ
+    .replace(/[\u200D]/g, "")      // ZWJ
+    .replace(/[\uFEFF]/g, "")
+     .replace(/[\u200B\u200C\u200D\uFEFF]/g, "") // zero-width characters
+    .replace(/\u00AD/g, "")                    // soft hyphens
+    .replace(/\r?\n|\r/g, " ")                 // CR/LF breaks
+    .replace(/ +/g, " ")     
+     .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
+    .replace(/ﻟ/g, "ل")
+    .replace(/ﻻ/g, "لا")
+    .replace(/ﺍ/g, "ا")
+    .replace(/ﺃ/g, "أ")
+    .replace(/ﺇ/g, "إ")
+    .replace(/ﺁ/g, "آ")
+    .replace(/(.)\1{2,}/g, "$1$1")
+    .replace(/(\S)\s+(\S)/g, "$1 $2")                 // double spaces
+    // === Normalize images ===
+    .replace(/<img([^>]+)>/g, (match, attrs) => {
+      if (!/alt=/.test(attrs)) attrs += ' alt=""';
+      if (!/loading=/.test(attrs)) attrs += ' loading="lazy"';
+      return `<img ${attrs} style="max-width:100%;height:auto;" />`;
+    });
+
+
+  // 🌟 ADD EXTRA SPACE BEFORE HEADING PARAGRAPHS (final fix)
+  cleanedHtml = cleanedHtml.replace(
+    /(<p[^>]*>[^<]*<\/p>)\s*(<p[^>]*>\s*<(strong|b)>[^<]+<\/(strong|b)>\s*<\/p>)/gi,
+    `$1<br/><br/>$2`
+  );
+
+  // Remove extra line breaks after inserting
+  cleanedHtml = cleanedHtml
+    .replace(/(<br\/?>\s*){3,}/g, '<br/><br/>')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/(\n|\r){2,}/g, '\n');
+  // Add spacing BEFORE paragraph headings (p → p<strong>)
+  cleanedHtml = cleanedHtml.replace(
+    /(<\/p>)\s*(<p[^>]*>\s*<(strong|b|em)[^>]*>[^<]+<\/(strong|b|em)>\s*<\/p>)/gi,
+    `$1<br/><br/>$2`
+  );
+  // === Style Mapping To Tailwind ===
+  const styleToTailwindMap = [
+    { regex: /style="text-decoration:underline;"/g, replacement: 'class="underline"' },
+    { regex: /style="font-weight:bold;"/g, replacement: 'class="font-bold"' },
+    { regex: /style="text-align:justify;"/g, replacement: 'class="text-justify"' },
+  ];
+  styleToTailwindMap.forEach(({ regex, replacement }) => {
+    cleanedHtml = cleanedHtml.replace(regex, replacement);
+  });
+
+  return he.decode(cleanedHtml);
 }
 
 

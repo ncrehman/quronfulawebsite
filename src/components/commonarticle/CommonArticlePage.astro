@@ -9,7 +9,8 @@ import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { getLangPrefix } from "@lib/postmethodService";
+import { cleanHtmlString, getLangPrefix } from "@lib/postmethodService";
+
 import {
     apiCalls,
     checkForDecode,
@@ -164,6 +165,33 @@ if (!!article) {
     if (faqSchema) jsonLd.push(faqSchema);
     if (howToSchema) jsonLd.push(howToSchema);
 }
+
+const cleanHtml = cleanHtmlString(article.description);
+function sanitizeArabic(str) {
+  if (!str) return str;
+
+  return str
+    // Remove all directional marks
+    .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
+
+    // Replace corrupted Arabic forms
+    .replace(/ﻟ/g, "ل")
+    .replace(/ﻻ/g, "لا")
+    .replace(/ﺍ/g, "ا")
+    .replace(/ﺃ/g, "أ")
+    .replace(/ﺇ/g, "إ")
+    .replace(/ﺁ/g, "آ")
+
+    // Remove duplicate malformed characters (common corruption cause)
+    .replace(/(.)\1{2,}/g, "$1$1")
+
+    // Trim accidental spacing inside words
+    .replace(/(\S)\s+(\S)/g, "$1 $2");
+}
+// console.log("cleanhtml: " + cleanHtml2);
+// const cleanHtml = sanitizeArabic(cleanHtmlString(cleanHtml2));
+console.log("cleanhtml2: " + cleanHtml);
+
 ---
 
 {
@@ -182,208 +210,207 @@ if (!!article) {
     )
 }
 <Layout>
-    {article ? 
-   (  <main class="article-container">
-        <h1 class="title">{article.title}</h1>
+    <div class="article-grid">
+        <!-- LEFT AD COLUMN -->
+        <aside class="ad-left">
+            <slot name="left-ad" />
+        </aside>
 
-        {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
+        <!-- CENTER ARTICLE -->
+        <main class="article-wrapper">
+            <h1 class="title">{article.title}</h1>
 
-        <div class="meta">
-            <!-- <span>By {article.author_name}</span> • -->
-            <span>{new Date(article.publishDate).toLocaleDateString(lang)}</span
-            >
-        </div>
+            {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
 
-        <!-- HERO IMAGE -->
-        {
-            article.landScapeBanner && (
-                <figure class="hero-figure">
-                    <img
-                        src={article.landScapeBanner}
-                        alt={article.imageAlt}
-                        class="hero-image"
-                        loading="lazy"
-                    />
-                    {article.caption && (
-                        <figcaption class="hero-caption">
-                            {article.caption}
-                        </figcaption>
-                    )}
-                </figure>
-            )
-        }
-        <article class="content" set:html={article.description} />
+            <div class="meta">
+                <span
+                    >{
+                        new Date(article.publishDate).toLocaleDateString(lang)
+                    }</span
+                >
+            </div>
 
-        <!-- SOCIAL SHARE -->
-        <div class="share-box">
-            Share:
-            <a
-                href={`https://facebook.com/sharer/sharer.php?u=https://quronfula.com/article/${article.slug}`}
-                >FB</a
-            >
-            <a
-                href={`https://x.com/share?url=https://quronfula.com/article/${article.slug}`}
-                >X</a
-            >
-        </div>
+            {
+                article.landScapeBanner && (
+                    <figure class="hero-figure">
+                        <img
+                            src={article.landScapeBanner}
+                            alt={article.imageAlt}
+                            loading="lazy"
+                            class="hero-image"
+                        />
+                        {article.caption && (
+                            <figcaption class="hero-caption">
+                                {article.caption}
+                            </figcaption>
+                        )}
+                    </figure>
+                )
+            }
+            <article class="article-content" set:html={cleanHtml} />
 
-    </main> ):
-    (
-        <section class="no-content">
-  <div class="no-content-box">
-    <img 
-      src="https://cdn-icons-png.flaticon.com/512/7486/7486817.png" 
-      alt="No content"
-      class="no-content-img"
-    />
+            <div class="share-box">
+                <span>Share:</span>
+                <a
+                    href={`https://facebook.com/sharer/sharer.php?u=${canonicalUrl}`}
+                    >FB</a
+                >
+                <a href={`https://x.com/share?url=${canonicalUrl}`}>X</a>
+            </div>
+        </main>
 
-   {lang === "ar" ? (
-  <>
-    <h1>عذراً، لا يوجد محتوى</h1>
-    <p>يبدو أنك وصلت إلى رابط غير صحيح أو أن المحتوى غير متوفر حالياً.</p>
-    <a href="/" class="go-home">العودة إلى الصفحة الرئيسية</a>
-  </>
-) : (
-  <>
-    <h2>Sorry, no content found</h2>
-    <p>It looks like you've reached an incorrect URL or the content is currently unavailable.</p>
-    <a href="/" class="go-home">Go back to Home</a>
-  </>
-)}
-  </div>
-</section>
-
-<style>
-.no-content {
-  width: 100%;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  background: #fafafa;
-}
-
-.no-content-box {
-  text-align: center;
-  background: white;
-  padding: 40px 28px;
-  border-radius: 18px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-  max-width: 480px;
-}
-
-.no-content-img {
-  width: 120px;
-  height: 120px;
-  margin-bottom: 20px;
-  opacity: 0.9;
-}
-
-.no-content-box h2 {
-  font-size: 1.6rem;
-  margin-bottom: 12px;
-  color: #333;
-}
-
-.no-content-box p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
-
-.go-home {
-  display: inline-block;
-  padding: 12px 26px;
-  background: #cc4144;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: 0.25s ease;
-}
-
-.go-home:hover {
-  background: #b7383c;
-  transform: translateY(-2px);
-}
-</style>
-    )
-    }
-   
+        <!-- RIGHT AD COLUMN -->
+        <aside class="ad-right">
+            <slot name="right-ad" />
+        </aside>
+    </div>
 </Layout>
-
-<style>
-    .hero-figure {
-        margin: 20px 0;
-        text-align: center; /* centers the caption */
-    }
-
-    .hero-caption {
-        font-size: 0.9rem;
-        color: #555;
-        margin-top: 8px;
-        line-height: 1.4;
-    }
-    .article-container {
-        max-width: 780px;
+<style is:global>
+    /* ================================
+   GRID LAYOUT
+================================ */
+    .article-grid {
+        display: grid;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 20px;
     }
 
+    /* Hide ad columns on mobile */
+    @media (max-width: 1024px) {
+        .article-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* ================================
+   ARTICLE TYPOGRAPHY
+================================ */
+    .article-wrapper {
+        background: white;
+    }
+
     .title {
-        font-size: 2rem;
+        font-size: clamp(26px, 3vw, 36px);
         font-weight: 700;
-        line-height: 1.3;
         margin-bottom: 12px;
+        line-height: 1.3;
     }
 
     .subtitle {
-        font-size: 1.2rem;
+        font-size: clamp(18px, 2.2vw, 22px);
         color: #666;
-        margin-bottom: 10px;
+        margin-bottom: 14px;
     }
 
     .meta {
         font-size: 0.9rem;
         color: #777;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
     }
 
+    /* ================================
+   HERO IMAGE
+================================ */
     .hero-image {
         width: 100%;
-        border-radius: 6px;
+        border-radius: 8px;
         margin: 20px 0;
     }
 
-    .content {
-        font-size: 1.1rem;
-        line-height: 1.75;
-        color: #333;
+    .hero-caption {
+        font-size: 0.9rem;
+        text-align: center;
+        color: #666;
+        margin-top: 6px;
     }
 
+    /* ================================
+   ARTICLE CONTENT
+================================ */
+.article-content {
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.7;
+    color: #333;
+    text-align: justify; /* Fallback for LTR */
+}
+
+.article-content * {
+    max-width: 100% !important;
+    box-sizing: border-box;
+
+    /* SAFE defaults */
+    overflow-wrap: anywhere;   /* does NOT break Arabic words */
+    word-break: normal;        /* prevents internal word breaking */
+    hyphens: auto;
+}
+
+    /* Responsive images */
+    .article-content img {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 20px auto;
+    }
+
+    /* Responsive tables */
+    .article-content table {
+        width: 100% !important;
+        display: block;
+        overflow-x: auto;
+        border-collapse: collapse;
+    }
+
+    /* Responsive iframes */
+    .article-content iframe {
+        max-width: 100% !important;
+        height: auto;
+        aspect-ratio: 16/9;
+    }
+
+    /* Headings inside editor HTML */
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+        margin-top: 28px;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    /* Paragraphs */
+    .article-content p {
+        margin: 16px 0;
+    }
+
+    /* Links */
+    .article-content a {
+        color: #0066cc;
+        text-decoration: underline;
+    }
+
+    /* Lists */
+    .article-content ul,
+    .article-content ol {
+        padding-left: 20px;
+        margin: 16px 0;
+    }
+
+    /* ================================
+   SHARE BOX
+================================ */
     .share-box {
         margin-top: 40px;
         font-size: 1rem;
         display: flex;
         gap: 12px;
-        flex-wrap: wrap;
     }
 
-    /* Mobile */
-    @media (max-width: 768px) {
-        .title {
-            font-size: 1.6rem;
-        }
+    /* ================================
+   RTL SUPPORT (Arabic)
+================================ */
 
-        .subtitle {
-            font-size: 1rem;
-        }
-
-        .content {
-            font-size: 1rem;
-        }
+    html[dir="rtl"] .article-content * {
+        word-break: keep-all !important;
+        overflow-wrap: anywhere;
     }
 </style>

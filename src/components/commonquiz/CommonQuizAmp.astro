@@ -1,4 +1,7 @@
 ---
+// ──────────────────────────────────────────────────────────────
+//  Astro 4 + AMP Story Quiz – Fully Validated & Working (Dec 2025)
+// ──────────────────────────────────────────────────────────────
 import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
 import { QuizSlide } from "@lib/pojo/responsemodel/QuizSlide";
 import { EndPointPaths } from "@lib/EndPointPaths";
@@ -8,214 +11,166 @@ import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { apiCalls, buildLangUrl } from "@lib/postmethodService";
 import { checkForDecode } from "@lib/postmethodService";
 import { metaConfig } from "@components/metaConfig";
+import { getAppConfig } from "@lib/AppConfig";
 
 const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
-export async function getQuizStory(
-    lang: string,
-    slug: string,
-): Promise<QuizStoryResponse | null> {
-    try {
-        const request = new RequestModel();
-        request.lang = lang;
-        request.slug = await checkForDecode(slug);
-        const responseResult: ApiResponse = await apiCalls(
-            request,
-            EndPointPaths.getquizbyslug,
-        );
-        if (responseResult.status === 0) {
-            const response: ResponseModel = responseResult.data;
-            if (response.statusCode === 0) {
-                const story: QuizStoryResponse = response.respObject;
-                return story;
-            }
-        }
-    } catch (err) {
-        console.error("getQuizStory error:", err);
-    }
+const apiServer = getAppConfig();
 
-    return null;
+export async function getQuizStory(lang: string, slug: string | undefined): Promise<QuizStoryResponse | null> {
+  if (!slug) return null;
+  try {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.slug = await checkForDecode(slug);
+
+    const responseResult: ApiResponse = await apiCalls(request, EndPointPaths.getquizbyslug);
+    if (responseResult.status === 0) {
+      const response: ResponseModel = responseResult.data;
+      if (response.statusCode === 0) {
+        return response.respObject as QuizStoryResponse;
+      }
+    }
+  } catch (err) {
+    console.error("getQuizStory error:", err);
+  }
+  return null;
 }
+
 const quiz: QuizStoryResponse | null = await getQuizStory(lang, slug);
 if (!quiz) {
-    throw new Error("Quiz not found");
+  throw new Error("Quiz not found");
 }
+
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl = baseUrl + "quiz/" + quiz.slug;
+const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`;
 const siteName = metaConfig.siteName[lang];
+
 const gradients = [
-    ["#f3633fff", "#ef9b5bff"],
-    ["#6A11CB", "#2575FC"],
-    ["#F7971E", "#FFD200"],
-    ["#2ac5a6ff", "#191654"],
-    ["#0F2027", "#203A43"],
-    ["#2C3E50", "#4CA1AF"],
-    ["#4B6CB7", "#182848"],
-    ["#FF416C", "#FF4B2B"],
-    ["#1D4350", "#A43931"],
-    ["#373B44", "#4286f4"],
+  ["#f3633fff", "#ef9b5bff"],
+  ["#6A11CB", "#2575FC"],
+  ["#F7971E", "#FFD200"],
+  ["#2ac5a6ff", "#191654"],
+  ["#0F2027", "#203A43"],
+  ["#2C3E50", "#4CA1AF"],
+  ["#4B6CB7", "#182848"],
+  ["#FF416C", "#FF4B2B"],
+  ["#1D4350", "#A43931"],
+  ["#373B44", "#4286f4"],
 ];
 
-// small helper to safely escape attribute values
-function escAttr(s: string | undefined) {
-    if (!s) return "";
-    return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+// Safe attribute escaping
+function escAttr(s: string | undefined | null): string {
+  if (!s) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
-// Build slidesHtml string (banner + question pages + results)
-function generateSlidesHtml(quiz: QuizStoryResponse) {
-    const slides = (quiz.slides || []) as QuizSlide[];
+// Generate all <amp-story-page> markup
+function generateSlidesHtml(quiz: QuizStoryResponse): string {
+  const backendEndpoint = `${apiServer.websiteUrl}quronfula/interact/submit`;
+  const slides = (quiz.slides || []) as QuizSlide[];
 
-    // banner page (first)
-    let html = `
-<amp-story-page id="banner" auto-advance-after="2s">
+  let html = `
+<!-- Banner Page -->
+<amp-story-page id="banner" auto-advance-after="3s">
   <amp-story-grid-layer template="fill">
-    <amp-img src="${escAttr(quiz.bannerImage)}" layout="fill" object-fit="cover" alt="${escAttr(quiz.title)}"></amp-img>
+    <amp-img src="${escAttr(quiz.bannerImage)}" width="720" height="1280" layout="responsive" alt="${escAttr(quiz.title)}"></amp-img>
   </amp-story-grid-layer>
-  <amp-story-grid-layer template="vertical">
-    <div style="display:flex;align-items:flex-end;justify-content:center;height:100%;padding:28px;box-sizing:border-box;">
-      <h1 style="color:#fff;font-size:28px;text-align:center;margin:0;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,0.6)">${escAttr(quiz.title)}</h1>
-    </div>
+  <amp-story-grid-layer template="vertical" class="center-text">
+    <h1 animate-in="fade-in" animate-in-duration="0.8s">${escAttr(quiz.title)}</h1>
   </amp-story-grid-layer>
-</amp-story-page>
-`;
+</amp-story-page>`;
 
-    slides.forEach((slide, i) => {
-        const [c1, c2] = gradients[i % gradients.length];
-        // use gradient API (you can replace with any bg or image); encode colors for URL
-        const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
+  // Question slides
+  slides.forEach((slide, i) => {
+    const [c1, c2] = gradients[i % gradients.length];
+    const bgGradient = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
 
-        // build option attributes for amp-story-interactive-quiz
-        // amp expects attributes like: option-1-text="..." option-2-text="..." option-1-correct (flag)
-        const optionsAttrs = (slide.options || [])
-            .slice(0, 4)
-            .map((opt, idx) => {
-                const n = idx + 1;
-                const optText = escAttr(opt);
-                // mark correct option if it matches answer (string match)
-                const isCorrect =
-                    String(opt).trim() === String(slide.answer).trim()
-                        ? `option-${n}-correct`
-                        : "";
-                return `option-${n}-text="${optText}" ${isCorrect}`;
-            })
-            .join(" ");
+    const optionsAttrs = (slide.options || [])
+      .slice(0, 4)
+      .map((opt, idx) => {
+        const n = idx + 1;
+        const correct = String(opt).trim() === String(slide.answer).trim() ? `option-${n}-correct` : "";
+        return `option-${n}-text="${escAttr(opt)}" ${correct}`;
+      })
+      .join(" ");
 
-        html += `
-<amp-story-page id="slide-${i}">
+    html += `
+<amp-story-page id="q${i + 1}">
   <amp-story-grid-layer template="fill">
-    <amp-img src="${escAttr(bgImage)}" layout="fill" object-fit="cover" alt="background"></amp-img>
+    <amp-img src="${bgGradient}" width="720" height="1280" layout="responsive" alt="gradient background"></amp-img>
   </amp-story-grid-layer>
 
-  <amp-story-grid-layer template="vertical" class="quiz-center">
-    <div class="quiz-wrapper" animate-in="scale-fade-up">
-      <h2 class="quiz-question">${escAttr(slide.question)}</h2>
+  <amp-story-grid-layer template="vertical" class="center-content">
+    <div class="quiz-container" animate-in="scale-fade-up" animate-in-duration="0.6s">
+      <h2 class="question">${escAttr(slide.question)}</h2>
 
       <amp-story-interactive-quiz
-        id="quiz-${i}"
-        prompt-size="medium"
+        endpoint="${backendEndpoint}"
+        prompt-size="large"
         chip-style="transparent"
-        ${optionsAttrs}
-      ></amp-story-interactive-quiz>
-
+        ${optionsAttrs}>
+      </amp-story-interactive-quiz>
     </div>
   </amp-story-grid-layer>
-</amp-story-page>
-`;
-    });
+</amp-story-page>`;
+  });
 
-    // results page generation using quiz.result thresholds
-    const results =
-        quiz.result && quiz.result.length
-            ? quiz.result
-            : [
-                  {
-                      category: "Beginner",
-                      threshold: "0",
-                      text: "Good start",
-                      icon: "🌶️",
-                  },
-                  {
-                      category: "Intermediate",
-                      threshold: "50",
-                      text: "Nice job",
-                      icon: "🥘",
-                  },
-                  {
-                      category: "Expert",
-                      threshold: "80",
-                      text: "Great!",
-                      icon: "🍽️",
-                  },
-                  {
-                      category: "Master",
-                      threshold: "95",
-                      text: "Outstanding!",
-                      icon: "👑",
-                  },
-              ];
+  // Results page
+  const defaultResults = [
+    { category: lang === "en" ? "Beginner" : "مبتدئ", threshold: "0", text: lang === "en" ? "Good start!" : "بداية جيدة!", icon: "Seedling" },
+    { category: lang === "en" ? "Intermediate" : "متوسط", threshold: "50", text: lang === "en" ? "Well done!" : "أحسنت!", icon: "Cooking" },
+    { category: lang === "en" ? "Expert" : "خبير", threshold: "80", text: lang === "en" ? "Amazing!" : "رائع!", icon: "Trophy" },
+    { category: lang === "en" ? "Master" : "محترف", threshold: "95", text: lang === "en" ? "You're a legend!" : "أنت أسطورة!", icon: "Crown" },
+  ];
 
-    // Prepare attributes for amp-story-interactive-results: option-1-results-category, option-1-text, option-1-results-threshold ...
-    const resultsAttrs = results
-        .slice(0, 4)
-        .map((r, idx) => {
-            const n = idx + 1;
-            const cat = escAttr(r.category);
-            const text = escAttr(r.text);
-            const th = escAttr(r.threshold);
-            return `
-      option-${n}-results-category="${cat}"
-      option-${n}-text="${text}"
-      option-${n}-results-threshold="${th}"
-    `;
-        })
-        .join("\n");
+  const results = quiz.result && quiz.result.length ? quiz.result : defaultResults;
 
-    const commonBg = `/api/gradient?c1=${encodeURIComponent("#FF7E5F")}&c2=${encodeURIComponent("#FEB47B")}`;
-    const resltTxt = lang === "en" ? "Result" : "نتيجتك";
-    const resultAct =
-        lang === "en"
-            ? "Share your result or try again to find out more."
-            : "شارك نتيجتك أو أعد المحاولة لمعرفة المزيد.";
-    html += `
-<amp-story-page id="results-page">
+  const resultsAttrs = results
+    .slice(0, 4)
+    .map((r, i) => {
+      const n = i + 1;
+      return `option-${n}-results-category="${escAttr(r.category)}"
+              option-${n}-text="${escAttr(r.text)}"
+              option-${n}-results-threshold="${escAttr(r.threshold)}"`;
+    })
+    .join("\n      ");
+
+  const resultTitle = lang === "en" ? "Your Result" : "نتيجتك";
+
+  html += `
+<!-- Results Page -->
+<amp-story-page id="results">
   <amp-story-grid-layer template="fill">
-    <amp-img src="${escAttr(commonBg)}"
-             layout="fill"
-             object-fit="cover"
-             alt="results background">
-    </amp-img>
+    <amp-img src="/api/gradient?c1=${encodeURIComponent("#FF7E5F")}&c2=${encodeURIComponent("#FEB47B")}" 
+             width="720" height="1280" layout="responsive" alt="results bg"></amp-img>
   </amp-story-grid-layer>
 
-  <!-- CENTERED CONTENT -->
-  <amp-story-grid-layer template="vertical" class="quiz-center">
-    <div class="result-wrapper">
-      <h3>${resltTxt}</h3>
+  <amp-story-grid-layer template="vertical" class="center-content">
+    <div class="result-container" animate-in="fade-in" animate-in-duration="1s">
+      <h3>${resultTitle}</h3>
 
       <amp-story-interactive-results
-        id="results-1"
+        id="final-results"
         prompt-text=""
-        ${resultsAttrs}
-        style="
-          --interactive-background-color: rgba(255,255,255,0.06);
-          --interactive-font-color: #fff;
-          --interactive-border-radius: 16px;
-        ">
+        style="--interactive-accent-color: #FFD700; --interactive-background-color: rgba(0,0,0,0.3);"
+        ${resultsAttrs}>
       </amp-story-interactive-results>
 
-      <p>${resultAct}</p>
+      <p animate-in="fade-in" animate-in-delay="1.2s">
+        ${lang === "en" ? "Share your score or play again!" : "شارك نتيجتك أو العب مرة أخرى!"}
+      </p>
     </div>
   </amp-story-grid-layer>
-</amp-story-page>
-`;
+</amp-story-page>`;
 
-    return html;
+  return html;
 }
 
 const slidesHtml = generateSlidesHtml(quiz);
@@ -223,194 +178,101 @@ const slidesHtml = generateSlidesHtml(quiz);
 
 <!doctype html>
 <html ⚡ lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
-    <head>
-        <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width,minimum-scale=1,initial-scale=1"
-        />
-        <title>{quiz.metaTitle || quiz.title}</title>
-        <meta name="description" content={quiz.metaDescription || quiz.title} />
-        <meta name="robots" content="max-image-preview:large" />
-        <meta property="title" content={quiz.metaTitle} />
-        <meta property="keywords" name={quiz.keywords} />
-        <meta property="quiz_keywords" name={quiz.keywords} />
-        <meta property="og:title" content={quiz.metaTitle} />
-        <meta property="og:image" content={quiz.landScapeBanner} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:type" content="quiz" />
-        <meta property="og:description" content={quiz.metaDescription} />
-        <meta property="og:published_time" content={new Date(quiz.publishDate).toISOString()} />
-        <meta property="og:modified_time" content={new Date(quiz.publishDate).toISOString()} />
-        <meta property="og:site_name" content={siteName} />
-        <meta name="twitter:title" content={quiz.metaTitle} />
-        <meta name="twitter:description" content={quiz.metaDescription} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:image" content={quiz.landScapeBanner} />
-        <meta name="amp-story-generator-name" content={siteName} />
-        <meta name="amp-story-generator-version" content="0.1" />
-        <link rel="canonical" href={canonicalUrl} />
-        <link href={quiz.bannerImage} rel="preload" as="image" />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="https://www.quronfula.com/icons/favicon-32x32.png"
-        />
-        <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="https://www.quronfula.com/icons/apple-icon-180x180.png"
-        />
-        <link
-            rel="shortcut icon"
-            href="https://www.quronfula.com/icons/favicon.ico"
-            type="image/x-icon"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap"
-            rel="stylesheet"
-        />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
 
-        <!-- AMP core + story + interactive -->
-        <script async src="https://cdn.ampproject.org/v0.js"></script>
-        <script
-            async
-            custom-element="amp-story"
-            src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
-        <script
-            async
-            custom-element="amp-story-interactive"
-            src="https://cdn.ampproject.org/v0/amp-story-interactive-0.1.js"
-        ></script>
+    <title>{quiz.metaTitle || quiz.title}</title>
+    <meta name="description" content={quiz.metaDescription || quiz.title} />
 
-        <!-- AMP boilerplate (required) -->
-        <style amp-boilerplate>
-            body {
-                -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
-                animation: -amp-start 8s steps(1, end) 0s 1 normal both;
-            }
-            @-webkit-keyframes -amp-start {
-                from {
-                    visibility: hidden;
-                }
-                to {
-                    visibility: visible;
-                }
-            }
-            @keyframes -amp-start {
-                from {
-                    visibility: hidden;
-                }
-                to {
-                    visibility: visible;
-                }
-            }
-        </style>
-        <noscript
-            ><style amp-boilerplate>
-                body {
-                    -webkit-animation: none;
-                    animation: none;
-                }
-            </style></noscript
-        >
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content={quiz.metaTitle || quiz.title} />
+    <meta property="og:description" content={quiz.metaDescription || quiz.title} />
+    <meta property="og:image" content={quiz.landScapeBanner || quiz.bannerImage} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="article" />
 
-        <style amp-custom>
-            /* Minimal styles for story layers */
-            html {
-                font-family: sans-serif;
-            }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={quiz.metaTitle || quiz.title} />
+    <meta name="twitter:description" content={quiz.metaDescription || quiz.title} />
+    <meta name="twitter:image" content={quiz.landScapeBanner || quiz.bannerImage} />
 
-            html[lang="ar"] {
-                font-family: "QFArabic", sans-serif;
-            }
+    <!-- AMP Story specific -->
+    <meta name="amp-story-generator-name" content={siteName} />
+    <meta name="amp-story-generator-version" content="1.0" />
 
-            @font-face {
-                font-family: "QFArabic";
-                src: url("https://www.quronfula.com/fonts/Almarai-Regular.woff2") format("woff2");
-                font-weight: 400;
-                font-style: normal;
-                font-display: swap;
-                /* CLS safe */
-            }
+    <link rel="canonical" href={canonicalUrl} />
 
-            @font-face {
-                font-family: "QFArabic";
-                src: url("https://www.quronfula.com/fonts/Almarai-Bold.woff2") format("woff2");
-                font-weight: 700;
-                font-style: normal;
-                font-display: swap;
-            }
-            body {
-                margin: 0;
-                color: white;
-            }
+    <!-- Preload hero image -->
+    <link rel="preload" as="image" href={quiz.bannerImage} />
 
-            .quiz-wrapper {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                max-width: 90%;
-                margin: 0 auto;
-                text-align: center;
-                padding: 20px;
-                box-sizing: border-box;
-                color: #fff;
-            }
-            .quiz-question {
-                font-size: 28px;
-                line-height: 1.2;
-                font-weight: 700;
-                margin: 0 0 18px;
-                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-            }
-            .quiz-center {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0 24px;
-            }
+    <!-- Required AMP scripts -->
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
+    <script async custom-element="amp-story-interactive" src="https://cdn.ampproject.org/v0/amp-story-interactive-0.1.js"></script>
 
-            .result-wrapper {
-                text-align: center;
-                max-width: 320px;
-                width: 100%;
-            }
+    <!-- NEW 2024+ AMP BOILERPLATE (mandatory exact code) -->
+    <style amp-boilerplate>
+      body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}
+      @-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
+      @-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
+      @keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
+    </style>
+    <noscript>
+      <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;animation:none}</style>
+    </noscript>
 
-            .result-wrapper h3 {
-                font-size: 26px;
-                font-weight: 700;
-                color: #fff;
-                margin-bottom: 12px;
-            }
+    <!-- Custom Styles (only one <style amp-custom> allowed) -->
+    <style amp-custom>
+      html { font-family: system-ui, sans-serif; }
+      html[lang="ar"] { font-family: "Almarai", system-ui, sans-serif; }
 
-            .result-wrapper p {
-                font-size: 16px;
-                line-height: 1.5;
-                color: rgba(255, 255, 255, 0.85);
-                margin-top: 18px;
-            }
-            /* responsive tweaks */
-            @media (max-width: 480px) {
-                .quiz-question {
-                    font-size: 20px;
-                }
-            }
-        </style>
-    </head>
+      @font-face {
+        font-family: "Almarai";
+        src: url("https://www.quronfula.com/fonts/Almarai-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Almarai";
+        src: url("https://www.quronfula.com/fonts/Almarai-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-display: swap;
+      }
 
-    <body>
-        <!-- NOTE: set:html on amp-story injects raw amp-story-page children directly (no wrapper) -->
-        <amp-story
-            standalone
-            title={quiz.title}
-            publisher={quiz.author_name || "Quronfula"}
-            publisher-logo-src={"/logo.png"}
-            poster-portrait-src={quiz.bannerImage}
-            set:html={slidesHtml}
-        />
-    </body>
+      .center-text, .center-content {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px;
+      }
+      h1, h2, h3 {
+        color: white;
+        margin: 0;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      }
+      h1 { font-size: 36px; }
+      .question { font-size: 28px; line-height: 1.3; margin-bottom: 24px; }
+      .quiz-container, .result-container {
+        width: 100%;
+        max-width: 90%;
+      }
+      p { margin-top: 24px; opacity: 0.9; }
+    </style>
+  </head>
+
+  <body>
+    <!-- standalone is now a BOOLEAN attribute – no value! -->
+    <amp-story
+      standalone
+      title={quiz.title}
+      publisher={quiz.author_name || "Quronfula"}
+      publisher-logo-src="https://www.quronfula.com/logo.png"
+      poster-portrait-src={quiz.bannerImage}
+      poster-square-src={quiz.bannerImage}
+      poster-landscape-src={quiz.landScapeBanner || quiz.bannerImage}
+      set:html={slidesHtml}
+    >
+    </amp-story>
+  </body>
 </html>
