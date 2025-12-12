@@ -2,7 +2,12 @@ import fs from "fs";
 import path from "path";
 // import Handlebars from "handlebars";
 import Handlebars from "handlebars/dist/handlebars.js";
-
+Handlebars.registerHelper("eq", function (a, b, options) {
+  if (a === b) {
+    return options.fn ? options.fn(this) : '';
+  }
+  return options.inverse ? options.inverse(this) : '';
+});
 import { metaConfig } from "../metaConfig";
 import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 import { getAppConfig } from "@lib/AppConfig";
