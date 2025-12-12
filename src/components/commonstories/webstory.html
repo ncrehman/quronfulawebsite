@@ -132,12 +132,12 @@
         /* === ARABIC FONT & RTL SUPPORT – 100% working in AMP Stories === */
         amp-story[lang="ar"],
         amp-story[lang="ar"] * {
-            font-family: 'Almarai', system-ui, sans-serif !important;
+            font-family: 'Almarai', system-ui, sans-serif;
         }
 
         /* Force RTL + right alignment on Arabic stories */
         amp-story[lang="ar"] {
-            direction: rtl !important;
+            direction: rtl;
         }
 
         amp-story[lang="ar"] .quiz-question,
@@ -147,22 +147,22 @@
         amp-story[lang="ar"] p,
         amp-story[lang="ar"] amp-story-interactive-quiz,
         amp-story[lang="ar"] amp-story-interactive-results {
-            text-align: right !important;
-            direction: rtl !important;
+            text-align: right;
+            direction: rtl;
         }
 
         /* Special fix: interactive components use their own shadow DOM */
         amp-story-interactive-quiz[lang="ar"],
         amp-story-interactive-results[lang="ar"] {
-            --interactive-font-family: 'Almarai', sans-serif !important;
-            direction: rtl !important;
-            text-align: right !important;
+            --interactive-font-family: 'Almarai', sans-serif;
+            direction: rtl;
+            text-align: right;
         }
 
         /* Fallback: if lang attribute is missing, use html lang */
         html[lang="ar"] amp-story,
         html[lang="ar"] amp-story * {
-            font-family: 'Almarai', system-ui, sans-serif !important;
+            font-family: 'Almarai', system-ui, sans-serif;
         }
 
         .banner-title-layer {
