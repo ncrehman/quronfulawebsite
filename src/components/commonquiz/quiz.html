@@ -1,0 +1,471 @@
+<!doctype html>
+<html ⚡ amp lang="{{lang}}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <title>{{metaTitle}}</title>
+    <meta name="description" content="{{metaDescription}}" />
+    <meta name="robots" content="max-image-preview:large">
+    <meta property="title" content="{{metaTitle}}">
+    <meta property="keywords" name="{{keywords}}">
+    <meta property="news_keywords" name="{{keywords}}">
+    <meta property="og:title" content="{{metaTitle}}">
+    <meta property="og:image" content="{{posterLandScape}}">
+    <meta property="og:url" content="{{canonicalUrl}}">
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="{{metaDescription}}">
+    <meta property="og:published_time" content="{{datePublished}}">
+    <meta property="og:modified_time" content="{{dateModified}}">
+    <meta property="og:site_name" content="{{siteName}}">
+    <meta name="twitter:title" content="{{metaTitle}}">
+    <meta name="twitter:description" content="{{metaDescription}}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="{{posterLandScape}}">
+    <meta name="amp-story-generator-name" content="{{siteName}}">
+    <meta name="amp-story-generator-version" content="0.1" />
+
+    <link rel="canonical" href="{{canonicalUrl}}" />
+   
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="{{posterImage}}" rel="preload" as="image">
+
+    <!-- <link rel="icon" type="image/svg+xml" href="https://www.quronfula.com/icons/favicon.svg"> -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.quronfula.com/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.quronfula.com/icons/apple-icon-180x180.png">
+    <link rel="shortcut icon" href="https://www.quronfula.com/icons/favicon.ico" type="image/x-icon">
+    <link rel="alternate" type="application/rss+xml" title="Quiz Web Stories RSS" href="{{rssUrl}}" />
+
+
+
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
+    <!-- <script async custom-element="amp-story-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-story-auto-ads-0.1.js"></script> -->
+    <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+    <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+    <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+    <script async custom-element="amp-selector" src="https://cdn.ampproject.org/v0/amp-selector-0.1.js"></script>
+    <script async custom-element="amp-story-interactive"
+        src="https://cdn.ampproject.org/v0/amp-story-interactive-0.1.js"></script>
+    <script type="application/ld+json">
+         {
+         	"@context": "http://schema.org",
+         	"@type": "WebSite",
+         	"name" : "{{siteName}}"
+         	,"alternateName":["{{siteName}}","Story Circuit"],
+         	"url": "https://www.quronfula.com",
+         	"potentialAction": {
+         		"@type": "SearchAction",
+         		"target": "https://www.quronfula.com/search?q={search_term_string}",
+         		"query-input": "required name=search_term_string"
+         	}
+         }
+      </script>
+    <style amp-boilerplate>
+        body {
+            -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            -moz-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            -ms-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            animation: -amp-start 8s steps(1, end) 0s 1 normal both
+        }
+
+        @-webkit-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-moz-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-ms-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @-o-keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+
+        @keyframes -amp-start {
+            from {
+                visibility: hidden
+            }
+
+            to {
+                visibility: visible
+            }
+        }
+    </style>
+    <noscript>
+        <style amp-boilerplate>
+            body {
+                -webkit-animation: none;
+                -moz-animation: none;
+                -ms-animation: none;
+                animation: none
+            }
+        </style>
+    </noscript>
+    <style amp-custom>
+        /* === ARABIC FONT & RTL SUPPORT – 100% working in AMP Stories === */
+        amp-story[lang="ar"],
+        amp-story[lang="ar"] * {
+            font-family: 'Almarai', system-ui, sans-serif !important;
+        }
+
+        /* Force RTL + right alignment on Arabic stories */
+        amp-story[lang="ar"] {
+            direction: rtl !important;
+        }
+
+        amp-story[lang="ar"] .quiz-question,
+        amp-story[lang="ar"] h1,
+        amp-story[lang="ar"] h2,
+        amp-story[lang="ar"] h3,
+        amp-story[lang="ar"] p,
+        amp-story[lang="ar"] amp-story-interactive-quiz,
+        amp-story[lang="ar"] amp-story-interactive-results {
+            text-align: right !important;
+            direction: rtl !important;
+        }
+
+        /* Special fix: interactive components use their own shadow DOM */
+        amp-story-interactive-quiz[lang="ar"],
+        amp-story-interactive-results[lang="ar"] {
+            --interactive-font-family: 'Almarai', sans-serif !important;
+            direction: rtl !important;
+            text-align: right !important;
+        }
+
+        /* Fallback: if lang attribute is missing, use html lang */
+        html[lang="ar"] amp-story,
+        html[lang="ar"] amp-story * {
+            font-family: 'Almarai', system-ui, sans-serif !important;
+        }
+
+        .banner-title-layer {
+            display: flex;
+            justify-content: center;
+            /* horizontal center */
+            align-items: center;
+            /* vertical center */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .banner-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin: 0;
+            line-height: 1.2;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #bd686a, #CC4144);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.8rem 1.6rem;
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(135deg, #CC4144, #bd686a);
+        }
+
+        .related-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            display: block;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .related-stories-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 12px;
+        }
+
+        .related-story-block {
+            width: 45%;
+            /* 2 stories per row on mobile */
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+
+        .related-story-block amp-img {
+            border-radius: 8px;
+        }
+
+        .related-story-block a {
+            text-decoration: none;
+        }
+
+        .related-story-title {
+            display: block;
+            font-size: 14px;
+            color: white;
+            margin-top: 4px;
+        }
+
+
+
+        #results-page .result-wrapper {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        #results-page h1 {
+            font-size: 64px;
+            color: #ffcc00;
+            margin: 10px 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        #results-page p {
+            font-size: 20px;
+            color: #fff;
+            margin-top: 20px;
+            line-height: 1.5;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Optional: dark overlay on background */
+        #results-page .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .quiz-center {
+            display: flex;
+            align-items: center;
+            /* vertical center */
+            justify-content: center;
+            /* horizontal center */
+        }
+
+        .quiz-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            color: white;
+            height: 100%;
+            /* ensures vertical alignment within story */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-question {
+            font-size: 1.6rem;
+            line-height: 2rem;
+            margin-bottom: 24px;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        amp-story-interactive-quiz.center {
+            width: 100%;
+            max-width: 90%;
+        }
+
+        @media (max-width: 480px) {
+            .quiz-question {
+                font-size: 1.2rem;
+                line-height: 1.4rem;
+            }
+
+            amp-story-interactive-quiz.center {
+                max-width: 95%;
+            }
+        }
+
+        body {
+            background: transparent;
+            color: white
+        }
+
+        amp-story {
+            background-color: transparent
+        }
+
+        .quiz-layer {
+            align-content: center;
+            padding: 16px
+        }
+
+        .quiz-question {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px auto;
+            width: 80%;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s
+        }
+
+        .quiz-option[selected] {
+            background: #ff8a00;
+            color: #fff;
+            font-weight: bold
+        }
+
+        .next-button {
+            margin-top: 20px;
+            text-align: center;
+            display: inline-block;
+            background: #ff8a00;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold
+        }
+    </style>
+    {{#if jsonLd}}
+    <script type="application/ld+json">
+            {{{jsonLd}}}
+        </script>
+    {{/if}}
+    {{#if orgJsonLd}}
+    <script type="application/ld+json">
+            {{{orgJsonLd}}}
+        </script>
+    {{/if}}
+    {{#if breadcrumbJson}}
+    <script type="application/ld+json">
+            {{{breadcrumbJson}}}
+        </script>
+    {{/if}}
+    {{#if itemJsonLd}}
+    {{#unless (eq itemJsonLd "null")}}
+    <script type="application/ld+json">
+      {{{itemJsonLd}}}
+    </script>
+    {{/unless}}
+    {{/if}}
+</head>
+
+<body amp lang="{{lang}}" dir="{{#eq lang 'ar'}}rtl{{else}}ltr{{/eq}}">
+    <amp-story standalone title="{{storyTitle}}" publisher="{{siteName}}"
+        publisher-logo-src="https://www.quronfula.com/logo.png" poster-square-src="{{posterSqaure}}"
+        poster-portrait-src="{{posterPortrait}}" poster-landscape-src="{{posterLandScape}}">
+        {{{allPages}}}
+
+        {{#if relatedStories.length}}
+        <amp-story-page id="related-slide">
+            <amp-story-grid-layer template="fill">
+                <amp-img src="{{bgImage}}" layout="fill" object-fit="cover" alt="Related stories background"></amp-img>
+            </amp-story-grid-layer>
+            <amp-story-grid-layer template="vertical">
+                <span class="related-title">Explore Related Quizes</span>
+                {{{relatedStoriesHtml}}}
+            </amp-story-grid-layer>
+        </amp-story-page>
+        {{/if}}
+        <!-- Auto Ads -->
+        <!-- <amp-story-auto-ads>
+            <script type="application/json">
+            {
+              "ad-attributes": {
+                "type": "adsense",
+                "data-ad-client": "ca-pub-4100521225351324",
+                "data-ad-slot": "1434054170"
+              }
+            }
+        </script>
+        </amp-story-auto-ads> -->
+        <amp-analytics type="gtag" data-credentials="include">
+            <script type="application/json">
+                    {
+                        "vars": {
+                        "gtag_id": "G-KSSCTHQE28",
+                        "config": {
+                            "G-KSSCTHQE28": { "groups": "default" }
+                        }
+                        },
+                        "triggers": {
+                        "quizResponse": {
+                            "on": "amp-story-interactive-submit",
+                            "selector": "amp-story-interactive-quiz",
+                            "request": "event",
+                            "vars": {
+                            "event_name": "quiz_response",
+                            "quiz_id": "${interactive-id}",
+                            "quiz_question": "${interactive-question-text}",
+                            "quiz_answer": "${interactive-response-text}"
+                            }
+                        }
+                        }
+                    }
+            </script>
+        </amp-analytics>
+    </amp-story>
+
+</body>
+
+</html>

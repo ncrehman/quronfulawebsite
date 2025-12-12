@@ -168,30 +168,34 @@ if (!!article) {
 
 const cleanHtml = cleanHtmlString(article.description);
 function sanitizeArabic(str) {
-  if (!str) return str;
+    if (!str) return str;
 
-  return str
-    // Remove all directional marks
-    .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
+    return (
+        str
+            // Remove all directional marks
+            .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
 
-    // Replace corrupted Arabic forms
-    .replace(/ﻟ/g, "ل")
-    .replace(/ﻻ/g, "لا")
-    .replace(/ﺍ/g, "ا")
-    .replace(/ﺃ/g, "أ")
-    .replace(/ﺇ/g, "إ")
-    .replace(/ﺁ/g, "آ")
+            // Replace corrupted Arabic forms
+            .replace(/ﻟ/g, "ل")
+            .replace(/ﻻ/g, "لا")
+            .replace(/ﺍ/g, "ا")
+            .replace(/ﺃ/g, "أ")
+            .replace(/ﺇ/g, "إ")
+            .replace(/ﺁ/g, "آ")
 
-    // Remove duplicate malformed characters (common corruption cause)
-    .replace(/(.)\1{2,}/g, "$1$1")
+            // Remove duplicate malformed characters (common corruption cause)
+            .replace(/(.)\1{2,}/g, "$1$1")
 
-    // Trim accidental spacing inside words
-    .replace(/(\S)\s+(\S)/g, "$1 $2");
+            // Trim accidental spacing inside words
+            .replace(/(\S)\s+(\S)/g, "$1 $2")
+    );
 }
 // console.log("cleanhtml: " + cleanHtml2);
 // const cleanHtml = sanitizeArabic(cleanHtmlString(cleanHtml2));
 console.log("cleanhtml2: " + cleanHtml);
-
+const hasAmp =
+    typeof article?.ampUrl === "string" && article.ampUrl.trim() !== "";
+const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
 ---
 
 {
@@ -206,6 +210,9 @@ console.log("cleanhtml2: " + cleanHtml);
             noindex={false}
             type="article"
             jsonLd={jsonLd}
+            media={{
+                amphtml: ampUrl,
+            }}
         />
     )
 }
@@ -328,22 +335,22 @@ console.log("cleanhtml2: " + cleanHtml);
     /* ================================
    ARTICLE CONTENT
 ================================ */
-.article-content {
-    font-size: clamp(16px, 2vw, 20px);
-    line-height: 1.7;
-    color: #333;
-    text-align: justify; /* Fallback for LTR */
-}
+    .article-content {
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.7;
+        color: #333;
+        text-align: justify; /* Fallback for LTR */
+    }
 
-.article-content * {
-    max-width: 100% !important;
-    box-sizing: border-box;
+    .article-content * {
+        max-width: 100% !important;
+        box-sizing: border-box;
 
-    /* SAFE defaults */
-    overflow-wrap: anywhere;   /* does NOT break Arabic words */
-    word-break: normal;        /* prevents internal word breaking */
-    hyphens: auto;
-}
+        /* SAFE defaults */
+        overflow-wrap: anywhere; /* does NOT break Arabic words */
+        word-break: normal; /* prevents internal word breaking */
+        hyphens: auto;
+    }
 
     /* Responsive images */
     .article-content img {

@@ -1,10 +1,20 @@
 ---
-import CommonStoriesAmp from "../../components/commonstories/CommonStoriesAmp.astro";
+import WebStoryAmpRenderer from "@components/commonstories/WebStoryAmpRenderer";
+import { getWebStory } from "@components/commonstories/CommonStoriesAmp copy.astro";
+import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 
-// Props passed from getStaticPaths/getStaticProps
-const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
+const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
----
 
-<CommonStoriesAmp {slug} {lang} />
+if (!slug) {
+    return new Response("Not Found", { status: 404 });
+}
+
+const story: WebStoryResponse = await getWebStory(lang, slug);
+if (!story) {
+    return new Response("Story not found", { status: 404 });
+}
+const response = await WebStoryAmpRenderer({ story, lang });
+return response;
+---

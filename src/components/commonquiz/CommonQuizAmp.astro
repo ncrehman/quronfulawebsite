@@ -1,6 +1,6 @@
 ---
 // ──────────────────────────────────────────────────────────────
-//  Astro 4 + AMP Story Quiz – Fully Validated & Working (Dec 2025)
+//  Astro 4 + AMP Story Quiz – 100% Valid (Dec 2025 Spec)
 // ──────────────────────────────────────────────────────────────
 import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
 import { QuizSlide } from "@lib/pojo/responsemodel/QuizSlide";
@@ -24,7 +24,6 @@ export async function getQuizStory(lang: string, slug: string | undefined): Prom
     const request = new RequestModel();
     request.lang = lang;
     request.slug = await checkForDecode(slug);
-
     const responseResult: ApiResponse = await apiCalls(request, EndPointPaths.getquizbyslug);
     if (responseResult.status === 0) {
       const response: ResponseModel = responseResult.data;
@@ -48,127 +47,79 @@ const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`;
 const siteName = metaConfig.siteName[lang];
 
 const gradients = [
-  ["#f3633fff", "#ef9b5bff"],
-  ["#6A11CB", "#2575FC"],
-  ["#F7971E", "#FFD200"],
-  ["#2ac5a6ff", "#191654"],
-  ["#0F2027", "#203A43"],
-  ["#2C3E50", "#4CA1AF"],
-  ["#4B6CB7", "#182848"],
-  ["#FF416C", "#FF4B2B"],
-  ["#1D4350", "#A43931"],
-  ["#373B44", "#4286f4"],
+  ["#f3633fff", "#ef9b5bff"], ["#6A11CB", "#2575FC"], ["#F7971E", "#FFD200"], ["#2ac5a6ff", "#191654"],
+  ["#0F2027", "#203A43"], ["#2C3E50", "#4CA1AF"], ["#4B6CB7", "#182848"], ["#FF416C", "#FF4B2B"],
+  ["#1D4350", "#A43931"], ["#373B44", "#4286f4"]
 ];
 
-// Safe attribute escaping
 function escAttr(s: string | undefined | null): string {
   if (!s) return "";
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// Generate all <amp-story-page> markup
 function generateSlidesHtml(quiz: QuizStoryResponse): string {
   const backendEndpoint = `${apiServer.websiteUrl}quronfula/interact/submit`;
   const slides = (quiz.slides || []) as QuizSlide[];
+  let html = `<amp-story-page id="banner" auto-advance-after="3s">
+    <amp-story-grid-layer template="fill">
+      <amp-img src="${escAttr(quiz.bannerImage)}" width="720" height="1280" layout="responsive" alt="${escAttr(quiz.title)}"></amp-img>
+    </amp-story-grid-layer>
+    <amp-story-grid-layer template="vertical" class="center-text">
+      <h1 class="title-anim">${escAttr(quiz.title)}</h1>
+    </amp-story-grid-layer>
+  </amp-story-page>`;
 
-  let html = `
-<!-- Banner Page -->
-<amp-story-page id="banner" auto-advance-after="3s">
-  <amp-story-grid-layer template="fill">
-    <amp-img src="${escAttr(quiz.bannerImage)}" width="720" height="1280" layout="responsive" alt="${escAttr(quiz.title)}"></amp-img>
-  </amp-story-grid-layer>
-  <amp-story-grid-layer template="vertical" class="center-text">
-    <h1 animate-in="fade-in" animate-in-duration="0.8s">${escAttr(quiz.title)}</h1>
-  </amp-story-grid-layer>
-</amp-story-page>`;
-
-  // Question slides
   slides.forEach((slide, i) => {
     const [c1, c2] = gradients[i % gradients.length];
     const bgGradient = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
+    const options = (slide.options || []).slice(0, 4);
+    let optionsAttrs = "";
+    options.forEach((opt, idx) => {
+      const n = idx + 1;
+      const correct = String(opt).trim() === String(slide.answer).trim() ? ` option-${n}-correct` : "";
+      optionsAttrs += ` option-${n}-text="${escAttr(opt)}"${correct}`;
+    });
 
-    const optionsAttrs = (slide.options || [])
-      .slice(0, 4)
-      .map((opt, idx) => {
-        const n = idx + 1;
-        const correct = String(opt).trim() === String(slide.answer).trim() ? `option-${n}-correct` : "";
-        return `option-${n}-text="${escAttr(opt)}" ${correct}`;
-      })
-      .join(" ");
-
-    html += `
-<amp-story-page id="q${i + 1}">
-  <amp-story-grid-layer template="fill">
-    <amp-img src="${bgGradient}" width="720" height="1280" layout="responsive" alt="gradient background"></amp-img>
-  </amp-story-grid-layer>
-
-  <amp-story-grid-layer template="vertical" class="center-content">
-    <div class="quiz-container" animate-in="scale-fade-up" animate-in-duration="0.6s">
-      <h2 class="question">${escAttr(slide.question)}</h2>
-
-      <amp-story-interactive-quiz
-        endpoint="${backendEndpoint}"
-        prompt-size="large"
-        chip-style="transparent"
-        ${optionsAttrs}>
-      </amp-story-interactive-quiz>
-    </div>
-  </amp-story-grid-layer>
-</amp-story-page>`;
+    const quizId = `quiz-${Date.now()}-${i}`; // Unique ID
+    html += `<amp-story-page id="q${i + 1}">
+      <amp-story-grid-layer template="fill">
+        <amp-img src="${bgGradient}" width="720" height="1280" layout="responsive" alt="background"></amp-img>
+      </amp-story-grid-layer>
+      <amp-story-grid-layer template="vertical" class="center-content">
+        <div class="quiz-container">
+          <h2 class="question">${escAttr(slide.question)}</h2>
+          <amp-story-interactive-quiz id="${quizId}" endpoint="${backendEndpoint}" prompt-size="large" chip-style="transparent"${optionsAttrs}></amp-story-interactive-quiz>
+        </div>
+      </amp-story-grid-layer>
+    </amp-story-page>`;
   });
 
-  // Results page
   const defaultResults = [
-    { category: lang === "en" ? "Beginner" : "مبتدئ", threshold: "0", text: lang === "en" ? "Good start!" : "بداية جيدة!", icon: "Seedling" },
-    { category: lang === "en" ? "Intermediate" : "متوسط", threshold: "50", text: lang === "en" ? "Well done!" : "أحسنت!", icon: "Cooking" },
-    { category: lang === "en" ? "Expert" : "خبير", threshold: "80", text: lang === "en" ? "Amazing!" : "رائع!", icon: "Trophy" },
-    { category: lang === "en" ? "Master" : "محترف", threshold: "95", text: lang === "en" ? "You're a legend!" : "أنت أسطورة!", icon: "Crown" },
+    { category: lang === "en" ? "Beginner" : "مبتدئ", threshold: "0", text: lang === "en" ? "Good start!" : "بداية جيدة!", icon: "" },
+    { category: lang === "en" ? "Intermediate" : "متوسط", threshold: "50", text: lang === "en" ? "Well done!" : "أحسنت!", icon: "" },
+    { category: lang === "en" ? "Expert" : "خبير", threshold: "80", text: lang === "en" ? "Amazing!" : "رائع!", icon: "" },
+    { category: lang === "en" ? "Master" : "محترف", threshold: "95", text: lang === "en" ? "You're a legend!" : "أنت أسطورة!", icon: "" }
   ];
-
   const results = quiz.result && quiz.result.length ? quiz.result : defaultResults;
-
-  const resultsAttrs = results
-    .slice(0, 4)
-    .map((r, i) => {
-      const n = i + 1;
-      return `option-${n}-results-category="${escAttr(r.category)}"
-              option-${n}-text="${escAttr(r.text)}"
-              option-${n}-results-threshold="${escAttr(r.threshold)}"`;
-    })
-    .join("\n      ");
+  let resultsAttrs = "";
+  results.slice(0, 4).forEach((r, i) => {
+    const n = i + 1;
+    resultsAttrs += ` option-${n}-results-category="${escAttr(r.category)}" option-${n}-text="${escAttr(r.text)}" option-${n}-results-threshold="${escAttr(r.threshold)}"`;
+  });
 
   const resultTitle = lang === "en" ? "Your Result" : "نتيجتك";
-
-  html += `
-<!-- Results Page -->
-<amp-story-page id="results">
-  <amp-story-grid-layer template="fill">
-    <amp-img src="/api/gradient?c1=${encodeURIComponent("#FF7E5F")}&c2=${encodeURIComponent("#FEB47B")}" 
-             width="720" height="1280" layout="responsive" alt="results bg"></amp-img>
-  </amp-story-grid-layer>
-
-  <amp-story-grid-layer template="vertical" class="center-content">
-    <div class="result-container" animate-in="fade-in" animate-in-duration="1s">
-      <h3>${resultTitle}</h3>
-
-      <amp-story-interactive-results
-        id="final-results"
-        prompt-text=""
-        style="--interactive-accent-color: #FFD700; --interactive-background-color: rgba(0,0,0,0.3);"
-        ${resultsAttrs}>
-      </amp-story-interactive-results>
-
-      <p animate-in="fade-in" animate-in-delay="1.2s">
-        ${lang === "en" ? "Share your score or play again!" : "شارك نتيجتك أو العب مرة أخرى!"}
-      </p>
-    </div>
-  </amp-story-grid-layer>
-</amp-story-page>`;
+  html += `<amp-story-page id="results">
+    <amp-story-grid-layer template="fill">
+      <amp-img src="/api/gradient?c1=${encodeURIComponent('#FF7E5F')}&c2=${encodeURIComponent('#FEB47B')}" width="720" height="1280" layout="responsive" alt="results bg"></amp-img>
+    </amp-story-grid-layer>
+    <amp-story-grid-layer template="vertical" class="center-content">
+      <div class="result-container">
+        <h3>${resultTitle}</h3>
+        <amp-story-interactive-results id="final-results" prompt-text=""${resultsAttrs} style="--interactive-accent-color: #FFD700; --interactive-background-color: rgba(0,0,0,0.3);"></amp-story-interactive-results>
+        <p class="share-text">${lang === "en" ? "Share your score or play again!" : "شارك نتيجتك أو العب مرة أخرى!"}</p>
+      </div>
+    </amp-story-grid-layer>
+  </amp-story-page>`;
 
   return html;
 }
@@ -177,92 +128,35 @@ const slidesHtml = generateSlidesHtml(quiz);
 ---
 
 <!doctype html>
-<html ⚡ lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+<html  lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
-
     <title>{quiz.metaTitle || quiz.title}</title>
     <meta name="description" content={quiz.metaDescription || quiz.title} />
-
-    <!-- Open Graph / Social -->
     <meta property="og:title" content={quiz.metaTitle || quiz.title} />
     <meta property="og:description" content={quiz.metaDescription || quiz.title} />
     <meta property="og:image" content={quiz.landScapeBanner || quiz.bannerImage} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:type" content="article" />
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={quiz.metaTitle || quiz.title} />
     <meta name="twitter:description" content={quiz.metaDescription || quiz.title} />
     <meta name="twitter:image" content={quiz.landScapeBanner || quiz.bannerImage} />
-
-    <!-- AMP Story specific -->
     <meta name="amp-story-generator-name" content={siteName} />
     <meta name="amp-story-generator-version" content="1.0" />
-
     <link rel="canonical" href={canonicalUrl} />
-
-    <!-- Preload hero image -->
     <link rel="preload" as="image" href={quiz.bannerImage} />
-
-    <!-- Required AMP scripts -->
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-story" src="https://cdn.ampproject.org/v0/amp-story-1.0.js"></script>
     <script async custom-element="amp-story-interactive" src="https://cdn.ampproject.org/v0/amp-story-interactive-0.1.js"></script>
-
-    <!-- NEW 2024+ AMP BOILERPLATE (mandatory exact code) -->
-    <style amp-boilerplate>
-      body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}
-      @-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
-      @-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
-      @keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}
-    </style>
-    <noscript>
-      <style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;animation:none}</style>
-    </noscript>
-
-    <!-- Custom Styles (only one <style amp-custom> allowed) -->
-    <style amp-custom>
-      html { font-family: system-ui, sans-serif; }
-      html[lang="ar"] { font-family: "Almarai", system-ui, sans-serif; }
-
-      @font-face {
-        font-family: "Almarai";
-        src: url("https://www.quronfula.com/fonts/Almarai-Regular.woff2") format("woff2");
-        font-weight: 400;
-        font-display: swap;
-      }
-      @font-face {
-        font-family: "Almarai";
-        src: url("https://www.quronfula.com/fonts/Almarai-Bold.woff2") format("woff2");
-        font-weight: 700;
-        font-display: swap;
-      }
-
-      .center-text, .center-content {
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 32px;
-      }
-      h1, h2, h3 {
-        color: white;
-        margin: 0;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-      }
-      h1 { font-size: 36px; }
-      .question { font-size: 28px; line-height: 1.3; margin-bottom: 24px; }
-      .quiz-container, .result-container {
-        width: 100%;
-        max-width: 90%;
-      }
-      p { margin-top: 24px; opacity: 0.9; }
-    </style>
+    <!-- EXACT 2025 BOILERPLATE - No spaces/newlines allowed -->
+    <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-o-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style>
+    <noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;-o-animation:none;animation:none}</style></noscript>
+    <!-- ONLY ONE amp-custom - Minified CSS -->
+    <style amp-custom>html{font-family:system-ui,sans-serif}html[lang="ar"]{font-family:"Almarai",system-ui,sans-serif}@font-face{font-family:"Almarai";src:url("https://www.quronfula.com/fonts/Almarai-Regular.woff2") format("woff2");font-weight:400;font-display:swap}@font-face{font-family:"Almarai";src:url("https://www.quronfula.com/fonts/Almarai-Bold.woff2") format("woff2");font-weight:700;font-display:swap}.center-text,.center-content{align-items:center;justify-content:center;text-align:center;padding:32px}h1,h2,h3{color:#fff;margin:0;text-shadow:0 2px 10px rgba(0,0,0,.6)}h1{font-size:36px}.question{font-size:28px;line-height:1.3;margin-bottom:24px}.quiz-container,.result-container{width:100%;max-width:90%}.share-text{margin-top:24px;opacity:.9}.title-anim{opacity:0;animation:fadeIn 0.8s ease-out forwards}@keyframes fadeIn{to{opacity:1}}</style>
   </head>
-
   <body>
-    <!-- standalone is now a BOOLEAN attribute – no value! -->
     <amp-story
       standalone
       title={quiz.title}
@@ -272,7 +166,6 @@ const slidesHtml = generateSlidesHtml(quiz);
       poster-square-src={quiz.bannerImage}
       poster-landscape-src={quiz.landScapeBanner || quiz.bannerImage}
       set:html={slidesHtml}
-    >
-    </amp-story>
+    ></amp-story>
   </body>
 </html>

@@ -1,10 +1,20 @@
 ---
-import CommonQuizAmp from "@components/commonquiz/CommonQuizAmp.astro";
+import { getQuizStory } from "@components/commonquiz/CommonQuizAmp.astro";
+import type { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
+import QuizAmpRenderer from "@components/commonquiz/QuizAmpRenderer.ts";
 
-// Props passed from getStaticPaths/getStaticProps
-const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
+const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
----
 
-<CommonQuizAmp {slug} {lang} />
+if (!slug) {
+  return new Response("Not Found", { status: 404 });
+}
+
+const quiz: QuizStoryResponse = await getQuizStory(lang, slug);
+if (!quiz) {
+  return new Response("Quiz not found", { status: 404 });
+}
+const response = await QuizAmpRenderer({ quiz, lang });
+return response;
+---
