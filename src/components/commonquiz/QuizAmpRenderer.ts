@@ -135,7 +135,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     <amp-img src="${quiz.bannerImage}" layout="fill" alt="${quiz.title}"></amp-img>
   </amp-story-grid-layer>
 
-  <amp-story-grid-layer  template="verticle" class="banner-title-layer">
+  <amp-story-grid-layer  template="horizontal" class="banner-title-layer">
     <div class="banner-title">
       <h1>${quiz.title}</h1>
     </div>

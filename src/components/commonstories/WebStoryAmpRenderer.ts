@@ -195,7 +195,7 @@ ${story.cta && story.cta.trim() !== "" ? `
     <amp-img src="${story.bannerImage}" layout="fill" alt="${story.title}"></amp-img>
   </amp-story-grid-layer>
 
-  <amp-story-grid-layer  template="verticle" class="banner-title-layer">
+  <amp-story-grid-layer  template="horizontal" class="banner-title-layer">
     <div class="banner-title">
       <h1>${story.title}</h1>
     </div>
