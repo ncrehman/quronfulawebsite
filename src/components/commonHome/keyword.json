@@ -1,0 +1,181 @@
+{
+    "en": [
+        {
+            "keyword": "latest articles",
+            "title": "Latest Articles & Fresh Reads",
+            "description": "Discover the latest articles featuring fresh perspectives, trending topics, and thoughtfully written content updated regularly."
+        },
+        {
+            "keyword": "blog posts",
+            "title": "Insightful Blog Posts",
+            "description": "Read engaging blog posts covering lifestyle, culture, wellness, and everyday topics that matter."
+        },
+        {
+            "keyword": "AMP web stories",
+            "title": "AMP Web Stories Collection",
+            "description": "Explore fast-loading AMP web stories designed for an immersive, visual storytelling experience."
+        },
+        {
+            "keyword": "AMP quizzes",
+            "title": "Interactive AMP Quizzes",
+            "description": "Take interactive AMP quizzes that are quick, engaging, and designed to test your knowledge in fun ways."
+        },
+        {
+            "keyword": "quiz challenges",
+            "title": "Fun Quiz Challenges",
+            "description": "Challenge yourself with quizzes across multiple topics, from knowledge tests to entertaining trivia."
+        },
+        {
+            "keyword": "visual stories",
+            "title": "Visual Stories & Experiences",
+            "description": "Enjoy visually rich stories that combine images, short text, and smooth storytelling formats."
+        },
+        {
+            "keyword": "health articles",
+            "title": "Health & Wellness Articles",
+            "description": "Read reliable health articles focused on well-being, balance, and practical lifestyle choices."
+        },
+        {
+            "keyword": "beauty tips",
+            "title": "Beauty Tips & Self-Care",
+            "description": "Discover simple beauty tips and self-care advice for everyday routines and confidence."
+        },
+        {
+            "keyword": "lifestyle blogs",
+            "title": "Lifestyle Blogs & Inspiration",
+            "description": "Explore lifestyle blogs offering inspiration on daily living, habits, and personal growth."
+        },
+        {
+            "keyword": "food recipes",
+            "title": "Food Recipes & Cooking Ideas",
+            "description": "Find easy-to-follow food recipes and cooking ideas suitable for everyday meals."
+        },
+        {
+            "keyword": "culture stories",
+            "title": "Culture Stories & Traditions",
+            "description": "Learn about culture through stories that highlight traditions, creativity, and modern perspectives."
+        },
+        {
+            "keyword": "wellness guides",
+            "title": "Wellness Guides & Practices",
+            "description": "Browse wellness guides designed to support mental clarity, healthy habits, and balanced living."
+        },
+        {
+            "keyword": "jobs and opportunities",
+            "title": "Jobs & Career Opportunities",
+            "description": "Explore job-related content, career tips, and opportunities to support professional growth."
+        },
+        {
+            "keyword": "self improvement",
+            "title": "Self Improvement & Personal Growth",
+            "description": "Discover self-improvement ideas focused on mindset, skills, and everyday motivation."
+        },
+        {
+            "keyword": "fashion & beauty trends",
+            "title": "Fashion & Beauty Trends",
+            "description": "Stay updated with fashion and beauty trends that blend style, comfort, and individuality."
+        },
+        {
+            "keyword": "travel experiences",
+            "title": "Travel Experiences & Stories",
+            "description": "Read travel experiences that share insights, destinations, and meaningful journeys."
+        },
+        {
+            "keyword": "entertainment facts",
+            "title": "Entertainment Facts & Insights",
+            "description": "Explore interesting entertainment facts and behind-the-scenes insights from popular culture."
+        },
+        {
+            "keyword": "daily insights",
+            "title": "Daily Insights & Ideas",
+            "description": "Get daily insights designed to inform, inspire, and add value to your everyday reading."
+        }
+    ],
+    "ar": [
+        {
+            "keyword": "مقالات",
+            "title": "أحدث المقالات",
+            "description": "اطّلع على أحدث المقالات التي تقدم محتوى متجددًا وأفكارًا متنوعة تناسب اهتماماتك اليومية."
+        },
+        {
+            "keyword": "مدونة",
+            "title": "مقالات المدونة",
+            "description": "اقرأ مقالات مدونة تغطي مواضيع نمط الحياة، الثقافة، والصحة بأسلوب واضح ومفيد."
+        },
+        {
+            "keyword": "قصص ويب AMP",
+            "title": "قصص ويب AMP السريعة",
+            "description": "استمتع بقصص ويب AMP المصممة لتجربة قراءة سريعة وسلسة على جميع الأجهزة."
+        },
+        {
+            "keyword": "اختبارات تفاعلية",
+            "title": "اختبارات تفاعلية ممتعة",
+            "description": "شارك في اختبارات تفاعلية تجمع بين المتعة والمعرفة في مواضيع متعددة."
+        },
+        {
+            "keyword": "قصص مرئية",
+            "title": "قصص مرئية ملهمة",
+            "description": "اكتشف قصصًا مرئية تجمع بين الصور والنصوص القصيرة لتجربة قراءة جذابة."
+        },
+        {
+            "keyword": "مقالات صحية",
+            "title": "مقالات الصحة والعافية",
+            "description": "اقرأ مقالات صحية تركز على العافية، التوازن، ونمط الحياة الصحي."
+        },
+        {
+            "keyword": "نصائح الجمال",
+            "title": "نصائح الجمال والعناية",
+            "description": "تعرف على نصائح الجمال والعناية اليومية بأسلوب بسيط وعملي."
+        },
+        {
+            "keyword": "نمط الحياة",
+            "title": "محتوى نمط الحياة",
+            "description": "استكشف محتوى نمط الحياة الذي يساعدك على تحسين روتينك اليومي."
+        },
+        {
+            "keyword": "وصفات الطعام",
+            "title": "وصفات طعام سهلة",
+            "description": "اطلع على وصفات طعام سهلة التحضير تناسب مختلف الأذواق."
+        },
+        {
+            "keyword": "قصص ثقافية",
+            "title": "قصص ثقافية ومعرفية",
+            "description": "تعرف على قصص ثقافية تسلط الضوء على التراث والأفكار المعاصرة."
+        },
+        {
+            "keyword": "دليل العافية",
+            "title": "أدلة العافية والصحة",
+            "description": "استخدم أدلة العافية لدعم صحتك النفسية والجسدية بأسلوب متوازن."
+        },
+        {
+            "keyword": "وظائف وفرص",
+            "title": "وظائف وفرص مهنية",
+            "description": "استكشف محتوى يركز على الوظائف والفرص المهنية وتطوير المسار الوظيفي."
+        },
+        {
+            "keyword": "تطوير الذات",
+            "title": "تطوير الذات والنمو الشخصي",
+            "description": "اطلع على محتوى تطوير الذات الذي يساعدك على بناء مهاراتك وثقتك بنفسك."
+        },
+        {
+            "keyword": "الموضة والجمال",
+            "title": "الموضة والجمال",
+            "description": "تابع مواضيع الموضة والجمال بأسلوب عصري ومتوازن يناسب جميع الأذواق."
+        },
+        {
+            "keyword": "تجارب السفر",
+            "title": "تجارب السفر والرحلات",
+            "description": "اقرأ تجارب سفر ملهمة تقدم أفكارًا ونصائح لرحلات مميزة."
+        },
+        {
+            "keyword": "معلومات ترفيهية",
+            "title": "معلومات ترفيهية ممتعة",
+            "description": "استمتع بمعلومات ترفيهية خفيفة ومفيدة من عالم الثقافة والترفيه."
+        },
+        {
+            "keyword": "حقائق يومية",
+            "title": "حقائق يومية مفيدة",
+            "description": "اكتشف حقائق يومية تضيف معرفة بسيطة ومفيدة إلى قراءتك اليومية."
+        }
+    ]
+}

@@ -1,0 +1,86 @@
+---
+import type { KeywordItem } from "./keywords";
+
+interface Props {
+    items: KeywordItem[];
+    lang: string;
+}
+
+const { items, lang } = Astro.props;
+---
+
+<div class="keywords-section">
+    <h2 class="keywords-title">{lang==='ar'?'استكشف المواضيع الرئيسية':'Explore Key Themes'}</h2>
+
+    <div class="keywords-grid">
+        {
+            items.map((item) => (
+                <article class="keyword-card">
+                    <h3 class="keyword-title">{item.title}</h3>
+                    <p class="keyword-desc">{item.description}</p>
+                </article>
+            ))
+        }
+    </div>
+</div>
+<style>
+    .keywords-section {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 4rem 1.5rem;
+    }
+
+    .keywords-title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        letter-spacing: -0.02em;
+        color: #111;
+    }
+
+    .keywords-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+    }
+
+    /* CARD */
+    .keyword-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 26px 28px;
+        border: 1px solid #eef0f3;
+        box-shadow:
+            0 1px 2px rgba(0, 0, 0, 0.04),
+            0 8px 24px rgba(0, 0, 0, 0.06);
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+    .keyword-card:hover {
+        transform: translateY(-6px);
+        border-color: #e3e6eb;
+        box-shadow:
+            0 4px 10px rgba(0, 0, 0, 0.08),
+            0 18px 36px rgba(0, 0, 0, 0.12);
+    }
+
+    /* TITLE */
+    .keyword-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #0f172a;
+        line-height: 1.35;
+    }
+
+    /* DESCRIPTION */
+    .keyword-desc {
+        font-size: 0.95rem;
+        color: #475569;
+        line-height: 1.6;
+    }
+</style>

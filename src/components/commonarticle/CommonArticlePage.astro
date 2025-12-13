@@ -167,32 +167,6 @@ if (!!article) {
 }
 
 const cleanHtml = cleanHtmlString(article.description);
-function sanitizeArabic(str) {
-    if (!str) return str;
-
-    return (
-        str
-            // Remove all directional marks
-            .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
-
-            // Replace corrupted Arabic forms
-            .replace(/ﻟ/g, "ل")
-            .replace(/ﻻ/g, "لا")
-            .replace(/ﺍ/g, "ا")
-            .replace(/ﺃ/g, "أ")
-            .replace(/ﺇ/g, "إ")
-            .replace(/ﺁ/g, "آ")
-
-            // Remove duplicate malformed characters (common corruption cause)
-            .replace(/(.)\1{2,}/g, "$1$1")
-
-            // Trim accidental spacing inside words
-            .replace(/(\S)\s+(\S)/g, "$1 $2")
-    );
-}
-// console.log("cleanhtml: " + cleanHtml2);
-// const cleanHtml = sanitizeArabic(cleanHtmlString(cleanHtml2));
-console.log("cleanhtml2: " + cleanHtml);
 const hasAmp =
     typeof article?.ampUrl === "string" && article.ampUrl.trim() !== "";
 const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;

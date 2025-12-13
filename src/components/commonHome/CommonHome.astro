@@ -20,6 +20,10 @@ import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { getLangPrefix } from "@lib/postmethodService";
 
+import keywordsData from "./keyword.json";
+import type { KeywordsData } from "./keywords";
+import KeywordsGrid from "./KeywordsGrid.astro";
+const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
 
@@ -340,6 +344,21 @@ if (articles) {
 					</section>
 				) : null
 			}
+
+			<section>
+				<div
+					style={{
+						fontSize: "36px",
+						fontWeight: 800,
+						textAlign: "center",
+						marginTop: "20px",
+						marginBottom: "40px",
+						color: "#0f0f0f",
+					}}
+				>
+					<KeywordsGrid items={keyData[lang]} lang={lang} />
+				</div>
+			</section>
 
 			<style>
 				.articles-grid {

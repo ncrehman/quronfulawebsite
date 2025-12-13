@@ -1,0 +1,26 @@
+---
+import Analytics from "@components/Analytics.astro";
+import NotificationRequest from "@components/common/NotificationRequest.astro";
+---
+
+<script>
+    // Run AFTER full page load (including fonts, images)
+    window.addEventListener("load", () => {
+        document.documentElement.classList.add("after-load");
+    });
+</script>
+
+<div class="after-load-only">
+    <Analytics id="G-KSSCTHQE28" />
+    <NotificationRequest />
+</div>
+
+<style>
+    .after-load-only {
+        display: none;
+    }
+
+    html.after-load .after-load-only {
+        display: contents;
+    }
+</style>

@@ -2,46 +2,113 @@
 import Footer from "@components/Footer.astro";
 import Header from "../components/Header.astro";
 
-import Analytics from "@components/Analytics.astro";
-import NotificationRequest from "@components/common/NotificationRequest.astro";
+import ClientAfterLoad from "@components/ClientAfterLoad.astro";
 
 const currentPath = Astro.url.pathname;
 let lang = currentPath.startsWith("/en") ? "en" : "ar";
 
-const { title, description, image } = Astro.props;
-
-// Fallback OG if page does not provide them
-// const ogTitle = title ?? "Quronfula - Trusted News & Articles";
-// const ogDesc =
-// 	description ??
-// 	"Latest articles in news, economy, jobs, migration, prices and lifestyle.";
-// const ogImage = image ?? "/ogimage.jpg";
 ---
 
 <!doctype html>
 <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
 	<head>
 		<meta charset="UTF-8" />
-		<!-- <meta name="viewport" content="width=device-width" /> -->
 		<meta name="generator" content="Quronfula" />
 		<!-- Font preload -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			rel="preload"
-			href="/fonts/Almarai-Regular.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Merriweather:wght@400;700&display=swap"
+			onload="this.onload=null;this.rel='stylesheet'"
 		/>
-		<link
-			rel="preload"
-			href="/fonts/Almarai-Bold.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
+		<noscript>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Merriweather:wght@400;700&display=swap"
+			/>
+		</noscript>
+		<style>
+			html {
+				font-family:
+					"Merriweather",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				font-size-adjust: 0.52;
+			}
 
-		<link rel="stylesheet" href="/styles/fonts.css" />
-		<link rel="stylesheet" href="/styles/global.css" />
+			html[lang="ar"] {
+				font-family:
+					"Almarai",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				font-size-adjust: 0.48;
+			}
+			/* /styles/global.css */
+			:root {
+				--content-max-width: 780px;
+			}
+
+			html[dir="rtl"] {
+				direction: rtl;
+				/* adjust typographic rules for Arabic if needed */
+			}
+
+			h1 {
+				font-size: 2rem;
+				/* or your preferred size */
+				margin: 0;
+				line-height: 1.3;
+			}
+
+			nav a,
+			footer a,
+			.nav a,
+			.menu a,
+			.breadcrumb a,
+			.site-links a {
+				/* This magic class is understood by Ahrefs, SEMrush, etc. */
+				speak: none;
+				font-weight: inherit;
+				font-size: inherit;
+			}
+
+			nav,
+			footer,
+			.header,
+			.site-header,
+			.site-footer {
+				speak: none;
+				/* 2025 standard */
+			}
+			:root {
+				--bg: #ffffff;
+				--text: #0f172a;
+				--card: #ffffff;
+				--border: #e5e7eb;
+			}
+
+			html.dark {
+				--bg: #0b0f19;
+				--text: #e5e7eb;
+				--card: #111827;
+				--border: #1f2937;
+			}
+			@media (prefers-color-scheme: dark) {
+				html {
+					color-scheme: dark;
+				}
+				html {
+					--bg: #0b0f19;
+					--text: #e5e7eb;
+					--card: #111827;
+					--border: #1f2937;
+				}
+			}
+		</style>
 		<link
 			rel="apple-touch-icon"
 			sizes="57x57"
@@ -134,8 +201,6 @@ const { title, description, image } = Astro.props;
 			name="p:domain_verify"
 			content="63128a8d24e6efaa851d8e236013a715"
 		/>
-
-		<Analytics id="G-KSSCTHQE28" />
 	</head>
 
 	<body>
@@ -159,12 +224,12 @@ const { title, description, image } = Astro.props;
 		</main>
 
 		<Footer lang={lang} currentPath={Astro.url.pathname} />
-		<NotificationRequest />
-	</body><script>
+		<ClientAfterLoad />
+	</body><!-- <script>
 		document.fonts.ready.then(() => {
 			document.documentElement.classList.add("font-ready");
 		});
-	</script>
+	</script> -->
 </html>
 
 <style>
@@ -209,7 +274,7 @@ const { title, description, image } = Astro.props;
 	.ad-placeholder {
 		width: 100%;
 		aspect-ratio: 300 / 600;
-		background: #999;
+		background: #fff;
 		display: flex;
 		align-items: center;
 		justify-content: center;
