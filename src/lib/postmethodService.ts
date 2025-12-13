@@ -4,6 +4,8 @@ import { ApiResponse } from './pojo/responsemodel/ApiResponse';
 import { getAppConfig, loadAppConfig } from './AppConfig';
 import { FaqSchema } from './pojo/responsemodel/FaqSchema';
 import he from 'he';
+// import { unescape } from 'he';  // Assuming you already import he for the final decode
+
 const printConsole = async (input: any) => {
   console.log(input);
 }
@@ -220,7 +222,7 @@ export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
   }
 }
 
-export function cleanHtmlString(input: string) {
+export function cleanHtmlString(input: string): string {
   if (!input) return '';
 
   let cleanedHtml = input
@@ -267,24 +269,20 @@ export function cleanHtmlString(input: string) {
     .replace(/<\?xml[^>]*>/g, '')
     .replace(/<\/?o:[^>]*>/g, '')
     .replace(/style="[^"]*(mso-|Calibri|Arial)[^"]*"/g, '')
-    .replace(/[\u00AD]/g, "")      // soft hyphen
-    .replace(/[\u200B]/g, "")      // zero-width space
-    .replace(/[\u200C]/g, "")      // ZWNJ
-    .replace(/[\u200D]/g, "")      // ZWJ
-    .replace(/[\uFEFF]/g, "")
-    .replace(/[\u200B\u200C\u200D\uFEFF]/g, "") // zero-width characters
-    .replace(/\u00AD/g, "")                    // soft hyphens
-    .replace(/\r?\n|\r/g, " ")                 // CR/LF breaks
-    .replace(/ +/g, " ")
-    .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
-    .replace(/ﻟ/g, "ل")
-    .replace(/ﻻ/g, "لا")
-    .replace(/ﺍ/g, "ا")
-    .replace(/ﺃ/g, "أ")
-    .replace(/ﺇ/g, "إ")
-    .replace(/ﺁ/g, "آ")
-    .replace(/(.)\1{2,}/g, "$1$1")
-    .replace(/(\S)\s+(\S)/g, "$1 $2")                 // double spaces
+    .replace(/[\u00AD]/g, '')                  // soft hyphen
+    .replace(/[\u200B\u200C\u200D\uFEFF]/g, '') // zero-width characters
+    .replace(/\r?\n|\r/g, ' ')
+    .replace(/ +/g, ' ')
+    .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, '')
+    .replace(/ﻟ/g, 'ل')
+    .replace(/ﻻ/g, 'لا')
+    .replace(/ﺍ/g, 'ا')
+    .replace(/ﺃ/g, 'أ')
+    .replace(/ﺇ/g, 'إ')
+    .replace(/ﺁ/g, 'آ')
+    .replace(/(.)\1{2,}/g, '$1$1')
+    .replace(/(\S)\s+(\S)/g, '$1 $2')
+
     // === Normalize images ===
     .replace(/<img([^>]+)>/g, (match, attrs) => {
       if (!/alt=/.test(attrs)) attrs += ' alt=""';
@@ -292,24 +290,13 @@ export function cleanHtmlString(input: string) {
       return `<img ${attrs} style="max-width:100%;height:auto;" />`;
     });
 
-
-  // 🌟 ADD EXTRA SPACE BEFORE HEADING PARAGRAPHS (final fix)
-  cleanedHtml = cleanedHtml.replace(
-    /(<p[^>]*>[^<]*<\/p>)\s*(<p[^>]*>\s*<(strong|b)>[^<]+<\/(strong|b)>\s*<\/p>)/gi,
-    `$1<br/><br/>$2`
-  );
-
-  // Remove extra line breaks after inserting
+  // 🌟 Add spacing before heading-like paragraphs
   cleanedHtml = cleanedHtml
-    .replace(/(<br\/?>\s*){3,}/g, '<br/><br/>')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/(\n|\r){2,}/g, '\n');
-  // Add spacing BEFORE paragraph headings (p → p<strong>)
-  cleanedHtml = cleanedHtml.replace(
-    /(<\/p>)\s*(<p[^>]*>\s*<(strong|b|em)[^>]*>[^<]+<\/(strong|b|em)>\s*<\/p>)/gi,
-    `$1<br/><br/>$2`
-  );
-  // === Style Mapping To Tailwind ===
+    .replace(/(<p[^>]*>[^<]*<\/p>)\s*(<p[^>]*>\s*<(strong|b)>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
+    .replace(/(<\/p>)\s*(<p[^>]*>\s*<(strong|b|em)[^>]*>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
+    .replace(/(<br\/?>\s*){3,}/g, '<br/><br/>');
+
+  // === Style Mapping to Tailwind ===
   const styleToTailwindMap = [
     { regex: /style="text-decoration:underline;"/g, replacement: 'class="underline"' },
     { regex: /style="font-weight:bold;"/g, replacement: 'class="font-bold"' },
@@ -318,16 +305,59 @@ export function cleanHtmlString(input: string) {
   styleToTailwindMap.forEach(({ regex, replacement }) => {
     cleanedHtml = cleanedHtml.replace(regex, replacement);
   });
-  // 🌟 NEW: Limit <strong> tags
+
+  // === COMBINED: Limit <strong> count AND convert long content to inline bold ===
   const MAX_STRONG = 18;
+  const MAX_STRONG_CHARS = 70;
   let strongCount = 0;
-  cleanedHtml = cleanedHtml.replace(/<strong>(.*?)<\/strong>/gi, (match, content) => {
+
+  cleanedHtml = cleanedHtml.replace(/<strong>(.*?)<\/strong>/gis, (match, innerContent) => {
+    // Compute visible plain text length
+    let plainText = innerContent
+      .replace(/<[^>]*>/g, '')          // Remove all tags
+      .replace(/&nbsp;/gi, ' ')
+      .trim();
+
+    plainText = he.decode(plainText);    // Critical: decode entities like &amp; → &
+    plainText = plainText.replace(/\s+/g, ' ');
+
+    const isTooLong = plainText.length > MAX_STRONG_CHARS;
     strongCount++;
-    if (strongCount <= MAX_STRONG) {
-      return `<strong>${content}</strong>`;
-    } else {
-      return `<span class="font-bold">${content}</span>`;
+
+    // Demote to inline style if too long OR exceeds count limit
+    if (isTooLong || strongCount > MAX_STRONG) {
+      return `<span style="font-weight:700;">${innerContent}</span>`;
     }
+
+    return match; // Keep as <strong>
+  });
+
+  // === Vary duplicate anchor texts (SEO best practice) ===
+  const anchorMap = new Map<string, number>();
+
+  cleanedHtml = cleanedHtml.replace(/<a([^>]*)>(.*?)<\/a>/gi, (match, attrs, originalText) => {
+    let text = originalText.trim();
+    if (text === '') return match;
+
+    const key = text.toLowerCase();
+    const count = (anchorMap.get(key) || 0) + 1;
+    anchorMap.set(key, count);
+
+    if (count > 1) {
+      const variations = [
+        `${text} (${count - 1})`,
+        `${text} again`,
+        `more on ${text.toLowerCase()}`,
+        text + ' →',
+      ];
+      text = variations[(count - 2) % variations.length] || `${text} (${count - 1})`;
+    }
+
+    if (!/class=/.test(attrs)) {
+      attrs += ' class="backlink underline"';
+    }
+
+    return `<a${attrs}>${text}</a>`;
   });
 
   return he.decode(cleanedHtml);
