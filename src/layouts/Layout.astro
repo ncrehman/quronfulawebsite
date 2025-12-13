@@ -192,11 +192,12 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 
 		<Footer lang={lang} currentPath={Astro.url.pathname} />
 		<ClientAfterLoad />
-	</body><script>
+	</body>
+	<!-- <script>
 		document.fonts.ready.then(() => {
 			document.documentElement.classList.add("font-ready");
 		});
-	</script>
+	</script> -->
 </html>
 
 <style>
