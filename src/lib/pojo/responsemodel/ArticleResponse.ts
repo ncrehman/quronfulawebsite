@@ -2,6 +2,7 @@
 export class ArticleResponse {
     public id: string;
     public title: string;
+    public metaDescription: string;
     public subTitle: string;
     public description: string;
     public slug: string;

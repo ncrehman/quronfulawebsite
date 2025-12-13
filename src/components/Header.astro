@@ -1,5 +1,6 @@
 ---
 import LanguageSwitcher from "@components/LanguageSwitcher.astro";
+import { Image } from "astro:assets";
 
 const currentPath = Astro.url.pathname;
 
@@ -23,6 +24,12 @@ const navItems = [
 ---
 
 <style>
+  .header-logo {
+    width: 40px; /* default display size */
+    height: auto; /* maintain aspect ratio */
+    max-width: 100%; /* scale down on smaller screens */
+    object-fit: contain;
+  }
   header {
     width: 100%;
     display: flex;
@@ -35,7 +42,7 @@ const navItems = [
     position: sticky;
     top: 0; /* REQUIRED */
     z-index: 1000; /* Keeps it above content */
-    background: #fff; /* Prevents content from showing behind */
+    background: #f1efef; /* Prevents content from showing behind */
   }
 
   .logo img {
@@ -129,7 +136,15 @@ const navItems = [
 <header dir={isArabic ? "rtl" : "ltr"}>
   <div class="logo">
     <a href={isArabic ? "/" : "/en"}>
-      <img src="/headerlogo.png" alt="Quronfula Logo" width="40" height="40" />
+      <Image
+        src="/headerlogo.png"
+        alt="Quronfula Logo"
+        width={88}
+        height={88}
+        loading="eager"
+        fetchpriority="high"
+        class="header-logo"
+      />
     </a>
   </div>
 

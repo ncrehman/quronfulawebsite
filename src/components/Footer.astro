@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
@@ -71,6 +72,8 @@ const t = {
     explore: isArabic ? "اكتشف الأقسام" : "Explore Categories",
     tags: isArabic ? "المواضيع" : "Topics",
     followUs: isArabic ? "تابعنا" : "Follow Us",
+    siteName: isArabic ? "قرنفلة" : "Quronfula",
+    rights: isArabic ? "جميع الحقوق محفوظة" : "All Rights Reserved",
 };
 ---
 
@@ -82,9 +85,16 @@ const t = {
             style={isArabic ? "text-align:right" : ""}
         >
             <a href={lang === "ar" ? "/" : `/${lang}`} class="logo">
-                <img src="/footerlogo.png" alt="Quronfula logo" />
+                <Image
+                    src="/footerlogo.png"
+                    alt="Quronfula logo"
+                    width={245}
+                    height={245}
+                    loading="lazy"
+                    class="footer-logo"
+                />
             </a>
-            <h3>Quronfula</h3>
+            <h3>{t.siteName}</h3>
             <p>{t.footerDesc}</p>
         </div>
 
@@ -185,11 +195,17 @@ const t = {
     </div>
 
     <div class="copyright">
-        © {new Date().getFullYear()} Quronfula - All Rights Reserved.
+        © {new Date().getFullYear()} {t.siteName} - {t.rights}.
     </div>
 </footer>
 
 <style>
+    .footer-logo {
+        width: 100%;
+        max-width: 245px;
+        height: auto;
+        object-fit: contain; /* keeps it inside its box */
+    }
     .footer {
         background: linear-gradient(to right, #707a7f, #75868f);
         color: #fff;
