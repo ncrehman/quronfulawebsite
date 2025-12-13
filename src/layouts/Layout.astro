@@ -43,10 +43,13 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 			onload="this.media='all'"
 		/>
 		<noscript><link rel="stylesheet" href="/styles/global.css" /></noscript>
-
-		<!-- <link rel="stylesheet" href="/styles/fonts.css" /> -->
-		<!-- <link rel="stylesheet" href="/styles/global.css" /> -->
-		<link rel="stylesheet" href="/styles/theme.css" />
+		<link
+			rel="stylesheet"
+			href="/styles/theme.css"
+			media="print"
+			onload="this.media='all'"
+		/>
+		<noscript><link rel="stylesheet" href="/styles/theme.css" /></noscript>
 		<link
 			rel="apple-touch-icon"
 			sizes="57x57"

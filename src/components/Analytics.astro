@@ -8,7 +8,7 @@ if (!id) throw new Error("Google Analytics ID is required.");
   window.addEventListener("load", () => {
     // Dynamically add GA script after page load
     const gaScript = document.createElement("script");
-    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=G-KSSCTHQE28`;
     gaScript.async = true;
     document.head.appendChild(gaScript);
 
@@ -17,7 +17,7 @@ if (!id) throw new Error("Google Analytics ID is required.");
       window.dataLayer = window.dataLayer || [];
       function gtag() { window.dataLayer.push(arguments); }
       gtag("js", new Date());
-      gtag("config", id);
+      gtag("config", 'G-KSSCTHQE28');
     };
   });
 </script>

@@ -272,11 +272,11 @@ export function cleanHtmlString(input: string) {
     .replace(/[\u200C]/g, "")      // ZWNJ
     .replace(/[\u200D]/g, "")      // ZWJ
     .replace(/[\uFEFF]/g, "")
-     .replace(/[\u200B\u200C\u200D\uFEFF]/g, "") // zero-width characters
+    .replace(/[\u200B\u200C\u200D\uFEFF]/g, "") // zero-width characters
     .replace(/\u00AD/g, "")                    // soft hyphens
     .replace(/\r?\n|\r/g, " ")                 // CR/LF breaks
-    .replace(/ +/g, " ")     
-     .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
+    .replace(/ +/g, " ")
+    .replace(/[\u200E\u200F\u202A\u202B\u202C\u202D\u202E]/g, "")
     .replace(/ﻟ/g, "ل")
     .replace(/ﻻ/g, "لا")
     .replace(/ﺍ/g, "ا")
@@ -317,6 +317,17 @@ export function cleanHtmlString(input: string) {
   ];
   styleToTailwindMap.forEach(({ regex, replacement }) => {
     cleanedHtml = cleanedHtml.replace(regex, replacement);
+  });
+  // 🌟 NEW: Limit <strong> tags
+  const MAX_STRONG = 18;
+  let strongCount = 0;
+  cleanedHtml = cleanedHtml.replace(/<strong>(.*?)<\/strong>/gi, (match, content) => {
+    strongCount++;
+    if (strongCount <= MAX_STRONG) {
+      return `<strong>${content}</strong>`;
+    } else {
+      return `<span class="font-bold">${content}</span>`;
+    }
   });
 
   return he.decode(cleanedHtml);
