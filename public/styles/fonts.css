@@ -1,15 +1,6 @@
 /* /styles/fonts.css */
-/* Default font (English) */
-html {
-  font-family: "Merriweather", system-ui, -apple-system, sans-serif;
-}
 
-/* Arabic pages */
-html[lang="ar"] {
-  font-family: "Almarai", system-ui, -apple-system, sans-serif;
-}
-
-/* @font-face {
+@font-face {
   font-family: "Almarai";
   src: url("/fonts/Almarai-Regular.woff2") format("woff2");
   font-weight: 400;
@@ -31,4 +22,4 @@ html {
 
 html[lang="ar"] {
   font-family: "Almarai", system-ui, -apple-system, sans-serif;
-} */
+}
