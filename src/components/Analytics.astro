@@ -1,22 +1,23 @@
 ---
-interface Props {
-    id: string;
-}
-
-const { id } = Astro.props;
+const { id } = Astro.props; // Example: "G-XXXXXXX"
 if (!id) throw new Error("Google Analytics ID is required.");
 ---
 
-<!-- Google Analytics -->
-<script async src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
-></script>
-
+<!-- Google Analytics deferred -->
 <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-        window.dataLayer.push(arguments);
-    }
+  window.addEventListener("load", () => {
+    // Dynamically add GA script after page load
+    const gaScript = document.createElement("script");
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+    gaScript.async = true;
+    document.head.appendChild(gaScript);
 
-    gtag("js", new Date());
-    gtag("config", "{id}");
+    // Initialize GA after script loads
+    gaScript.onload = () => {
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", id);
+    };
+  });
 </script>

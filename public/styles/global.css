@@ -35,3 +35,17 @@ footer,
     speak: none;
     /* 2025 standard */
 }
+
+a, button, .clickable {
+    min-height: 28px;
+    min-width: 28px;
+    padding: 4px 6px; /* adds internal spacing */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px; /* spacing between elements */
+}
+
+a + a, button + button {
+    margin-left: 3px; /* horizontal spacing */
+}

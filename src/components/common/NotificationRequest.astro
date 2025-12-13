@@ -3,13 +3,12 @@
 ---
 
 <script>
-    import { getAppConfig } from "@lib/AppConfig";
     import { EndPointPaths } from "@lib/EndPointPaths";
     import { getToken, messaging } from "@lib/firebase";
     import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
     import { apiCalls } from "@lib/postmethodService";
 
-    async function checkSubscription(token) {
+    async function checkSubscription(token:string) {
         const today = new Date().toISOString().split("T")[0];
         const lastSubscribedDate = localStorage.getItem("fcmSubscribedDate");
         const cachedToken = localStorage.getItem("quronfulafcmToken");

@@ -9,7 +9,7 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 ---
 
 <!doctype html>
-<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} >
+<html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="generator" content="Quronfula" />
@@ -29,8 +29,23 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 			crossorigin
 		/>
 
-		<link rel="stylesheet" href="/styles/fonts.css" />
-		<link rel="stylesheet" href="/styles/global.css" />
+		<link
+			rel="preload"
+			href="/styles/fonts.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript><link rel="stylesheet" href="/styles/fonts.css" /></noscript>
+		<link
+			rel="stylesheet"
+			href="/styles/global.css"
+			media="print"
+			onload="this.media='all'"
+		/>
+		<noscript><link rel="stylesheet" href="/styles/global.css" /></noscript>
+
+		<!-- <link rel="stylesheet" href="/styles/fonts.css" /> -->
+		<!-- <link rel="stylesheet" href="/styles/global.css" /> -->
 		<link rel="stylesheet" href="/styles/theme.css" />
 		<link
 			rel="apple-touch-icon"
