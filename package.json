@@ -13,11 +13,14 @@
     "@astrojs/node": "^9.5.1",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.6.0",
+    "@fontsource/almarai": "^5.2.8",
     "@types/handlebars": "^4.0.40",
     "astro": "^5.16.4",
+    "astro-fontaine": "^1.0.1",
     "astro-icon": "^1.1.5",
     "axios": "^1.13.2",
     "firebase": "^12.6.0",
+    "fontaine": "^0.7.0",
     "handlebars": "^4.7.8",
     "he": "^1.2.0"
   }

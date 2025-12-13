@@ -3,7 +3,8 @@ import Footer from "@components/Footer.astro";
 import Header from "../components/Header.astro";
 
 import ClientAfterLoad from "@components/ClientAfterLoad.astro";
-
+import "@fontsource/almarai";
+import "@fontsource/almarai/700.css"; // for bold
 const currentPath = Astro.url.pathname;
 let lang = currentPath.startsWith("/en") ? "en" : "ar";
 ---
@@ -13,36 +14,7 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="generator" content="Quronfula" />
-		<!-- Font preload -->
-		<link
-			rel="preload"
-			href="/fonts/Almarai-Regular.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-		<link
-			rel="preload"
-			href="/fonts/Almarai-Bold.woff2"
-			as="font"
-			type="font/woff2"
-			crossorigin
-		/>
-
-		<link
-			rel="preload"
-			href="/styles/fonts.css"
-			as="style"
-			onload="this.onload=null;this.rel='stylesheet'"
-		/>
-		<noscript><link rel="stylesheet" href="/styles/fonts.css" /></noscript>
-		<link
-			rel="stylesheet"
-			href="/styles/global.css"
-			media="print"
-			onload="this.media='all'"
-		/>
-		<noscript><link rel="stylesheet" href="/styles/global.css" /></noscript>
+		
 		<link
 			rel="stylesheet"
 			href="/styles/theme.css"
@@ -143,6 +115,29 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 			content="63128a8d24e6efaa851d8e236013a715"
 		/>
 		<style>
+			@font-face {
+				font-family: "Almarai Fallback";
+				src: local("Tahoma"), local("Arial");
+				ascent-override: 93%;
+				descent-override: 24%;
+				line-gap-override: 0%;
+				size-adjust: 103.5%; /* This is the most important for width matching */
+			}
+			html {
+				font-family:
+					system-ui,
+					-apple-system,
+					sans-serif; /* English */
+			}
+
+			html[lang="ar"] {
+				font-family:
+					"Almarai",
+					"Almarai Fallback",
+					system-ui,
+					-apple-system,
+					sans-serif;
+			}
 			:root {
 				--bg: #ffffff;
 				--text: #0f172a;
@@ -193,11 +188,6 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 		<Footer lang={lang} currentPath={Astro.url.pathname} />
 		<ClientAfterLoad />
 	</body>
-	<!-- <script>
-		document.fonts.ready.then(() => {
-			document.documentElement.classList.add("font-ready");
-		});
-	</script> -->
 </html>
 
 <style>

@@ -3,15 +3,8 @@ import LanguageSwitcher from "@components/LanguageSwitcher.astro";
 import { Image } from "astro:assets";
 
 const currentPath = Astro.url.pathname;
-
-// Detect current language based on URL
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
 const isArabic = lang === "ar";
-
-// Build language switch URL
-const switchTo = isArabic
-  ? `/en${currentPath}`
-  : currentPath.replace(/^\/en/, "") || "/";
 
 const navItems = [
   { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
@@ -24,123 +17,156 @@ const navItems = [
 ---
 
 <style>
-  .header-logo {
-    width: 40px; /* default display size */
-    height: auto; /* maintain aspect ratio */
-    max-width: 100%; /* scale down on smaller screens */
-    object-fit: contain;
-  }
-  header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 20px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #eee;
+/* ===============================
+   HEADER (CLS SAFE)
+================================ */
 
-    position: sticky;
-    top: 0; /* REQUIRED */
-    z-index: 1000; /* Keeps it above content */
-    background: #f1efef; /* Prevents content from showing behind */
-  }
+header {
+  height: 72px;                 /* LOCKED HEIGHT */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #eee;
 
-  .logo img {
-    height: 50px;
-    width: auto;
-  }
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #f1efef;
+}
 
-  /* Desktop Nav */
+/* ===============================
+   LOGO (FIXED BOX)
+================================ */
+
+.logo {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  width: 66px;
+  height: 66px;
+  display: block;
+}
+
+/* ===============================
+   DESKTOP NAV (LOCKED)
+================================ */
+
+nav.desktop {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  white-space: nowrap;
+}
+
+nav.desktop a {
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Language switch space reserved */
+.lang-switch {
+  min-width: 88px;
+  text-align: center;
+  background: #f4f4f4;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* ===============================
+   HAMBURGER
+================================ */
+
+.hamburger {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ===============================
+   MOBILE MENU (NO CLS)
+================================ */
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,.15);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 1001;
+
+  transform: translateX(var(--menu-pos));
+  transition: transform .3s ease;
+  will-change: transform;
+}
+
+.mobile-menu a {
+  text-decoration: none;
+  font-size: 17px;
+  color: #333;
+}
+
+.close-btn {
+  font-size: 32px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
   nav.desktop {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-
-  nav.desktop a {
-    text-decoration: none;
-    color: #333;
-    font-size: 15px;
-    white-space: nowrap;
-  }
-
-  .lang-switch {
-    background: #f4f4f4;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    color: #333;
-    white-space: nowrap;
-  }
-
-  /* Hamburger */
-  .hamburger {
     display: none;
-    cursor: pointer;
-    font-size: 28px;
-    padding: 4px;
   }
 
-  /* Mobile Menu */
-  .mobile-menu {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    width: 260px;
-    background: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
-    padding: 20px;
-    transform: translateX(var(--menu-pos));
-    transition: transform 0.3s ease;
-    display: none; /* hidden by default */
-    flex-direction: column;
-    gap: 18px;
-    z-index: 1001;
+  .hamburger {
+    display: block;
   }
+}
 
-  .mobile-menu a {
-    text-decoration: none;
-    font-size: 17px;
-    color: #333;
-    padding: 8px 0;
-  }
+/* ===============================
+   MENU STATE
+================================ */
 
-  .close-btn {
-    font-size: 32px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    display: inline-block;
-  }
-
-  /* Mobile Styles */
-  @media (max-width: 768px) {
-    nav.desktop {
-      display: none;
-    }
-    .hamburger {
-      display: block;
-    }
-    .mobile-menu {
-      display: flex;
-    }
-  }
-
-  /* Slide open/close */
-  body.menu-open .mobile-menu {
-    transform: translateX(0);
-  }
+body.menu-open .mobile-menu {
+  transform: translateX(0);
+}
 </style>
 
 <header dir={isArabic ? "rtl" : "ltr"}>
+  <!-- LOGO -->
   <div class="logo">
     <a href={isArabic ? "/" : "/en"}>
       <Image
         src="/headerlogo.png"
         alt="Quronfula Logo"
-        width={88}
-        height={88}
+        width={140}
+        height={40}
         loading="eager"
         fetchpriority="high"
         class="header-logo"
@@ -148,11 +174,11 @@ const navItems = [
     </a>
   </div>
 
-  <!-- Desktop Navigation -->
+  <!-- DESKTOP NAV -->
   <nav class="desktop">
     {
       navItems.map((item) => (
-        <a href={isArabic ? `${item.href}` : `/en${item.href}`}>
+        <a href={isArabic ? item.href : `/en${item.href}`}>
           {isArabic ? item.labelAr : item.labelEn}
         </a>
       ))
@@ -160,44 +186,49 @@ const navItems = [
     <LanguageSwitcher lang={lang} currentPath={currentPath} />
   </nav>
 
-  <!-- Hamburger for Mobile -->
+  <!-- HAMBURGER -->
   <div class="hamburger">☰</div>
 </header>
 
-<!-- Mobile Menu -->
-<div class="mobile-menu" style={`--menu-pos: ${isArabic ? "100%" : "-100%"};`}>
+<!-- MOBILE MENU -->
+<div
+  class="mobile-menu"
+  style={`--menu-pos: ${isArabic ? "100%" : "-100%"};`}
+>
   <span class="close-btn">×</span>
 
   {
     navItems.map((item) => (
-      <a href={isArabic ? `${item.href}` : `/en${item.href}`}>
+      <a href={isArabic ? item.href : `/en${item.href}`}>
         {isArabic ? item.labelAr : item.labelEn}
       </a>
     ))
   }
+
   <LanguageSwitcher lang={lang} currentPath={currentPath} />
 </div>
 
 <script>
-  // Open mobile menu
-  document.querySelector(".hamburger")?.addEventListener("click", (e) => {
+  const body = document.body;
+  const hamburger = document.querySelector(".hamburger");
+  const closeBtn = document.querySelector(".close-btn");
+  const mobileMenu = document.querySelector(".mobile-menu");
+
+  hamburger?.addEventListener("click", (e) => {
     e.stopPropagation();
-    document.body.classList.add("menu-open");
+    body.classList.add("menu-open");
   });
 
-  // Close mobile menu
-  document.querySelector(".close-btn")?.addEventListener("click", (e) => {
+  closeBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    document.body.classList.remove("menu-open");
+    body.classList.remove("menu-open");
   });
 
-  // Prevent menu close on menu click
-  document.querySelector(".mobile-menu")?.addEventListener("click", (e) => {
+  mobileMenu?.addEventListener("click", (e) => {
     e.stopPropagation();
   });
 
-  // Close menu if clicking outside
   document.addEventListener("click", () => {
-    document.body.classList.remove("menu-open");
+    body.classList.remove("menu-open");
   });
 </script>

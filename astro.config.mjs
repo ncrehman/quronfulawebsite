@@ -2,24 +2,19 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import node from "@astrojs/node";
 
-
 export default defineConfig({
     site: "https://www.quronfula.com",
     integrations: [sitemap()],
     output: 'server',
     adapter: node({
-        mode: "standalone",  // bundles everything for deployment
+        mode: "standalone",
     }),
     vite: {
         ssr: {
-            noExternal: ['axobject-query'], // Force Vite to bundle it correctly
+            noExternal: ['axobject-query'],
         },
         optimizeDeps: {
             include: ['axobject-query'],
         },
     },
-
-
-    // Enable SSR later if using server rendering
-    // output: "server" or "static"
 });

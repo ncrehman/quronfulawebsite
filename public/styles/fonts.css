@@ -1,25 +1,7 @@
-/* /styles/fonts.css */
-
-@font-face {
-  font-family: "Almarai";
-  src: url("/fonts/Almarai-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-display: swap;
-  unicode-range: U+0600-6FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
-}
-
-@font-face {
-  font-family: "Almarai";
-  src: url("/fonts/Almarai-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-display: swap;
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
-}
-
-html {
+/* html {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 html[lang="ar"] {
   font-family: "Almarai", system-ui, -apple-system, sans-serif;
-}
+} */
