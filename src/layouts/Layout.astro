@@ -14,7 +14,7 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="generator" content="Quronfula" />
-		<meta name="google-adsense-account" content="ca-pub-4100521225351324">
+		<meta name="google-adsense-account" content="ca-pub-4100521225351324" />
 		<link
 			rel="stylesheet"
 			href="/styles/theme.css"
@@ -114,6 +114,7 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 			name="p:domain_verify"
 			content="63128a8d24e6efaa851d8e236013a715"
 		/>
+		
 		<style>
 			@font-face {
 				font-family: "Almarai Fallback";
@@ -143,6 +144,16 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 				--text: #0f172a;
 				--card: #ffffff;
 				--border: #e5e7eb;
+				--card-bg: #ffffff;
+				--card-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+				--footer-bg: var(--bg);
+				--footer-text: var(--text);
+				--bg-surface: #ffffff;
+				--bg-surface-elevated: #f9fafb;
+				--text-primary: #111827;
+				--text-secondary: #6b7280;
+				--border-subtle: rgba(0, 0, 0, 0.08);
+				--shadow-card: 0 6px 16px rgba(0, 0, 0, 0.1);
 			}
 
 			html.dark {
@@ -150,6 +161,15 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 				--text: #e5e7eb;
 				--card: #111827;
 				--border: #1f2937;
+			}
+			[data-theme="dark"] {
+				--card-bg: #0f172a;
+				--card-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+			}
+
+			.article-card {
+				background: var(--card-bg);
+				box-shadow: var(--card-shadow);
 			}
 			@media (prefers-color-scheme: dark) {
 				html {

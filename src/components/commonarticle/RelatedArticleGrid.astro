@@ -38,67 +38,65 @@ const langPrefix = getLangPrefix(lang);
     </div>
 </div>
 <style>
-    .keyword-card-link {
-        text-decoration: none;
-        color: inherit;
-    }
-    .keywords-section {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 4rem 1.5rem;
-    }
+  /* =========================================
+   KEYWORDS SECTION – THEME AGNOSTIC
+   Colors handled globally
+========================================= */
 
-    .keywords-title {
-        font-size: 2.4rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 3rem;
-        letter-spacing: -0.02em;
-        color: #111;
-    }
+.keyword-card-link {
+  text-decoration: none;
+  color: inherit;
+}
 
-    .keywords-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 24px;
-    }
+.keywords-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
 
-    /* CARD */
-    .keyword-card {
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 26px 28px;
-        border: 1px solid #eef0f3;
-        box-shadow:
-            0 1px 2px rgba(0, 0, 0, 0.04),
-            0 8px 24px rgba(0, 0, 0, 0.06);
-        transition:
-            transform 0.25s ease,
-            box-shadow 0.25s ease,
-            border-color 0.25s ease;
-    }
+.keywords-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+}
 
-    .keyword-card:hover {
-        transform: translateY(-6px);
-        border-color: #e3e6eb;
-        box-shadow:
-            0 4px 10px rgba(0, 0, 0, 0.08),
-            0 18px 36px rgba(0, 0, 0, 0.12);
-    }
+/* GRID */
+.keywords-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
 
-    /* TITLE */
-    .keyword-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: #0f172a;
-        line-height: 1.35;
-    }
+/* CARD */
+.keyword-card {
+  border-radius: 18px;
+  padding: 26px 28px;
+  border: 1px solid;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
 
-    /* DESCRIPTION */
-    .keyword-desc {
-        font-size: 0.95rem;
-        color: #475569;
-        line-height: 1.6;
-    }
+/* Hover = motion only (no color assumptions) */
+.keyword-card:hover {
+  transform: translateY(-6px);
+}
+
+/* TITLE */
+.keyword-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.35;
+}
+
+/* DESCRIPTION */
+.keyword-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 </style>

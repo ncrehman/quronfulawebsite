@@ -119,136 +119,138 @@ if (categories) {
     jsonLd={jsonLd}
 />
 <Layout>
-    <main>
-        <>
-            {
-                categories ? (
-                    <section>
-                        <h1 style="display: flex;justify-content: center;">
-                            {lang === "ar" ? "فئات" : "Categories"}
-                        </h1>
-                        <section class="articles-grid">
-                            {categories?.length ? (
-                                categories.map((item: CatResponse) => (
-                                    <article class="article-card">
-                                        <a
-                                            href={`/${langPrefix}category/${item.slug}`}
-                                            class="card-link"
-                                        >
-                                            <div class="card-image">
-                                                <img
-                                                    src={item.bannerImage}
-                                                    alt={
-                                                        item.imageAlt ||
-                                                        item.title
-                                                    }
-                                                    loading="lazy"
-                                                    width="400"
-                                                    height="225"
-                                                />
-                                            </div>
-                                            <div class="card-content">
-                                                <h2>{item.title}</h2>
-                                            </div>
-                                        </a>
-                                    </article>
-                                ))
-                            ) : (
-                                <p class="no-articles">
-                                    {lang === "ar"
-                                        ? "لا توجد فئة متاحة."
-                                        : "No category available."}
-                                </p>
-                            )}
-                        </section>
-                    </section>
-                ) : null
-            }
+  <main>
+    <>
+      {categories ? (
+        <section>
+          <h1 class="page-title">
+            {lang === "ar" ? "فئات" : "Categories"}
+          </h1>
 
-            <style>
-                .articles-grid {
-                    display: grid;
-                    grid-template-columns: repeat(
-                        auto-fill,
-                        minmax(300px, 1fr)
-                    );
-                    gap: 20px;
-                    padding: 16px;
-                }
+          <section class="articles-grid">
+            {categories.length ? (
+              categories.map((item: CatResponse) => (
+                <article class="article-card">
+                  <a
+                    href={`/${langPrefix}category/${item.slug}`}
+                    class="card-link"
+                  >
+                    <div class="card-image">
+                      <img
+                        src={item.bannerImage}
+                        alt={item.imageAlt || item.title}
+                        loading="lazy"
+                        width="400"
+                        height="225"
+                      />
+                    </div>
 
-                .article-card {
-                    background: #fff;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-                    transition:
-                        transform 0.3s ease,
-                        box-shadow 0.3s ease;
-                }
+                    <div class="card-content">
+                      <h2>{item.title}</h2>
+                    </div>
+                  </a>
+                </article>
+              ))
+            ) : (
+              <p class="no-articles">
+                {lang === "ar"
+                  ? "لا توجد فئة متاحة."
+                  : "No category available."}
+              </p>
+            )}
+          </section>
+        </section>
+      ) : null}
 
-                .article-card:hover {
-                    transform: translateY(-6px);
-                    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-                }
+      <style>
+        /* =========================
+           Layout & Grid
+        ========================== */
+        .page-title {
+          display: flex;
+          justify-content: center;
+          margin: 2rem 0;
+        }
 
-                .card-link {
-                    display: block;
-                    color: inherit;
-                    text-decoration: none;
-                }
+        .articles-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 20px;
+          padding: 16px;
+        }
 
-                .card-image {
-                    overflow: hidden;
-                    height: 0;
-                    padding-top: 56.25%; /* 16:9 aspect ratio */
-                    position: relative;
-                }
+        /* =========================
+           Cards (Theme Neutral)
+        ========================== */
+        .article-card {
+          border-radius: 12px;
+          overflow: hidden;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-                .card-image img {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: transform 0.5s ease;
-                }
+        .article-card:hover {
+          transform: translateY(-6px);
+        }
 
-                .article-card:hover .card-image img {
-                    transform: scale(1.05);
-                }
+        .card-link {
+          display: block;
+          color: inherit;
+          text-decoration: none;
+        }
 
-                .card-content {
-                    padding: 12px 16px;
-                    text-align: center;
-                    display: flex;
-                }
+        /* =========================
+           Image
+        ========================== */
+        .card-image {
+          position: relative;
+          height: 0;
+          padding-top: 56.25%; /* 16:9 */
+          overflow: hidden;
+        }
 
-                .card-content h2 {
-                    font-size: 18px;
-                    margin: 0 0 8px;
-                    line-height: 1.3;
-                }
+        .card-image img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
 
-                .card-content p {
-                    font-size: 14px;
-                    color: #555;
-                    margin: 0;
-                }
+        .article-card:hover .card-image img {
+          transform: scale(1.05);
+        }
 
-                .no-articles {
-                    text-align: center;
-                    font-size: 16px;
-                    padding: 20px;
-                    color: #777;
-                }
+        /* =========================
+           Content
+        ========================== */
+        .card-content {
+          padding: 12px 16px;
+          display: flex;
+          justify-content: center;
+          text-align: center;
+          background: inherit;
+        }
 
-                /* RTL support */
-                html[lang="ar"] .card-content h2,
-                html[lang="ar"] .card-content p {
-                    text-align: right;
-                }
-            </style>
-        </>
-    </main>
+        .card-content h2 {
+          font-size: 18px;
+          margin: 0;
+          line-height: 1.3;
+        }
+
+        .no-articles {
+          text-align: center;
+          font-size: 16px;
+          padding: 20px;
+        }
+
+        /* =========================
+           RTL Support
+        ========================== */
+        html[lang="ar"] .card-content h2 {
+          text-align: right;
+        }
+      </style>
+    </>
+  </main>
 </Layout>

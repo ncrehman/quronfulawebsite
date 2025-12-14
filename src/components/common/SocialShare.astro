@@ -115,76 +115,75 @@ const encodedTitle = encodeURIComponent(title);
 </div>
 
 <style>
-    .social-share-container {
-        margin: 3rem 0;
-        text-align: center;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(5px);
-    }
+  /* =========================================
+   SOCIAL SHARE – THEME AGNOSTIC
+   Colors & surfaces handled globally
+========================================= */
 
-    .share-label {
-        margin-bottom: 1rem;
-        font-size: 1.1rem;
-        color: #444;
-        font-weight: 600;
-    }
+.social-share-container {
+  margin: 3rem 0;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+}
 
-    .social-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
+/* LABEL */
+.share-label {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
 
-    .social-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        color: white;
-        transition: all 0.3s ease;
-    }
+/* BUTTON GROUP */
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-    .social-btn:hover {
-        transform: translateY(-4px) scale(1.1);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        filter: brightness(1.15);
-    }
+/* BUTTON */
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
 
-    .social-btn svg {
-        width: 24px;
-        height: 24px;
-    }
+/* Motion only – no color assumptions */
+.social-btn:hover {
+  transform: translateY(-4px) scale(1.1);
+}
 
-    .twitter {
-        background: #000000;
-    }
-    .facebook {
-        background: #1877f2;
-    }
-    .linkedin {
-        background: #0a66c2;
-    }
-    .reddit {
-        background: #ff4500;
-    }
-    .whatsapp {
-        background: #25d366;
-    }
+/* ICON */
+.social-btn svg {
+  width: 24px;
+  height: 24px;
+}
 
-    @media (max-width: 640px) {
-        .social-btn {
-            width: 45px;
-            height: 45px;
-        }
-        .social-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-    }
+/* PLATFORM HOOKS (no colors here) */
+.twitter {}
+.facebook {}
+.linkedin {}
+.reddit {}
+.whatsapp {}
+
+@media (max-width: 640px) {
+  .social-btn {
+    width: 45px;
+    height: 45px;
+  }
+
+  .social-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 </style>

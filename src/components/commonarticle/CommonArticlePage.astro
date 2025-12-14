@@ -229,13 +229,8 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
 }
 <Layout>
     <div class="article-grid">
-        <!-- LEFT AD COLUMN -->
-        <aside class="ad-left">
-            <slot name="left-ad" />
-        </aside>
-
         <!-- CENTER ARTICLE -->
-        <main class="article-wrapper">
+        <main>
             <h1 class="title">{article.title}</h1>
 
             {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
@@ -282,7 +277,6 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
                                 textAlign: "center",
                                 marginTop: "20px",
                                 marginBottom: "40px",
-                                color: "#0f0f0f",
                             }}
                         >
                             <RelatedArticleGrid
@@ -294,30 +288,18 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
                 )
             }
         </main>
-
-        <!-- RIGHT AD COLUMN -->
-        <aside class="ad-right">
-            <slot name="right-ad" />
-        </aside>
     </div>
 </Layout>
 <style is:global>
+    /* =========================================================
+   ARTICLE PAGE – THEME AGNOSTIC CSS
+   Uses ONLY inherited colors from global layout
+   Dark mode handled globally
+========================================================= */
+
     /* ================================
    GRID LAYOUT
 ================================ */
-    .hero-image-wrapper {
-        width: 100%;
-        aspect-ratio: 1200 / 630; /* Maintains 1.91:1 ratio */
-        overflow: hidden;
-        border-radius: 8px; /* optional */
-    }
-
-    .hero-image-wrapper img.hero-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* ensures image fills container without distortion */
-        display: block;
-    }
     .article-grid {
         display: grid;
         max-width: 1400px;
@@ -325,7 +307,6 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
         padding: 20px;
     }
 
-    /* Hide ad columns on mobile */
     @media (max-width: 1024px) {
         .article-grid {
             grid-template-columns: 1fr;
@@ -333,45 +314,45 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
     }
 
     /* ================================
-   ARTICLE TYPOGRAPHY
+   TYPOGRAPHY
 ================================ */
-    .article-wrapper {
-        background: white;
-    }
-
     .title {
         font-size: clamp(26px, 3vw, 36px);
         font-weight: 700;
         margin-bottom: 12px;
         line-height: 1.3;
-        color: #111; /* high contrast */
     }
 
     .subtitle {
         font-size: clamp(18px, 2.2vw, 22px);
-        color: #333; /* improved contrast */
         margin-bottom: 14px;
     }
 
     .meta {
         font-size: 0.9rem;
-        color: #444; /* improved contrast */
         margin-bottom: 22px;
     }
 
     /* ================================
    HERO IMAGE
 ================================ */
-    .hero-image {
+    .hero-image-wrapper {
         width: 100%;
+        aspect-ratio: 1200 / 630;
+        overflow: hidden;
         border-radius: 8px;
-        margin: 20px 0;
+    }
+
+    .hero-image-wrapper img.hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
 
     .hero-caption {
         font-size: 0.9rem;
         text-align: center;
-        color: #444; /* improved contrast */
         margin-top: 6px;
     }
 
@@ -381,19 +362,41 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
     .article-content {
         font-size: clamp(16px, 2vw, 20px);
         line-height: 1.7;
-        color: #111; /* high contrast */
-        text-align: justify; /* Fallback for LTR */
+        text-align: justify;
     }
 
     .article-content * {
         max-width: 100% !important;
         box-sizing: border-box;
-        overflow-wrap: anywhere; /* does NOT break Arabic words */
+        overflow-wrap: anywhere;
         word-break: normal;
         hyphens: auto;
     }
 
-    /* Responsive images */
+    .article-content p {
+        margin: 16px 0;
+    }
+
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+        margin-top: 28px;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    /* ================================
+   LINKS
+================================ */
+    .article-content a {
+        text-decoration: underline;
+        padding: 0;
+        display: inline;
+    }
+
+    /* ================================
+   MEDIA
+================================ */
     .article-content img {
         max-width: 100% !important;
         height: auto !important;
@@ -401,49 +404,30 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
         margin: 20px auto;
     }
 
-    /* Responsive tables */
-    .article-content table {
-        width: 100% !important;
-        display: block;
-        overflow-x: auto;
-        border-collapse: collapse;
-    }
-
-    /* Responsive iframes */
     .article-content iframe {
         max-width: 100% !important;
-        height: auto;
-        aspect-ratio: 16/9;
+        aspect-ratio: 16 / 9;
+        background: transparent;
     }
 
-    /* Headings inside editor HTML */
-    .article-content h2,
-    .article-content h3,
-    .article-content h4 {
-        margin-top: 28px;
-        margin-bottom: 12px;
-        line-height: 1.4;
-        color: #111; /* high contrast */
+    /* ================================
+   TABLES
+================================ */
+    .article-content table {
+        width: 100% !important;
+        border-collapse: collapse;
+        display: block;
+        overflow-x: auto;
     }
 
-    /* Paragraphs */
-    .article-content p {
-        margin: 16px 0;
-        color: #111; /* high contrast */
+    .article-content th,
+    .article-content td {
+        padding: 10px;
     }
 
-    /* Links */
-    .article-content a {
-        color: #0066cc;
-        text-decoration: underline;
-    }
-    .article-content a {
-        min-height: auto;
-        padding: 0;
-        display: inline;
-    }
-
-    /* Lists */
+    /* ================================
+   LISTS
+================================ */
     .article-content ul,
     .article-content ol {
         padding-left: 20px;
@@ -455,13 +439,12 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
 ================================ */
     .share-box {
         margin-top: 40px;
-        font-size: 1rem;
         display: flex;
         gap: 12px;
     }
 
     /* ================================
-   RTL SUPPORT (Arabic)
+   RTL (ARABIC SAFE)
 ================================ */
     html[dir="rtl"] .article-content * {
         word-break: keep-all !important;
