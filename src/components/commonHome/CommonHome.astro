@@ -23,6 +23,7 @@ import { getLangPrefix } from "@lib/postmethodService";
 import keywordsData from "./keyword.json";
 import type { KeywordsData } from "./keywords";
 import KeywordsGrid from "./KeywordsGrid.astro";
+import CategoryFeature from "./CategoryFeature.astro";
 const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -215,6 +216,8 @@ if (articles) {
 	<main>
 		<>
 			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
+			<!-- <section><CategoryFeature lang={lang} /> -->
+			</section>
 			{
 				articles ? (
 					<section>

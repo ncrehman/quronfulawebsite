@@ -49,7 +49,7 @@ async function getSlugList(lang: string) {
     return list.respList;
 }
 
-const categoryList = await getCategory(lang);
+const categoryList:Array<CatResponse> = await getCategory(lang);
 const slugList = await getSlugList(lang);
 
 // ---------------- Translations ----------------
