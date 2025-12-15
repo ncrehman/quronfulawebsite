@@ -9,10 +9,7 @@ export async function GET({ url }) {
   const lang = url.searchParams.get("lang") || "ar";
   const apiServer = getAppConfig();
 
-  const baseUrl =
-    lang && lang !== "ar"
-      ? `${apiServer.websiteUrl}${lang}/`
-      : apiServer.websiteUrl;
+ 
 
   const request = new RequestModel();
   request.lang = lang;
@@ -24,39 +21,21 @@ export async function GET({ url }) {
 
   // Build ALL URLs - each item gives us both Arabic + English
   const allUrlEntries = items.flatMap((item: any) => {
-    const arUrl = (item.defaultUrl || item.url).replace(/\/$/, "");
-    const enUrl = item.url.replace(/\/$/, "");
+  const lastmod = new Date(item.lastModified).toISOString();
 
-    const lastmod = new Date(item.lastModified).toISOString();
-
-    // Arabic entry (primary)
-    const arEntry = {
-      loc: arUrl,
+  return item.hrefLangs
+    .filter(h => h.lang !== "x-default")
+    .map(h => ({
+      loc: h.url.replace(/\/$/, ""),
       lastmod,
       changefreq: item.changeFreq || "weekly",
       priority: item.priority || "0.8",
-      hreflangs: [
-        { lang: "ar", url: arUrl },
-        { lang: "en", url: enUrl },
-        { lang: "x-default", url: arUrl }
-      ]
-    };
-
-    // English entry
-    const enEntry = {
-      loc: enUrl,
-      lastmod,
-      changefreq: item.changeFreq || "weekly",
-      priority: item.priority || "0.8",
-      hreflangs: [
-        { lang: "ar", url: arUrl },
-        { lang: "en", url: enUrl },
-        { lang: "x-default", url: arUrl }
-      ]
-    };
-
-    return [arEntry, enEntry];
-  });
+      hreflangs: item.hrefLangs.map(x => ({
+        lang: x.lang,
+        url: x.url.replace(/\/$/, "")
+      }))
+    }));
+});
 
   const dynamicUrls = allUrlEntries
     .map(entry => {
