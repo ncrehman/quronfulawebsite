@@ -9,6 +9,10 @@ export class ArticleResponse {
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;
+    public bannerImage_title: string;
+    public squareBanner_title: string;
+    public landScapeBanner_title: string;
+    public image: string;
     public imageAlt: string;
     public authorName: string;
     public authorSlug: string;

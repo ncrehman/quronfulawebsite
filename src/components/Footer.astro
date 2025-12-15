@@ -49,8 +49,8 @@ async function getSlugList(lang: string) {
     return list.respList;
 }
 
-const categoryList:Array<CatResponse> = await getCategory(lang);
-const slugList = await getSlugList(lang);
+const categoryList: Array<CatResponse> = await getCategory(lang);
+const slugList :Array<CatResponse>= await getSlugList(lang);
 
 // ---------------- Translations ----------------
 const t = {
@@ -165,37 +165,27 @@ const t = {
                 }
             </ul>
         </div>
-
-        <!-- Tags & Social -->
         <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
             <h4>{t.tags}</h4>
-            <div class="tags">
+            <ul>
                 {
-                    slugList?.map((slug) => (
-                        <a href={`/category/${slug.slug}`}>{slug.title}</a>
+                    slugList?.map((cat:CatResponse) => (
+                        <li>
+                            <a
+                                href={`${lang === "ar" ? "" : `/${lang}`}/category/${cat.slug}`}
+                            >
+                                {cat.title}
+                            </a>
+                        </li>
                     ))
                 }
-            </div>
-
-            <!-- <h4 style="margin-top:20px">{t.followUs}</h4>
-            <div class="social">
-                <a
-                    href="https://facebook.com/storycircuit"
-                    aria-label="Facebook">F</a
-                >
-                <a href="https://x.com/thestorycircuit" aria-label="X">X</a>
-                <a
-                    href="https://instagram.com/batoolanmedia"
-                    aria-label="Instagram">IG</a
-                >
-                <a href="https://medium.com/@nc.rehman" aria-label="Medium">M</a
-                >
-            </div> -->
+            </ul>
         </div>
     </div>
 
     <div class="copyright">
-        © {new Date().getFullYear()} {t.siteName} - {t.rights}.
+        © {new Date().getFullYear()}
+        {t.siteName} - {t.rights}.
     </div>
 </footer>
 

@@ -6,6 +6,8 @@ export class RssFeedResponse {
     public slug: string;
     public cat_slug: string;
     public bannerImage: string;
+    public squareBanner: string;
+    public landScapeBanner: string;
     public content: string;
     public subCategory: string;
     public category: string;

@@ -1,7 +1,7 @@
 {
-    "runLocalService": false,
+    "runLocalService": true,
     "useLanguage": false,
-    "localWebServicesUrl": "http://localhost:8080/quronfula/portal/",
+    "localWebServicesUrl": "http://localhost:8080/blogs/portal/",
     "webServicesUrl": "https://www.quronfula.com/quronfula/portal/",
     "clientName": "Batoolan Media",
     "title": "Quronfula",

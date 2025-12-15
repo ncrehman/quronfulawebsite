@@ -54,7 +54,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
   if (!appConfig) throw new Error("AppConfig not initialized");
 
   const uri = appConfig.webServicesUrl + url;
-
+console.log('uri: '+uri)
   const options: AxiosRequestConfig = {
     headers: {
       "Content-Type": "application/json; charset=utf-8",

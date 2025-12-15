@@ -1,10 +1,7 @@
 ---
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import { apiCalls, getLangPrefix } from "@lib/postmethodService";
-import "bootstrap/dist/css/bootstrap.min.css";
 
-import { Carousel } from "astro-bootstrap";
-import type { CarouselSlideType } from "astro-bootstrap";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
@@ -23,12 +20,6 @@ const langPrefix = getLangPrefix(lang);
 const main: ArticleResponse | undefined = articles[0];
 const side1: ArticleResponse | undefined = articles[1];
 const side2: ArticleResponse | undefined = articles[2];
-
-const slides: CarouselSlideType[] = [
-  { img: main.landScapeBanner, alt: "First placeholder", active: true },
-  { img: side1.landScapeBanner, alt: "Second placeholder" },
-  { img: side2.landScapeBanner, alt: "Third placeholder" },
-];
 
 const categoryCache = new Map<string, Array<CatResponse>>();
 async function getCategory(lang: string) {
