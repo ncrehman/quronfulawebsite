@@ -31,107 +31,43 @@ async function getCategory(lang: string) {
   categoryCache.set(cacheKey, list.respList);
   return list.respList;
 }
-const categoryList: Array<CatResponse> = await getCategory(lang);
+const categories: Array<CatResponse> = await getCategory(lang);
+const isRTL = lang === "ar";
 ---
-<section class="home-categories py-0">
-  <div class="home-categories-wrapper">
-    {categoryList.map((category) => (
-      <a
-        href={`/${langPrefix}category/${category.slug}`}
-        class="home-category-pill"
-      >
-        {category.title}
-      </a>
-    ))}
-  </div>
-</section>
+<div class="hero-snap">
+ {categories.map((cat) => (
+        <a href={`/category/${cat.slug}`} class="slide">
+          {cat.title}
+        </a>
+      ))}
+</div>
+
 
 <style>
-  /* Ultra-Isolated Capsule Pills – Maximum Protection */
-  .home-categories {
-    all: unset; /* Reset any inherited styles */
-    display: block;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+  .hero-snap {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
 
-  .home-categories .home-categories-wrapper {
-    all: unset;
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 1rem;
-    padding: 1rem 1.25rem; /* More side padding for scroll hint */
-    justify-content: flex-start;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    box-sizing: border-box;
-  }
-
-  /* Mobile: Hidden scrollbar */
-  @media (max-width: 768px) {
-    .home-categories .home-categories-wrapper {
-      scrollbar-width: none;
-    }
-    .home-categories .home-categories-wrapper::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  /* Desktop: Very subtle scrollbar */
-  @media (min-width: 769px) {
-    .home-categories .home-categories-wrapper {
-      scrollbar-width: thin;
-      scrollbar-color: #e0e0e0 transparent;
-    }
-    .home-categories .home-categories-wrapper::-webkit-scrollbar {
-      height: 4px;
-    }
-    .home-categories .home-categories-wrapper::-webkit-scrollbar-thumb {
-      background: #d0d0d0;
-      border-radius: 10px;
-    }
-  }
-
-  .home-categories .home-category-pill {
-    all: unset; /* Strong reset for links */
-    flex: 0 0 auto;
-    display: block;
-    padding: 0.85rem 2rem;
-    background-color: #f9f9f9;
-    color: #444;
-    font-weight: 600;
-    font-size: 1.05rem;
-    text-decoration: none;
-    border-radius: 50px;
-    border: 1.5px solid #e2e2e2;
-    transition: all 0.4s ease;
-    white-space: nowrap;
-    scroll-snap-align: center;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.07);
-    box-sizing: border-box;
-  }
-
-  .home-categories .home-category-pill:hover {
-    background-color: #0062cc; /* Deeper blue – adjust to your brand */
-    color: white;
-    border-color: #0062cc;
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0, 98, 204, 0.3);
-  }
-
-  .home-categories .home-category-pill:active,
-  .home-categories .home-category-pill:focus {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 98, 204, 0.3);
-  }
-
-  /* RTL */
-  html[dir="rtl"] .home-categories .home-categories-wrapper {
-    direction: rtl;
-  }
+.slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  border-radius: 16px;
+  overflow: hidden;
+}
+ 
 </style>
+<script>
+  import Swiper from 'swiper';
+  import 'swiper/css';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new Swiper('.swiper', {
+      slidesPerView: 1,
+      pagination: { el: '.swiper-pagination' },
+    });
+  });
+</script>

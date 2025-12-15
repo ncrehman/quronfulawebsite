@@ -26,6 +26,8 @@
     "fontaine": "^0.7.0",
     "handlebars": "^4.7.8",
     "he": "^1.2.0",
+    "jQuery": "^1.7.4",
+    "slick-carousel": "^1.8.1",
     "swiper": "^12.0.3"
   },
   "devDependencies": {
