@@ -4,6 +4,8 @@ import { ApiResponse } from './pojo/responsemodel/ApiResponse';
 import { getAppConfig, loadAppConfig } from './AppConfig';
 import { FaqSchema } from './pojo/responsemodel/FaqSchema';
 import he from 'he';
+import { parseHTML } from "linkedom";
+
 // import { unescape } from 'he';  // Assuming you already import he for the final decode
 
 const printConsole = async (input: any) => {
@@ -54,7 +56,6 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
   if (!appConfig) throw new Error("AppConfig not initialized");
 
   const uri = appConfig.webServicesUrl + url;
-console.log('uri: '+uri)
   const options: AxiosRequestConfig = {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -72,7 +73,6 @@ console.log('uri: '+uri)
     };
 
     // Logging
-    // console.log("console per: "+appConfig.isConsole)
     if (appConfig.isConsole) {
       printConsole(`URL: ${uri}`);
       printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
@@ -222,6 +222,7 @@ export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
   }
 }
 
+
 export function cleanHtmlString(input: string): string {
   if (!input) return '';
 
@@ -234,7 +235,9 @@ export function cleanHtmlString(input: string): string {
     .replace(/style="[^"]*"/g, '')
     .replace(/width="\d+"/g, 'width="100%"')
     .replace(/height="\d+"/g, '')
-    .replace(/<span[^>]*>/g, '')
+    // .replace(/<span[^>]*>/g, '')
+    // .replace(/<\/span>/g, '')
+    .replace(/<span(?![^>]*font-weight)[^>]*>/g, '')
     .replace(/<\/span>/g, '')
     .replace(/&nbsp;/g, ' ')
 
@@ -307,30 +310,33 @@ export function cleanHtmlString(input: string): string {
   });
 
   // === COMBINED: Limit <strong> count AND convert long content to inline bold ===
-  const MAX_STRONG = 18;
-  const MAX_STRONG_CHARS = 70;
+  // === COMBINED: Limit <strong> count AND convert long content to inline bold ===
+  const MAX_TAGS = 16;          // Max tags allowed for SEO
+  const MAX_STRONG_CHARS = 70;  // Already defined
   let strongCount = 0;
 
-  cleanedHtml = cleanedHtml.replace(/<strong>(.*?)<\/strong>/gis, (match, innerContent) => {
-    // Compute visible plain text length
-    let plainText = innerContent
-      .replace(/<[^>]*>/g, '')          // Remove all tags
-      .replace(/&nbsp;/gi, ' ')
-      .trim();
+  cleanedHtml = cleanedHtml.replace(
+    /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi,
+    (match, innerContent) => {
 
-    plainText = he.decode(plainText);    // Critical: decode entities like &amp; → &
-    plainText = plainText.replace(/\s+/g, ' ');
 
-    const isTooLong = plainText.length > MAX_STRONG_CHARS;
-    strongCount++;
+      let plainText = innerContent
+        .replace(/<[^>]*>/g, '')
+        .replace(/\u00A0/g, ' ')
+        .trim();
 
-    // Demote to inline style if too long OR exceeds count limit
-    if (isTooLong || strongCount > MAX_STRONG) {
-      return `<span style="font-weight:700;">${innerContent}</span>`;
+      plainText = he.decode(plainText);
+      plainText = plainText.replace(/\s+/g, ' ');
+
+      strongCount++;
+
+      if (strongCount > MAX_TAGS || plainText.length > MAX_STRONG_CHARS) {
+        return `<span style="font-weight:700;">${innerContent}</span>`;
+      }
+
+      return match;
     }
-
-    return match; // Keep as <strong>
-  });
+  );
 
   // === Vary duplicate anchor texts (SEO best practice) ===
   const anchorMap = new Map<string, number>();
@@ -359,6 +365,27 @@ export function cleanHtmlString(input: string): string {
 
     return `<a${attrs}>${text}</a>`;
   });
+
+  // === FINAL SAFETY: Fix empty anchors ===
+  cleanedHtml = cleanedHtml.replace(
+    /<a([^>]*)>(\s|&nbsp;|<br\/?>|<img[^>]*alt=""[^>]*>)*<\/a>/gi,
+    (match, attrs) => {
+      // Try aria-label
+      const aria = attrs.match(/aria-label="([^"]+)"/i);
+      if (aria) {
+        return `<a${attrs}>${aria[1]}</a>`;
+      }
+
+      // Try image alt
+      const imgAlt = match.match(/alt="([^"]+)"/i);
+      if (imgAlt && imgAlt[1].trim()) {
+        return `<a${attrs}>${imgAlt[1]}</a>`;
+      }
+
+      // Fallback safe text
+      return `<a${attrs}>Read more</a>`;
+    }
+  );
 
   return he.decode(cleanedHtml);
 }
