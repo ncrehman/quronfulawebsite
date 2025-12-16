@@ -1,69 +1,87 @@
 import { getAppConfig } from "@lib/AppConfig";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { SiteMapData } from "@lib/pojo/responsemodel/SiteMapData";
 import { apiCalls } from "@lib/postmethodService";
 
 export async function GET({ url }) {
   // Extract optional lang param (/?lang=en)
   const lang = url.searchParams.get("lang") || "ar";
-  const apiServer = getAppConfig();
+  const apiServer = await getAppConfig();
+  const website = apiServer.websiteUrl.replace(/\/$/, "");
 
- 
-
+  /* ----------------------------
+     FETCH DYNAMIC SITEMAP DATA
+  ----------------------------- */
   const request = new RequestModel();
-  request.lang = lang;
+  request.lang = lang; // language-agnostic sitemap
 
-  // Call API to fetch dynamic sitemap items
-  const resp = await apiCalls(request, EndPointPaths.generatesitemap);
-  const items: Array<SiteMapData> = resp?.data?.respList || [];
+  const resp: ApiResponse = await apiCalls(
+    request,
+    EndPointPaths.generatesitemap
+  );
 
+  const items: SiteMapData[] = resp?.data?.respList || [];
 
-  // Build ALL URLs - each item gives us both Arabic + English
-  const allUrlEntries = items.flatMap((item: any) => {
-  const lastmod = new Date(item.lastModified).toISOString();
+  /* ----------------------------
+     DYNAMIC MULTI-LANGUAGE PAGES
+  ----------------------------- */
+  const dynamicUrlsXml = items
+    .flatMap(item => {
+      const lastmod = new Date(item.lastModified).toISOString();
 
-  return item.hrefLangs
-    .filter(h => h.lang !== "x-default")
-    .map(h => ({
-      loc: h.url.replace(/\/$/, ""),
-      lastmod,
-      changefreq: item.changeFreq || "weekly",
-      priority: item.priority || "0.8",
-      hreflangs: item.hrefLangs.map(x => ({
-        lang: x.lang,
-        url: x.url.replace(/\/$/, "")
-      }))
-    }));
-});
+      return item.hrefLangs
+        .filter(h => h.lang !== "x-default")
+        .map(h => {
+          const links = item.hrefLangs
+            .map(
+              x =>
+                `    <xhtml:link rel="alternate" hreflang="${x.lang}" href="${x.url.replace(
+                  /\/$/,
+                  ""
+                )}" />`
+            )
+            .join("\n");
 
-  const dynamicUrls = allUrlEntries
-    .map(entry => {
-      const links = entry.hreflangs
-        .map(h => `    <xhtml:link rel="alternate" hreflang="${h.lang}" href="${h.url}" />`)
-        .join("\n");
-
-      return `
+          return `
   <url>
-    <loc>${entry.loc}</loc>
-    <lastmod>${entry.lastmod}</lastmod>
-    <changefreq>${entry.changefreq}</changefreq>
-    <priority>${entry.priority}</priority>
+    <loc>${h.url.replace(/\/$/, "")}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${item.changeFreq || "weekly"}</changefreq>
+    <priority>${item.priority || "0.8"}</priority>
 ${links}
   </url>`;
+        });
     })
     .join("");
 
+  /* ----------------------------
+     FINAL XML
+  ----------------------------- */
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Homepage -->
   <url>
-    <loc>https://www.quronfula.com/</loc>
+    <loc>${website}/</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-${dynamicUrls}
+
+  <!-- Author Page -->
+  <url>
+    <loc>${website}/author/motiur-rehman</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  ${dynamicUrlsXml}
+
 </urlset>`;
 
   return new Response(xml, {
