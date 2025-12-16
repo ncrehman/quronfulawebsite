@@ -4,7 +4,6 @@ import { ApiResponse } from './pojo/responsemodel/ApiResponse';
 import { getAppConfig, loadAppConfig } from './AppConfig';
 import { FaqSchema } from './pojo/responsemodel/FaqSchema';
 import he from 'he';
-import { parseHTML } from "linkedom";
 
 // import { unescape } from 'he';  // Assuming you already import he for the final decode
 
