@@ -1,0 +1,56 @@
+---
+// src/pages/article/[slug]/amp.astro
+
+import ArticleAmpRenderer from '@components/commonarticle/ArticleAmpRenderer';
+import { EndPointPaths } from '@lib/EndPointPaths';
+import { RequestModel } from '@lib/pojo/requestmodel/RequestModel';
+import type { ApiResponse } from '@lib/pojo/responsemodel/ApiResponse';
+import type { FeedContentResponse } from '@lib/pojo/responsemodel/FeedContentResponse';
+import type { ResponseModel } from '@lib/pojo/responsemodel/ResponseModel';
+import { apiCalls } from '@lib/postmethodService';
+
+// In-memory cache (persists across requests in serverless/deployed environments with warmup)
+const articleCache = new Map<string, FeedContentResponse>();
+
+async function getArticle(lang: string, articleSlug: string): Promise<FeedContentResponse | null> {
+    try {
+        const cacheKey = `${lang}_${articleSlug}`;
+        if (articleCache.has(cacheKey)) {
+            return articleCache.get(cacheKey)!;
+        }
+
+        const request = new RequestModel();
+        request.lang = lang;
+        request.slug = articleSlug;
+
+        const responseResult: ApiResponse = await apiCalls(request, EndPointPaths.getarticlebyslug);
+
+        if (responseResult.status === 0) {
+            const response: ResponseModel = responseResult.data;
+            if (response.statusCode === 0) {
+                const article: FeedContentResponse = response.respObject;
+                articleCache.set(cacheKey, article);
+                return article;
+            }
+        }
+    } catch (err) {
+        console.error("Article fetch error:", err);
+    }
+
+    return null;
+}
+
+// Astro server endpoint logic
+
+const { lang,slug } = Astro.params;
+
+const article: FeedContentResponse | null = await getArticle(lang, slug);
+
+if (!article) {
+    throw new Response("Not found", { status: 404 });
+}
+
+// Render the AMP page using your existing component
+const ampHtml = await ArticleAmpRenderer({ article, lang });
+return ampHtml;
+---

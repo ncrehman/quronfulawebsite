@@ -200,9 +200,8 @@ if (!!article) {
 }
 
 const cleanHtml = cleanHtmlString(article.description);
-const hasAmp =
-    typeof article?.ampUrl === "string" && article.ampUrl.trim() !== "";
-const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
+
+const ampUrl = canonicalUrl + "/amp";
 ---
 
 {
@@ -218,7 +217,7 @@ const ampUrl = hasAmp ? getLocalizedAmpUrl(article.ampUrl, lang) : null;
             type="article"
             jsonLd={jsonLd}
             media={{
-                // amphtml: ampUrl,
+                amphtml: ampUrl,
             }}
             author={article.author_name}
             publishDate={new Date(article.publishDate).toISOString()}

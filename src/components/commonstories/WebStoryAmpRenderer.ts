@@ -27,6 +27,16 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
 
   const rssUrl = `${baseUrl}stories/rss.xml`;
   const canonicalUrl = `${baseUrl}stories/${story.slug}`.replace(/\/$/, "");
+  // let ampRef = '';
+  // if (story.referenceLink != null) {
+  //   if (story.referenceLink.includes('/article/')) {
+  //     ampRef = story.referenceLink;
+  //   } else {
+  //     ampRef = `${baseUrl}stories/${story.slug}`.replace(/\/$/, "");
+  //   }
+  // } else {
+  //   ampRef = `${baseUrl}stories/${story.slug}`.replace(/\/$/, "");
+  // }
   const siteName = metaConfig.siteName[lang];
   const description = metaConfig.description[lang];
   // Languages
@@ -273,6 +283,7 @@ ${story.cta && story.cta.trim() !== "" ? `
     metaTitle: story.metaTitle || story.title,
     metaDescription: story.metaDescription,
     canonicalUrl,
+    ogUrl: canonicalUrl,
     rssUrl,
     storyTitle: story.title,
     posterImage: story.bannerImage,

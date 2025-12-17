@@ -11,12 +11,10 @@
     "currency": "$",
     "countryCode": "91",
     "timeZone": "UTC+06:00",
-    "defaultLanguage": "en",
+    "defaultLanguage": "ar",
     "supportedLang": [
         "en",
-        "ar",
-        "fr",
-        "hi"
+        "ar"
     ],
     "isConsole": false,
     "multipleLanguage": false,
