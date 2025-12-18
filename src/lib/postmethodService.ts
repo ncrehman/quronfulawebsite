@@ -12,7 +12,8 @@ const printConsole = async (input: any) => {
 }
 export  function ensureTrailingSlash(url: string){
   if (!url) return url;
-  return url.endsWith("/") ? url : `${url}/`;
+  // return url.endsWith("/") ? url : `${url}/`;
+  return url;
 };
 
 export async function removeDuplicate(list: Array<any>, key: string) {

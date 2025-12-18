@@ -13,7 +13,7 @@ const { lang = "ar" } = Astro.props;
 
 const baseUrl = await buildLangUrl(lang);
 const apiServer = getAppConfig();
-const canonicalUrl = baseUrl + "terms-and-conditions/";
+const canonicalUrl = baseUrl + "terms-and-conditions";
 
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];

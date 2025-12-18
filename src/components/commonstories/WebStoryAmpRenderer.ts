@@ -127,7 +127,7 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
   const breadCrumb = generateBreadcrumb("Menu", [
     { name: siteName, url: "https://www.quronfula.com/" },
     { name: "Visual Story", url: "https://www.quronfula.com/stories/" },
-    { name: story.metaTitle, url: canonicalUrl.endsWith('/') ? canonicalUrl : canonicalUrl + '/' }
+    { name: story.metaTitle, url: canonicalUrl }
   ]);
   // const backgroundImages = [
   //   '/common_web_background_0.png',

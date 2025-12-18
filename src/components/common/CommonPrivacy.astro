@@ -17,7 +17,7 @@ const { lang = "ar" } = Astro.props;
 
 const baseUrl = await buildLangUrl(lang);
 const apiServer = getAppConfig();
-const canonicalUrl = baseUrl + "privacy-policy/";
+const canonicalUrl = baseUrl + "privacy-policy";
 
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];

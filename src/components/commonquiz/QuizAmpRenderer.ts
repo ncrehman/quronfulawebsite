@@ -111,7 +111,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const breadCrumb = generateBreadcrumb("Menu", [
     { name: siteName, url: "https://www.quronfula.com/" },
     { name: "Quiz Visual Story", url: "https://www.quronfula.com/quiz/" },
-    { name: quiz.metaTitle, url: canonicalUrl.endsWith('/') ? canonicalUrl : canonicalUrl + '/' }
+    { name: quiz.metaTitle, url: canonicalUrl}
   ]);
 
   const gradients = [
