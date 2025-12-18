@@ -9,7 +9,7 @@ export async function GET({ url }) {
      CONFIG
   ---------------------------------- */
   const website = "https://www.quronfula.com/";
-  const baseDomain = website.replace(/\/$/, "");
+  const baseDomain = website.replace(/\/$/, ""); // remove trailing slash
 
   const LANGUAGES = ["en", "ar"] as const;
   const DEFAULT_LANG = "ar";
@@ -18,30 +18,20 @@ export async function GET({ url }) {
   const now = new Date().toISOString();
 
   /* ---------------------------------
-     URL NORMALIZER (ALWAYS TRAILING SLASH)
-  ---------------------------------- */
-  const normalizeUrl = (u: string): string =>
-    u.endsWith("/") ? u : `${u}/`;
-
-  /* ---------------------------------
-     URL BUILDER (CANONICAL SAFE)
+     URL BUILDER (NO TRAILING SLASH)
   ---------------------------------- */
   const buildUrl = (lang: string, path = ""): string => {
-    const cleanPath = path.replace(/^\/|\/$/g, "");
+    const cleanPath = path.replace(/^\/|\/$/g, ""); // remove leading/trailing slashes
 
     if (!cleanPath) {
-      return normalizeUrl(
-        lang === DEFAULT_LANG
-          ? `${baseDomain}`
-          : `${baseDomain}/${lang}`
-      );
+      return lang === DEFAULT_LANG
+        ? baseDomain
+        : `${baseDomain}/${lang}`;
     }
 
-    return normalizeUrl(
-      lang === DEFAULT_LANG
-        ? `${baseDomain}/${cleanPath}`
-        : `${baseDomain}/${lang}/${cleanPath}`
-    );
+    return lang === DEFAULT_LANG
+      ? `${baseDomain}/${cleanPath}`
+      : `${baseDomain}/${lang}/${cleanPath}`;
   };
 
   /* ---------------------------------
@@ -78,11 +68,7 @@ export async function GET({ url }) {
       const loc = buildUrl(l, page.path);
 
       const hreflangs = LANGUAGES.map(
-        x =>
-          `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(
-            x,
-            page.path
-          )}" />`
+        x => `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(x, page.path)}" />`
       ).join("\n");
 
       return `
@@ -92,10 +78,7 @@ export async function GET({ url }) {
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
 ${hreflangs}
-    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl(
-        DEFAULT_LANG,
-        page.path
-      )}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl(DEFAULT_LANG, page.path)}" />
   </url>`;
     })
   ).join("");
@@ -104,31 +87,28 @@ ${hreflangs}
      DYNAMIC MULTI-LANGUAGE CONTENT
   ---------------------------------- */
   const dynamicUrlsXml = items
-    .flatMap(item => {
-      const lastmod = new Date(item.lastModified).toISOString();
-
-      return item.hrefLangs
+    .flatMap(item =>
+      item.hrefLangs
         .filter(h => h.lang !== "x-default")
         .map(h => {
+          const lastmod = new Date(item.lastModified).toISOString();
+
           const links = item.hrefLangs
             .map(
-              x =>
-                `    <xhtml:link rel="alternate" hreflang="${x.lang}" href="${normalizeUrl(
-                  x.url
-                )}" />`
+              x => `    <xhtml:link rel="alternate" hreflang="${x.lang}" href="${x.url.replace(/\/$/, "")}" />`
             )
             .join("\n");
 
           return `
   <url>
-    <loc>${normalizeUrl(h.url)}</loc>
+    <loc>${h.url.replace(/\/$/, "")}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${item.changeFreq || "weekly"}</changefreq>
     <priority>${item.priority || "0.8"}</priority>
 ${links}
   </url>`;
-        });
-    })
+        })
+    )
     .join("");
 
   /* ---------------------------------
