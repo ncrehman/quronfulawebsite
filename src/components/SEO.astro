@@ -1,4 +1,5 @@
 ---
+import { ensureTrailingSlash } from "@lib/postmethodService";
 export interface Props {
   title: string;
   description: string;
@@ -24,6 +25,7 @@ const alternateEn =
     : `https://www.quronfula.com/en${new URL(p.url).pathname}`;
 
 const siteName = "Quronfula";
+const canonical = ensureTrailingSlash(p.canonical);
 ---
 
 <head>
@@ -32,7 +34,7 @@ const siteName = "Quronfula";
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{p.title}</title>
   <meta name="description" content={p.description} />
-  {p.canonical && <link rel="canonical" href={p.canonical} />}
+  {canonical && <link rel="canonical" href={canonical} />}
 
   {p.noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
 
@@ -41,8 +43,12 @@ const siteName = "Quronfula";
   <link rel="alternate" hreflang="en" href={alternateEn} />
   <link rel="alternate" hreflang="x-default" href={alternateAr} />
   {p.media?.amphtml && <link rel="amphtml" href={p.media.amphtml} />}
-  {p.author && <meta name="author" content={p.author}/>}
-  {p.publishDate && <meta property="article:published_time" content={p.publishDate} />}
+  {p.author && <meta name="author" content={p.author} />}
+  {
+    p.publishDate && (
+      <meta property="article:published_time" content={p.publishDate} />
+    )
+  }
   <!-- FAVICON -->
   <link rel="icon" href="/favicon.ico" />
   <meta name="theme-color" content="#CC4144" />

@@ -10,6 +10,11 @@ import he from 'he';
 const printConsole = async (input: any) => {
   console.log(input);
 }
+export  function ensureTrailingSlash(url: string){
+  if (!url) return url;
+  return url.endsWith("/") ? url : `${url}/`;
+};
+
 export async function removeDuplicate(list: Array<any>, key: string) {
   return list.filter((obj: any, pos: number, arr: Array<any>) => {
     return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === pos;
