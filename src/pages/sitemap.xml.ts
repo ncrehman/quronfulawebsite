@@ -8,9 +8,19 @@ import { apiCalls } from "@lib/postmethodService";
 export async function GET({ url }) {
   // Extract optional lang param (/?lang=en)
   const lang = url.searchParams.get("lang") || "ar";
-  const apiServer = await getAppConfig();
-  const website = apiServer.websiteUrl.replace(/\/$/, "");
-
+  const website = 'https://www.quronfula.com/';
+  const LANGUAGES = ["en", "ar"] as const;
+  const DEFAULT_LANG = "ar";
+  const baseDomain = website.replace(/\/$/, "");
+  /* ---------------------------------
+     URL BUILDER
+  ---------------------------------- */
+  const buildUrl = (lang: string, path = "") => {
+    if (lang === DEFAULT_LANG) {
+      return `${baseDomain}/${path}`.replace(/\/$/, "");
+    }
+    return `${baseDomain}/${lang}/${path}`.replace(/\/$/, "");
+  };
   /* ----------------------------
      FETCH DYNAMIC SITEMAP DATA
   ----------------------------- */
@@ -56,31 +66,106 @@ ${links}
     })
     .join("");
 
-  /* ----------------------------
+
+    
+  /* ---------------------------------
+     STATIC ROOT PAGES
+  ---------------------------------- */
+  const STATIC_PAGES = [
+    {
+      path: "",
+      changefreq: "daily",
+      priority: "1.0",
+    },
+    {
+      path: "about",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "stories",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "quiz",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "category",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "aticle",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "contact",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "privacy-policy",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+    {
+      path: "terms-and-conditions",
+      changefreq: "daily",
+      priority: "0.9",
+    },
+
+    {
+      path: "author/motiur-rehman",
+      changefreq: "weekly",
+      priority: "0.6",
+    },
+  ];
+
+  const now = new Date().toISOString();
+
+  const staticPagesXml = STATIC_PAGES.flatMap(page =>
+    LANGUAGES.map(lang => {
+      const loc = buildUrl(lang, page.path);
+
+      const hreflangs = LANGUAGES.map(
+        l =>
+          `    <xhtml:link rel="alternate" hreflang="${l}" href="${buildUrl(
+            l,
+            page.path
+          )}" />`
+      ).join("\n");
+
+      return `
+  <url>
+    <loc>${loc}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+${hreflangs}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl(
+        DEFAULT_LANG,
+        page.path
+      )}" />
+  </url>`;
+    })
+  ).join("");
+
+
+  
+  /* ---------------------------------
      FINAL XML
-  ----------------------------- */
+  ---------------------------------- */
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset 
+<urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!-- Homepage -->
-  <url>
-    <loc>${website}/</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- Author Page -->
-  <url>
-    <loc>${website}/author/motiur-rehman</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  ${dynamicUrlsXml}
+${staticPagesXml}
+${dynamicUrlsXml}
 
 </urlset>`;
 
