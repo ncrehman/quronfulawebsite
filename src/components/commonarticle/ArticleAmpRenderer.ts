@@ -57,8 +57,8 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     headline: article.title,
     description: article.metaDescription,
     image: [article.landScapeBanner],
-    datePublished: article.publishDate,
-    dateModified: article.updatedAt || article.publishDate,
+    datePublished: new Date(article.publishDate).toISOString(),
+    dateModified: new Date(article.publishDate).toISOString(),
     author: {
       "@type": "Person",
       name: article.author_name,
@@ -71,7 +71,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
         url: `${apiServer.websiteUrl}icons/android-icon-192x192.png`,
       },
     },
-    mainEntityOfPage: canonicalUrl,
+    mainEntityOfPage: apiServer.websiteUrl + 'article',
   };
 
   const templatePath = path.join(
@@ -83,7 +83,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   const template = Handlebars.compile(templateSource);
   const html = template({
     lang,
-    dir:lang==='ar'?'rtl':'ltr',
+    dir: lang === 'ar' ? 'rtl' : 'ltr',
     title: article.title,
     metaTitle: article.metaTitle || article.title,
     metaDescription: article.metaDescription,
@@ -95,7 +95,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     jsonLd: JSON.stringify(jsonLd),
   });
 
-   return new Response(html, {
+  return new Response(html, {
     headers: { "content-type": "text/html; charset=utf-8" }
   });
 }

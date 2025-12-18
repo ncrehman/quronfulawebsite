@@ -23,8 +23,10 @@
 
     <!-- Canonical MUST point to normal article -->
     <link rel="canonical" href="{{canonicalUrl}}">
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
-        rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
+        rel="stylesheet"> -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 
     <script async src="https://cdn.ampproject.org/v0.js"></script>
@@ -37,13 +39,60 @@
 
     <style amp-boilerplate>
         body {
-            visibility: hidden
+            -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            -moz-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            -ms-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+            animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        }
+
+        @-webkit-keyframes -amp-start {
+            from {
+                visibility: hidden;
+            }
+
+            to {
+                visibility: visible;
+            }
+        }
+
+        @-moz-keyframes -amp-start {
+            from {
+                visibility: hidden;
+            }
+
+            to {
+                visibility: visible;
+            }
+        }
+
+        @-ms-keyframes -amp-start {
+            from {
+                visibility: hidden;
+            }
+
+            to {
+                visibility: visible;
+            }
+        }
+
+        @keyframes -amp-start {
+            from {
+                visibility: hidden;
+            }
+
+            to {
+                visibility: visible;
+            }
         }
     </style>
+
     <noscript>
         <style amp-boilerplate>
             body {
-                visibility: visible
+                -webkit-animation: none;
+                -moz-animation: none;
+                -ms-animation: none;
+                animation: none;
             }
         </style>
     </noscript>
@@ -59,7 +108,8 @@
         article[lang="ar"] {
             direction: rtl;
         }
-          html[lang="ar"] article,
+
+        html[lang="ar"] article,
         html[lang="ar"] article * {
             font-family: 'Almarai', system-ui, sans-serif;
         }
@@ -226,7 +276,7 @@
     </style>
 
     <script type="application/ld+json">
-    {{{jsonLd}}} <!-- Ensure this is a full Article/NewsArticle schema with headline, image, datePublished, author, publisher, etc. -->
+    {{{jsonLd}}}
   </script>
 </head>
 

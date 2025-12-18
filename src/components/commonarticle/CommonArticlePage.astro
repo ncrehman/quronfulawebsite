@@ -164,8 +164,8 @@ if (!!article) {
         },
         keywords: keywords,
         about: about,
-        datePublished: article.publishDate,
-        dateModified: article.updatedAt || article.publishDate,
+        datePublished: new Date(article.publishDate).toISOString(),
+        dateModified: new Date(article.publishDate).toISOString(),
     };
 
     let howToSchema: any = null;
