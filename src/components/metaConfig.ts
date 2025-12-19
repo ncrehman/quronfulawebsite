@@ -6,7 +6,7 @@ export const metaConfig = {
 
     title: {
         en: "Quronfula - Latest Articles, Stories & Insights",
-        ar: "قرنفلة - أحدث المقالات والقصص والمعلومات اليومية"
+        ar: "قرنفلة - أحدث المقالات والقصص ومعلومات الحياة اليومية"
     },
 
     keywordsMap: {

@@ -7,6 +7,7 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { Image } from "astro:assets";
 
 const id = "carouselExampleBasic";
 interface Props {
@@ -23,65 +24,255 @@ const side2: ArticleResponse | undefined = articles[2];
 
 const categoryCache = new Map<string, Array<CatResponse>>();
 async function getCategory(lang: string) {
-    const cacheKey = `${lang}_footer_cat`;
-    if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey);
+  const cacheKey = `${lang}_footer_cat`;
+  if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey);
 
-    const req = new RequestModel();
-    req.lang = lang;
+  const req = new RequestModel();
+  req.lang = lang;
 
-    const response: ApiResponse = await apiCalls(
-        req,
-        EndPointPaths.getallcategories,
-    );
-    if (response.status !== 0) return [];
+  const response: ApiResponse = await apiCalls(
+    req,
+    EndPointPaths.getallcategories,
+  );
+  if (response.status !== 0) return [];
 
-    const list: ResponseModel = response.data;
-    categoryCache.set(cacheKey, list.respList);
-    return list.respList;
+  const list: ResponseModel = response.data;
+  categoryCache.set(cacheKey, list.respList);
+  return list.respList;
 }
-const categoryList:Array<CatResponse> = await getCategory(lang);
+const categoryList: Array<CatResponse> = await getCategory(lang);
 ---
 
-<div class="mobile-only">
-</div>
+<div class="mobile-only"></div>
 <div class="desktop-only">
   {
     articles.length >= 3 && (
-      <section class={`hero-featured ${lang === "ar" ? "rtl" : ""}`}>
-        <div class="hero-grid">
-          <a href={`/${langPrefix}article/${main.slug}`} class="hero-main">
-            <div class="img-wrapper">
-              <img
-                src={main.landScapeBanner || main.bannerImage}
-                alt={main.imageAlt}
-                loading="lazy"
-              />
-            </div>
-          
-            <div class="hero-text" />
-          </a>
-          <div class="hero-side">
-            <a href={`/${langPrefix}article/${side1.slug}`} class="side-card">
-              <div class="img-wrapper small">
-                <img
-                  src={side1.landScapeBanner || side1.bannerImage}
-                  alt={side1.imageAlt}
-                  loading="lazy"
-                />
-              </div>
-            </a>
-            <a href={`/${langPrefix}article/${side2.slug}`} class="side-card">
-              <div class="img-wrapper small">
-                <img
-                  src={side2.landScapeBanner || side2.bannerImage}
-                  alt={side2.imageAlt}
-                  loading="lazy"
-                />
-              </div>
-            </a>
+     <section class={`hero-featured ${lang === "ar" ? "rtl" : ""}`}>
+  <div class="hero-grid">
+    <!-- MAIN RECTANGULAR FEATURED ARTICLE -->
+    <a href={`/${langPrefix}article/${main.slug}`} class="hero-main">
+      <div class="img-wrapper">
+        <img
+          src={main.landScapeBanner || main.landScapeBanner}
+          alt={main.imageAlt}
+          loading="lazy"
+        />
+        <div class="overlay">
+          <div class="text-content">
+            <h2 class="hero-title">{main.title}</h2>
+            <p class="hero-excerpt">{main.subTitle || main.subTitle}</p>
           </div>
         </div>
-      </section>
+      </div>
+    </a>
+
+    <!-- STACKED SIDE ARTICLES (match main height together) -->
+    <div class="hero-side">
+      <a href={`/${langPrefix}article/${side1.slug}`} class="side-card">
+        <div class="img-wrapper">
+          <img
+            src={side1.landScapeBanner || side1.landScapeBanner}
+            alt={side1.imageAlt}
+            loading="lazy"
+          />
+          <div class="overlay">
+            <div class="text-content">
+              <h3 class="side-title">{side1.title}</h3>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <a href={`/${langPrefix}article/${side2.slug}`} class="side-card">
+        <div class="img-wrapper">
+          <img
+            src={side2.landScapeBanner || side2.landScapeBanner}
+            alt={side2.imageAlt}
+            loading="lazy"
+          />
+          <div class="overlay">
+            <div class="text-content">
+              <h3 class="side-title">{side2.title}</h3>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* =========================================
+     HERO FEATURED – LARGE RECTANGLE + TWO HALVES
+  ========================================= */
+
+  .hero-featured {
+    padding: 3rem 1.5rem;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Main is twice as wide */
+    gap: 1.5rem;
+    align-items: stretch; /* Ensures full height alignment */
+  }
+
+  .hero-main,
+  .side-card {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .hero-main:hover,
+  .side-card:hover {
+    transform: scale(1.03);
+  }
+
+  .img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+
+  .hero-main:hover img,
+  .side-card:hover img {
+    transform: scale(1.12);
+  }
+
+  /* Gradient Overlay */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      transparent 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: 2.5rem;
+    transition: background 0.4s ease;
+  }
+
+  .hero-main:hover .overlay,
+  .side-card:hover .overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.5) 60%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+  }
+
+  .text-content {
+    color: white;
+    max-width: 95%;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0 0 1rem;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-excerpt {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
+
+  .side-title {
+    font-size: 1.1rem;
+    font-weight: 200;
+    line-height: 1.3;
+    margin: 0;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Fixed height for main, sides auto-fill */
+  .hero-main .img-wrapper {
+    height: 380px; /* Adjust this value to control overall hero height */
+  }
+
+  .hero-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+  }
+
+  .side-card .img-wrapper {
+    height: calc((380px - 1.5rem) / 2); /* Exactly half of main minus gap */
+  }
+
+  /* RTL Support */
+  .rtl .text-content {
+    text-align: right;
+  }
+
+  /* Responsive – Stack vertically */
+  @media (max-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .hero-main .img-wrapper {
+      height: 380px;
+    }
+
+    .side-card .img-wrapper {
+      height: 165px;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 2.2rem;
+    }
+
+    .hero-excerpt {
+      font-size: 1.1rem;
+    }
+
+    .side-title {
+      font-size: 1.5rem;
+    }
+
+    .overlay {
+      padding: 1.8rem;
+    }
+
+    .hero-main .img-wrapper {
+      height: 420px;
+    }
+
+    .side-card .img-wrapper {
+      height: 240px;
+    }
+  }
+</style>
     )
   }
 </div>
@@ -105,127 +296,6 @@ const categoryList:Array<CatResponse> = await getCategory(lang);
     }
     .mobile-only {
       display: block;
-    }
-  }
-  .hero-featured {
-    width: 100%;
-    margin: 30px auto;
-    padding: 0 0px;
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 18px;
-    align-items: stretch;
-  }
-
-  /* Main large card */
-  .hero-main {
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    background: #000;
-  }
-
-  .hero-main .img-wrapper {
-    width: 100%;
-    aspect-ratio: 16/9;
-    overflow: hidden;
-  }
-
-  .hero-main img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: 0.35s ease;
-  }
-
-  .hero-main:hover img {
-    transform: scale(1.05);
-  }
-
-  .hero-main .hero-text {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    padding: 12px 14px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
-    border-radius: 12px;
-  }
-
-  .hero-main h2 {
-    color: white;
-    margin: 0;
-    font-size: 1.4rem;
-    line-height: 1.3;
-  }
-
-  .hero-main p {
-    margin-top: 6px;
-    color: #e8e8e8;
-    font-size: 0.95rem;
-  }
-
-  /* Right side cards */
-  .hero-side {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .side-card {
-    display: block;
-    background: #fff;
-    border-radius: 14px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.3s ease;
-  }
-
-  .side-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-  }
-
-  .side-card .img-wrapper.small {
-    width: 100%;
-    aspect-ratio: 16/9;
-    overflow: hidden;
-  }
-
-  .side-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .side-card h3 {
-    padding: 12px 14px;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.35;
-  }
-
-  /* RTL Support */
-  .hero-featured.rtl h2,
-  .hero-featured.rtl h3,
-  .hero-featured.rtl p {
-    text-align: right;
-  }
-
-  /* Mobile layout */
-  @media (max-width: 768px) {
-    .hero-grid {
-      grid-template-columns: 1fr;
     }
   }
 </style>
