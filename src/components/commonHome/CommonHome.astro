@@ -160,7 +160,7 @@ const organizationSchema = {
 	"@id": apiServer.websiteUrl + "#organization",
 	name: siteName,
 	url: baseUrl,
-	logo: apiServer.websiteUrl + "logo.png",
+	logo: apiServer.websiteUrl.replace(/\/$/, "") + "/icons/android-icon-192x192.png",
 	sameAs: [
 		"https://www.facebook.com/storycircuit",
 		"https://x.com/thestorycircuit",
