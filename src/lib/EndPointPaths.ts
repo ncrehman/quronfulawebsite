@@ -22,6 +22,7 @@ export class EndPointPaths {
   public static getarticlebyslug = 'getarticlebyslug';
   public static getauthorbyslug = 'getauthorbyslug';
   public static generatesitemap = 'generatesitemap';
+  public static generatenewssitemap = 'generatenewssitemap';
   public static generateallsitemap = 'generateallsitemap';
   public static generaterssfeed = 'generaterssfeed';
   public static postcontactus = 'postcontactus';
