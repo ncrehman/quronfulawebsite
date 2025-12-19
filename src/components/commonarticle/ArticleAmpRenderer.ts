@@ -8,7 +8,7 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, checkSupportedLang, generateFAQJsonLd } from "@lib/postmethodService";
+import { apiCalls, checkSupportedLang, generateFAQJsonLd, getLangPrefix } from "@lib/postmethodService";
 import { getAppConfig } from "@lib/AppConfig";
 
 
@@ -48,6 +48,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     lang === 'ar'
       ? apiServer.websiteUrl
       : `${apiServer.websiteUrl}${lang}/`;
+        const langPrefix = getLangPrefix(lang);
   const canonicalUrl = `${baseUrl}article/${article.slug}`.replace(/\/$/, "");
   const ampUrl = `${canonicalUrl}/amp`;
   const siteName = metaConfig.siteName[lang];
@@ -108,6 +109,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     relatedArticles: relatedArticle,
     jsonLd: JSON.stringify(jsonLd),
     faqJsonLD: JSON.stringify(faqSchema),
+     langPrefix:langPrefix
   });
 
   return new Response(html, {
