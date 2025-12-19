@@ -23,6 +23,9 @@
 
     <!-- Canonical MUST point to normal article -->
     <link rel="canonical" href="{{canonicalUrl}}">
+    {{#each hrefData}}
+    <link rel="alternate" hreflang="{{@key}}" href="{{this}}">
+    {{/each}}
     <!-- <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
         rel="stylesheet"> -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

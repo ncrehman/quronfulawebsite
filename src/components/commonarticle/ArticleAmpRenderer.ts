@@ -48,7 +48,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     lang === 'ar'
       ? apiServer.websiteUrl
       : `${apiServer.websiteUrl}${lang}/`;
-        const langPrefix = getLangPrefix(lang);
+  const langPrefix = getLangPrefix(lang);
   const canonicalUrl = `${baseUrl}article/${article.slug}`.replace(/\/$/, "");
   const ampUrl = `${canonicalUrl}/amp`;
   const siteName = metaConfig.siteName[lang];
@@ -84,11 +84,21 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     }
   };
 
-  let faqSchema= null;
+  let faqSchema = null;
 
   if (article?.faqSchema?.length) {
     faqSchema = generateFAQJsonLd(article.faqSchema);
   }
+
+  const website = apiServer.websiteUrl.replace(/\/$/, "");
+  const alternatesLanguages = {
+    ar: `${website}/article/${article.slug}`,
+    en: `${website}/en/article/${article.slug}`,
+    "x-default": `${website}/article/${article.slug}`,
+  };
+  const alternatesLanguagesAMP = Object.fromEntries(
+    Object.entries(alternatesLanguages).map(([lang, url]) => [lang, `${url}`])
+  );
   const templatePath = path.join(
     process.cwd(),
     "src/components/commonarticle/article.html"
@@ -109,7 +119,8 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     relatedArticles: relatedArticle,
     jsonLd: JSON.stringify(jsonLd),
     faqJsonLD: JSON.stringify(faqSchema),
-     langPrefix:langPrefix
+    langPrefix: langPrefix,
+    hrefData: alternatesLanguagesAMP
   });
 
   return new Response(html, {
