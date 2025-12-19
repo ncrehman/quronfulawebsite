@@ -54,6 +54,6 @@ if (!article) {
 }
 
 // Render the AMP page using your existing component
-const ampHtml = await ArticleAmpRenderer({ article, lang });
-return ampHtml;
+const articleAmp = await ArticleAmpRenderer({ article, lang });
+return articleAmp;
 ---

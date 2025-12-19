@@ -98,6 +98,8 @@ const siteName = metaConfig.siteName[lang];
 
 const article: FeedContentResponse = await getArticles(lang, slug);
 const canonicalUrl = baseUrl + "article/" + decodedSlug;
+const ampUrl = canonicalUrl + "/amp";
+
 const jsonLd = [];
 
 let keywords = [];
@@ -111,62 +113,168 @@ if (!!article) {
             name: keyword,
         }),
     );
-    const breadCrumb = generateBreadcrumb("Article Page Breadcrumbs", [
-        {
-            name: siteName,
-            url: baseUrl,
-        },
-        {
-            name: "Articles",
-            url: baseUrl + "artcile/",
-        },
-        {
-            name: article.title,
-            url: baseUrl + "artcile/" + article.slug,
-        },
-    ]);
-    const articleJsonLd = {
+
+    const allInOneJsonLd = {
         "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        mainEntityOfPage: {
-            "@type": "WebPage",
-            "@id": canonicalUrl,
-        },
-        ...(article.ampUrl && {
-            potentialAction: [
-                {
-                    "@type": "ViewAction",
-                    target: getLocalizedAmpUrl(article.ampUrl, lang),
-                    name: "View Web Story",
+        "@graph": [
+            /* ---------------- Organization ---------------- */
+            {
+                "@type": "Organization",
+                "@id": `${baseUrl}#organization`,
+                name: "Quronfula",
+                url: baseUrl,
+                logo: {
+                    "@type": "ImageObject",
+                    url: `${apiServer.websiteUrl}logo.png`,
+                    width: 192,
+                    height: 192,
                 },
-            ],
-        }),
-        headline: article.title,
-        alternativeHeadline: article.metaTitle,
-        description: article.metaDescription,
-        image: [
-            article.landScapeBanner,
-            article.bannerImage,
-            article.squareBanner,
-        ].filter(Boolean),
-        author: {
-            "@type": "Person",
-            name: article.author_name,
-            url: baseUrl + "author/" + article.author_slug,
-        },
-        publisher: {
-            "@type": "Organization",
-            name: "Quronfula",
-            logo: {
-                "@type": "ImageObject",
-                url: apiServer.websiteUrl + "logo.png",
             },
-        },
-        keywords: keywords,
-        about: about,
-        datePublished: new Date(article.publishDate).toISOString(),
-        dateModified: new Date(article.publishDate).toISOString(),
+
+            /* ---------------- WebSite ---------------- */
+            {
+                "@type": "WebSite",
+                "@id": `${baseUrl}#website`,
+                url: baseUrl,
+                name: siteName,
+                publisher: {
+                    "@id": `${baseUrl}#organization`,
+                },
+            },
+
+            /* ---------------- WebPage ---------------- */
+            {
+                "@type": "WebPage",
+                "@id": canonicalUrl,
+                url: canonicalUrl,
+                name: article.title,
+                isPartOf: {
+                    "@id": `${baseUrl}#website`,
+                },
+                breadcrumb: {
+                    "@id": `${canonicalUrl}#breadcrumb`,
+                },
+                primaryImageOfPage: {
+                    "@id": `${canonicalUrl}#primaryimage`,
+                },
+            },
+
+            /* ---------------- Primary Image ---------------- */
+            {
+                "@type": "ImageObject",
+                "@id": `${canonicalUrl}#primaryimage`,
+                url: article.landScapeBanner,
+                width: 1200,
+                height: 630,
+            },
+
+            /* ---------------- Breadcrumb ---------------- */
+            {
+                "@type": "BreadcrumbList",
+                "@id": `${canonicalUrl}#breadcrumb`,
+                itemListElement: [
+                    {
+                        "@type": "ListItem",
+                        position: 1,
+                        name: siteName,
+                        item: baseUrl,
+                    },
+                    {
+                        "@type": "ListItem",
+                        position: 2,
+                        name: "Articles",
+                        item: `${baseUrl}article/`,
+                    },
+                    {
+                        "@type": "ListItem",
+                        position: 3,
+                        name: article.title,
+                        item: canonicalUrl,
+                    },
+                ],
+            },
+
+            /* ---------------- Article ---------------- */
+            {
+                "@type": "Article",
+                "@id": `${canonicalUrl}#article`,
+                isPartOf: {
+                    "@id": canonicalUrl,
+                },
+                headline: article.title,
+                alternativeHeadline: article.metaTitle,
+                description: article.metaDescription,
+                image: {
+                    "@id": `${canonicalUrl}#primaryimage`,
+                },
+                author: {
+                    "@type": "Person",
+                    name: article.author_name,
+                    url: `${baseUrl}author/${article.author_slug}/`,
+                },
+                publisher: {
+                    "@id": `${baseUrl}#organization`,
+                },
+                keywords: keywords,
+                about: about,
+                datePublished: new Date(article.publishDate).toISOString(),
+                dateModified: new Date(
+                    article.updatedAt || article.publishDate,
+                ).toISOString(),
+                mainEntityOfPage: {
+                    "@id": canonicalUrl,
+                },
+            },
+        ],
     };
+
+    // const breadCrumb = generateBreadcrumb("Article Page Breadcrumbs", [
+    //     {
+    //         name: siteName,
+    //         url: baseUrl,
+    //     },
+    //     {
+    //         name: "Articles",
+    //         url: baseUrl + "artcile/",
+    //     },
+    //     {
+    //         name: article.title,
+    //         url: baseUrl + "artcile/" + article.slug,
+    //     },
+    // ]);
+    // const articleJsonLd = {
+    //     "@context": "https://schema.org",
+    //     "@type": "NewsArticle",
+    //     mainEntityOfPage: {
+    //         "@type": "WebPage",
+    //         "@id": canonicalUrl,
+    //     },
+    //     headline: article.title,
+    //     alternativeHeadline: article.metaTitle,
+    //     description: article.metaDescription,
+    //     image: [
+    //         article.landScapeBanner,
+    //         article.bannerImage,
+    //         article.squareBanner,
+    //     ].filter(Boolean),
+    //     author: {
+    //         "@type": "Person",
+    //         name: article.author_name,
+    //         url: baseUrl + "author/" + article.author_slug,
+    //     },
+    //     publisher: {
+    //         "@type": "Organization",
+    //         name: "Quronfula",
+    //         logo: {
+    //             "@type": "ImageObject",
+    //             url: apiServer.websiteUrl + "logo.png",
+    //         },
+    //     },
+    //     keywords: keywords,
+    //     about: about,
+    //     datePublished: new Date(article.publishDate).toISOString(),
+    //     dateModified: new Date(article.publishDate).toISOString(),
+    // };
 
     let howToSchema: any = null;
     if (article.howToSchema != null) {
@@ -192,16 +300,15 @@ if (!!article) {
         faqSchema = null;
     }
 
-    jsonLd.push(articleJsonLd);
-    jsonLd.push(breadCrumb);
+    jsonLd.push(allInOneJsonLd);
+    // jsonLd.push(articleJsonLd);
+    // jsonLd.push(breadCrumb);
 
     if (faqSchema) jsonLd.push(faqSchema);
     if (howToSchema) jsonLd.push(howToSchema);
 }
 
 const cleanHtml = cleanHtmlString(article.description);
-
-const ampUrl = canonicalUrl + "/amp";
 ---
 
 {

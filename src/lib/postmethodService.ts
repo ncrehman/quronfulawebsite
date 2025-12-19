@@ -10,7 +10,7 @@ import he from 'he';
 const printConsole = async (input: any) => {
   console.log(input);
 }
-export  function ensureTrailingSlash(url: string){
+export function ensureTrailingSlash(url: string) {
   if (!url) return url;
   // return url.endsWith("/") ? url : `${url}/`;
   return url;
@@ -34,7 +34,11 @@ export async function buildLangUrl(lang: string) {
 
   return `${appConfig.websiteUrl}${langPrefix}`;
 }
-
+export function checkSupportedLang(lang: string) {
+  return supportedLangs.includes(lang ?? '')
+    ? lang!
+    : 'ar';
+}
 
 export async function checkForDecode(slug: string) {
   let abc = '';
@@ -200,6 +204,7 @@ export function generateFAQJsonLd(faqs: Array<FaqSchema>) {
     }))
   };
 }
+const supportedLangs = ["en", "ar"];
 export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
   // If amp is disabled or lang is English, return the original
   if (!ampUrl || lang === "ar") return ampUrl;
@@ -210,7 +215,6 @@ export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
     // Remove existing lang if accidentally present
     const parts = url.pathname.split("/").filter(Boolean);
 
-    const supportedLangs = ["en", "ar"];
 
     // If first segment is already lang, remove it
     if (supportedLangs.includes(parts[0])) {

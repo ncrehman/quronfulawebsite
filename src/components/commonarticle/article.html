@@ -10,7 +10,7 @@
 
     <!-- Essential SEO meta tags -->
     <meta name="robots" content="index, follow">
-    <meta name="keywords" content="{{keywords}}">
+    <!-- <meta name="keywords" content="{{keywords}}"> -->
     <meta property="og:title" content="{{metaTitle}}">
     <meta property="og:description" content="{{metaDescription}}">
     <meta property="og:image" content="{{featuredImage}}">
@@ -278,11 +278,16 @@
     <script type="application/ld+json">
     {{{jsonLd}}}
   </script>
+   {{#if faqJsonLD}}
+    <script type="application/ld+json">
+    {{{faqJsonLD}}}
+  </script>
+    {{/if}}
 </head>
 
 <body>
 
-    <article>
+    <article lang="{{lang}}" dir="{{dir}}">
         <h1>{{title}}</h1>
 
         <amp-img class="featured" src="{{featuredImage}}" width="1200" height="675" layout="responsive" alt="{{title}}">
@@ -302,7 +307,7 @@
 
                 {{#each relatedArticles}}
                 <div class="related-card">
-                    <a href="/{{slug}}-amp">
+                    <a href="/{{slug}}/amp">
                         <amp-img src="{{landScapeBanner}}" width="400" height="225" layout="responsive"
                             alt="{{title}}"></amp-img>
                         <div class="related-title">{{title}}</div>

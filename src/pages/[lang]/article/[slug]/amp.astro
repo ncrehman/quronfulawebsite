@@ -1,18 +1,22 @@
 ---
 // src/pages/article/[slug]/amp.astro
 
-import ArticleAmpRenderer from '@components/commonarticle/ArticleAmpRenderer';
-import { EndPointPaths } from '@lib/EndPointPaths';
-import { RequestModel } from '@lib/pojo/requestmodel/RequestModel';
-import type { ApiResponse } from '@lib/pojo/responsemodel/ApiResponse';
-import type { FeedContentResponse } from '@lib/pojo/responsemodel/FeedContentResponse';
-import type { ResponseModel } from '@lib/pojo/responsemodel/ResponseModel';
-import { apiCalls } from '@lib/postmethodService';
+import ArticleAmpRenderer from "@components/commonarticle/ArticleAmpRenderer";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { apiCalls } from "@lib/postmethodService";
+import { undefined } from "astro:schema";
 
 // In-memory cache (persists across requests in serverless/deployed environments with warmup)
 const articleCache = new Map<string, FeedContentResponse>();
 
-async function getArticle(lang: string, articleSlug: string): Promise<FeedContentResponse | null> {
+async function getArticle(
+    lang: string,
+    articleSlug: string,
+): Promise<FeedContentResponse | null> {
     try {
         const cacheKey = `${lang}_${articleSlug}`;
         if (articleCache.has(cacheKey)) {
@@ -23,7 +27,10 @@ async function getArticle(lang: string, articleSlug: string): Promise<FeedConten
         request.lang = lang;
         request.slug = articleSlug;
 
-        const responseResult: ApiResponse = await apiCalls(request, EndPointPaths.getarticlebyslug);
+        const responseResult: ApiResponse = await apiCalls(
+            request,
+            EndPointPaths.getarticlebyslug,
+        );
 
         if (responseResult.status === 0) {
             const response: ResponseModel = responseResult.data;
@@ -42,7 +49,8 @@ async function getArticle(lang: string, articleSlug: string): Promise<FeedConten
 
 // Astro server endpoint logic
 
-const { lang,slug } = Astro.params;
+const { lang, slug } = Astro.params;
+// const lang = Astro.url.pathname.split("/")[1] || "en";
 
 const article: FeedContentResponse | null = await getArticle(lang, slug);
 
@@ -51,6 +59,6 @@ if (!article) {
 }
 
 // Render the AMP page using your existing component
-const ampHtml = await ArticleAmpRenderer({ article, lang });
-return ampHtml;
+const articleAmp = await ArticleAmpRenderer({ article, lang });
+return articleAmp;
 ---
