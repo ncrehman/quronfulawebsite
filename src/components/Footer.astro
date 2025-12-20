@@ -50,7 +50,7 @@ async function getSlugList(lang: string) {
 }
 
 const categoryList: Array<CatResponse> = await getCategory(lang);
-const slugList :Array<CatResponse>= await getSlugList(lang);
+const slugList: Array<CatResponse> = await getSlugList(lang);
 
 // ---------------- Translations ----------------
 const t = {
@@ -84,7 +84,33 @@ const t = {
             class="footer-section logo-sec"
             style={isArabic ? "text-align:right" : ""}
         >
-            <a href={lang === "ar" ? "/" : `/${lang}`} class="logo">
+            <a
+                href={lang === "ar" ? "/" : `/${lang}`}
+                class="logo"
+                aria-label={lang === "ar"
+                    ? "العودة إلى الصفحة الرئيسية"
+                    : "Quronfula home"}
+            >
+                <span
+                    style="
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    "
+                >
+                    {
+                        lang === "ar"
+                            ? "العودة إلى الصفحة الرئيسية"
+                            : "Quronfula Home"
+                    }
+                </span>
+
                 <Image
                     src="/footerlogo.png"
                     alt="Quronfula logo"
