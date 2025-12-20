@@ -18,3 +18,4 @@ Disallow: /*.php$
 
 # Sitemap (very important – helps Google find all your articles fast)
 Sitemap: https://www.quronfula.com/sitemap.xml
+Sitemap: https://www.quronfula.com/news-sitemap.xml
