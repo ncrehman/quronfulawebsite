@@ -15,11 +15,11 @@ export async function GET({ url }) {
   const DEFAULT_LANG = "ar";
 
   const lang = url.searchParams.get("lang") || DEFAULT_LANG;
-const NEWS_WINDOW_HOURS = 48;
-const now = new Date(); // ✅ Date object
-const cutoffTime = new Date(
-  now.getTime() - NEWS_WINDOW_HOURS * 60 * 60 * 1000
-);
+  const NEWS_WINDOW_HOURS = 48;
+  const now = new Date(); // ✅ Date object
+  const cutoffTime = new Date(
+    now.getTime() - NEWS_WINDOW_HOURS * 60 * 60 * 1000
+  );
 
   /* ---------------------------------
      FETCH DYNAMIC SITEMAP DATA
@@ -35,6 +35,7 @@ const cutoffTime = new Date(
   const items: SiteMapData[] = resp?.data?.respList || [];
 
 
+
   /* ---------------------------------
      FILTER: LAST 48 HOURS ONLY
   ---------------------------------- */
@@ -42,6 +43,12 @@ const cutoffTime = new Date(
     item => new Date(item.lastModified) >= cutoffTime
   );
 
+  /* ✅ RETURN 204 IF NO NEWS */
+  if (recentItems.length === 0) {
+    return new Response(null, {
+      status: 204,
+    });
+  }
   /* ---------------------------------
      BUILD NEWS URLS
   ---------------------------------- */
