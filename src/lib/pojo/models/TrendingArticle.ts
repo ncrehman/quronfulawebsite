@@ -10,8 +10,8 @@ export class TrendingArticle {
     public subCatId: string;
     public subCatName: string;
     public articleWritten: Boolean;
-    public publishedAt: Instant;
-    public fetchedAt: Instant;
+    public publishedAt: number;
+    public fetchedAt: number;
     public rankabilityScore: number = 0;
     public createdDate: Date;
 }
