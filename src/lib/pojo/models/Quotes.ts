@@ -21,8 +21,10 @@ export class Quotes {
     public likeCounts: number = 0;
     public readCounts: number = 0;
     public viewCounts: number = 0;
-    public readingTime: number = 0;
-    public wordsCount: number = 0;
+    public en_readingTime: number = 0;
+    public secondary_readingTime: number = 0;
+    public en_wordCount: number = 0;
+    public secondary_wordCount: number = 0;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;

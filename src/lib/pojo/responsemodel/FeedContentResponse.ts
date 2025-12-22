@@ -17,7 +17,7 @@ export class FeedContentResponse {
     public readCounts: number = 0;
     public viewCounts: number = 0;
     public readingTime: number = 0;
-    public wordsCount: number = 0;
+    public wordCount: number = 0;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;

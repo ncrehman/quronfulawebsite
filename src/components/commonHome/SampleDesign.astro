@@ -1,0 +1,71 @@
+---
+// src/pages/index.astro
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Blog</title>
+  <style>
+    :root { --primary: #333; --accent: #ff6600; --bg: #f9f9f9; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--primary); line-height: 1.6; margin: 0; }
+    header { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; background: white; }
+    nav a { margin-left: 1.5rem; text-decoration: none; color: var(--primary); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .hero { margin-bottom: 3rem; }
+    .hero img { width: 100%; height: 500px; object-fit: cover; border-radius: 12px; }
+    .hero h1 { font-size: 2.5rem; margin: 1rem 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card img { width: 100%; height: 200px; object-fit: cover; }
+    .card-content { padding: 1.5rem; }
+    .card h3 { margin-bottom: 0.5rem; }
+    .card-meta { font-size: 0.9rem; color: #666; }
+    @media (max-width: 768px) { .hero h1 { font-size: 2rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>My Blog</h2>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- Hero Featured Post -->
+    <section class="hero">
+      <img src="https://source.unsplash.com/random/1200x800/?nature" alt="Featured" />
+      <h1>Featured: The Future of Web Design in 2025</h1>
+      <p>A deep dive into emerging trends...</p>
+      <p class="card-meta">December 21, 2025 • 10 min read</p>
+    </section>
+
+    <!-- Article Grid -->
+    <section class="grid">
+      <article class="card">
+        <img src="https://source.unsplash.com/random/600x400/?tech" alt="Post 1" />
+        <div class="card-content">
+          <h3>Building Responsive Layouts</h3>
+          <p>Tips for modern CSS Grid and Flexbox...</p>
+          <p class="card-meta">Dec 20, 2025 • 5 min read</p>
+        </div>
+      </article>
+      <!-- Repeat cards for more posts -->
+      <article class="card">
+        <img src="https://source.unsplash.com/random/600x400/?travel" alt="Post 2" />
+        <div class="card-content">
+          <h3>Travel Adventures 2025</h3>
+          <p>Exploring hidden gems...</p>
+          <p class="card-meta">Dec 19, 2025 • 8 min read</p>
+        </div>
+      </article>
+      <!-- Add more as needed -->
+    </section>
+  </div>
+</body>
+</html>

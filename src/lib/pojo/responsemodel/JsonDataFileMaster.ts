@@ -1,6 +1,6 @@
 import { JsonDataFile } from './JsonDataFile';
 
 export class JsonDataFileMaster {
-    public primary: JsonDataFile;
+    public en: JsonDataFile;
     public secondary: JsonDataFile;
 }

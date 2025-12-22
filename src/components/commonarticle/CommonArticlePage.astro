@@ -121,7 +121,7 @@ if (!!article) {
             {
                 "@type": "Organization",
                 "@id": `${baseUrl}#organization`,
-                name: "Quronfula",
+                name: siteName,
                 url: baseUrl,
                 logo: {
                     "@type": "ImageObject",
@@ -182,12 +182,18 @@ if (!!article) {
                     {
                         "@type": "ListItem",
                         position: 2,
-                        name: "Articles",
-                        item: `${baseUrl}article/`,
+                        name: article.cat_name,
+                        item: `${baseUrl}category/${article.cat_slug}`,
                     },
                     {
                         "@type": "ListItem",
                         position: 3,
+                        name: article.sub_catTitle,
+                        item: `${baseUrl}category/${article.cat_slug}/${article.sub_catslug}`,
+                    },
+                    {
+                        "@type": "ListItem",
+                        position: 4,
                         name: article.title,
                         item: canonicalUrl,
                     },
@@ -196,7 +202,7 @@ if (!!article) {
 
             /* ---------------- Article ---------------- */
             {
-                "@type": "Article",
+                "@type": ["Article", "BlogPosting"],
                 "@id": `${canonicalUrl}#article`,
                 isPartOf: {
                     "@id": canonicalUrl,
@@ -204,9 +210,17 @@ if (!!article) {
                 headline: article.title,
                 alternativeHeadline: article.metaTitle,
                 description: article.metaDescription,
+                articleSection: [article.cat_name, article.sub_catTitle],
+
+                inLanguage: article.lang || apiServer.defaultLanguage,
+                wordCount: article.wordCount || 1200,
+                readingTime:
+                    article.readingTime ||
+                    Math.ceil((article.wordCount || 1200) / 200),
                 image: {
                     "@id": `${canonicalUrl}#primaryimage`,
                 },
+
                 author: {
                     "@type": "Person",
                     name: article.author_name,

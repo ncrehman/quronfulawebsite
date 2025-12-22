@@ -25,6 +25,7 @@ import type { KeywordsData } from "./keywords";
 import KeywordsGrid from "./KeywordsGrid.astro";
 import CategoryFeature from "./CategoryFeature.astro";
 import SocialShare from "@components/common/SocialShare.astro";
+import SampleDesign from "./SampleDesign.astro";
 const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -237,6 +238,7 @@ const data = content[lang];
 <Layout>
 	<main>
 		<>
+			<!-- <SampleDesign /> -->
 			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
 			<!-- <section><CategoryFeature lang={lang} /> -->
 		</>

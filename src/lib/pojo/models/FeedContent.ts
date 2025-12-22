@@ -23,8 +23,10 @@ export class FeedContent {
     public likeCounts: number = 0;
     public readCounts: number = 0;
     public viewCounts: number = 0;
-    public readingTime: number = 0;
-    public wordsCount: number = 0;
+    public en_readingTime: number = 0;
+    public secondary_readingTime: number = 0;
+    public en_wordCount: number = 0;
+    public secondary_wordCount: number = 0;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;
@@ -45,6 +47,8 @@ export class FeedContent {
     public en_faqSchema: Array<FaqSchema>;
     public secondary_howToSchema: HowToSchema;
     public secondary_faqSchema: Array<FaqSchema>;
+    public en_links: Array<string>;
+    public secondary_links: Array<string>;
     public isDeleted: Boolean;
     public deletedDate: Date;
     public createdDate: Date;
