@@ -59,6 +59,7 @@ const t = {
         : "Trusted articles covering economy, migration, health, beauty, and lifestyle.",
     quickLinks: isArabic ? "روابط سريعة" : "Quick Links",
     home: isArabic ? "الرئيسية" : "Home",
+    category: isArabic ? "التصنيفات" : "Category",
     article: isArabic ? "المقالات" : "Articles",
     quotes: isArabic ? "اقتباسات" : "Quotes",
     webstories: isArabic ? "قصص الويب" : "Web Stories",
@@ -133,6 +134,11 @@ const t = {
             <h4>{t.quickLinks}</h4>
             <ul>
                 <li><a href={lang === "ar" ? "/" : `/${lang}`}>{t.home}</a></li>
+                 <li>
+                    <a href={lang === "ar" ? "/category" : `/${lang}/category`}
+                        >{t.category}</a
+                    >
+                </li>
                 <li>
                     <a href={lang === "ar" ? "/article" : `/${lang}/article`}
                         >{t.article}</a
