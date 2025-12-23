@@ -74,6 +74,10 @@ const t = {
     followUs: isArabic ? "تابعنا" : "Follow Us",
     siteName: isArabic ? "قرنفلة" : "Quronfula",
     rights: isArabic ? "جميع الحقوق محفوظة" : "All Rights Reserved",
+    disclaimer: isArabic ? "إخلاء المسؤولية" : "Disclaimer",
+    correctionPolicy: isArabic ? "سياسة التصحيح" : "Correction Policy",
+    codeEthics: isArabic ?  "مدونة السلوك المهني" : "Code of Ethics",
+    factchecking: isArabic ?  "سياسة التحقق من المعلومات" : "Fact-Checking Policy",
 };
 ---
 
@@ -169,6 +173,38 @@ const t = {
                             ? "/terms-and-conditions"
                             : `/${lang}/terms-and-conditions`}
                         >{t.termsConditions}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/disclaimer"
+                            : `/${lang}/disclaimer`}
+                        >{t.disclaimer}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/correction-policy"
+                            : `/${lang}/correction-policy`}
+                        >{t.correctionPolicy}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/code-of-ethics"
+                            : `/${lang}/code-of-ethics`}
+                        >{t.codeEthics}</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={lang === "ar"
+                            ? "/fact-checking-policy"
+                            : `/${lang}/fact-checking-policy`}
+                        >{t.factchecking}</a
                     >
                 </li>
             </ul>

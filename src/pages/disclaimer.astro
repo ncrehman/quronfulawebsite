@@ -1,0 +1,9 @@
+---
+import CommonDisclaimer from "@components/common/CommonDisclaimer.astro";
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonDisclaimer {lang} />

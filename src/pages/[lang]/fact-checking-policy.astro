@@ -1,0 +1,11 @@
+---
+import CommonCorrectionPolicy from "@components/common/CommonCorrection-policy.astro";
+import CommonFactCheckingPolicy from "@components/common/CommonFact-checking-policy.astro";
+
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonFactCheckingPolicy {lang} />

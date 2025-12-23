@@ -1,0 +1,11 @@
+---
+import CommonCodeOfEthics from "@components/common/CommonCode-of-ethics.astro";
+import CommonCorrectionPolicy from "@components/common/CommonCorrection-policy.astro";
+
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<CommonCodeOfEthics {lang} />
