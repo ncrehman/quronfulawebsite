@@ -11,8 +11,3 @@ html.dark {
   --card: #111827;
   --border: #1f2937;
 }
-
-
-/* Target category links specifically */
-/* Adjust the selector to match your actual elements */
-/* Common patterns: look for classes like .category, .tag, .category-link, or direct a in a categories section */
