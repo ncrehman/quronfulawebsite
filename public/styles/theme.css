@@ -16,37 +16,3 @@ html.dark {
 /* Target category links specifically */
 /* Adjust the selector to match your actual elements */
 /* Common patterns: look for classes like .category, .tag, .category-link, or direct a in a categories section */
-
-.category-link, /* replace with your actual class */
-a[href^="/category"],
-.categories a,   /* if wrapped in a .categories container */
-.tag,
-.chip {
-  display: inline-flex;         /* or block/flex depending on layout */
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;             /* Minimum recommended height */
-  padding: 12px 16px;            /* Generous internal padding */
-  margin: 8px;                  /* Spacing between items */
-  text-align: center;
-  touch-action: manipulation;    /* Improves tap response */
-  border-radius: 8px;           /* Optional: makes them feel like buttons */
-  background: var(--card);      /* Optional: visual affordance */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional */
-}
-
-/* If they are in a grid or flex container */
-.categories-grid,
-.categories-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive */
-  gap: 16px; /* Space between grid items */
-}
-
-/* Or if horizontal scrolling tags */
-.categories-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 12px;
-  padding: 8px 0;
-}

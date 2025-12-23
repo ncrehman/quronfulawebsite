@@ -9,49 +9,6 @@ import { apiCalls } from "@lib/postmethodService";
 const { lang } = Astro.props;
 const isArabic = lang === "ar";
 
-// ---------------- Fetch Categories ----------------
-const categoryCache = new Map<string, Array<CatResponse>>();
-const categorySlugCache = new Map<string, Array<CatResponse>>();
-
-async function getCategory(lang: string) {
-    const cacheKey = `${lang}_footer_cat`;
-    if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey);
-
-    const req = new RequestModel();
-    req.lang = lang;
-
-    const response: ApiResponse = await apiCalls(
-        req,
-        EndPointPaths.getallcategories,
-    );
-    if (response.status !== 0) return [];
-
-    const list: ResponseModel = response.data;
-    categoryCache.set(cacheKey, list.respList);
-    return list.respList;
-}
-
-async function getSlugList(lang: string) {
-    const cacheKey = `${lang}_footer_slug`;
-    if (categorySlugCache.has(cacheKey)) return categorySlugCache.get(cacheKey);
-
-    const req = new RequestModel();
-    req.lang = lang;
-
-    const response: ApiResponse = await apiCalls(
-        req,
-        EndPointPaths.getallcategoriesslug,
-    );
-    if (response.status !== 0) return [];
-
-    const list: ResponseModel = response.data;
-    categorySlugCache.set(cacheKey, list.respList);
-    return list.respList;
-}
-
-const categoryList: Array<CatResponse> = await getCategory(lang);
-const slugList: Array<CatResponse> = await getSlugList(lang);
-
 // ---------------- Translations ----------------
 const t = {
     footerDesc: isArabic
@@ -77,8 +34,10 @@ const t = {
     rights: isArabic ? "جميع الحقوق محفوظة" : "All Rights Reserved",
     disclaimer: isArabic ? "إخلاء المسؤولية" : "Disclaimer",
     correctionPolicy: isArabic ? "سياسة التصحيح" : "Correction Policy",
-    codeEthics: isArabic ?  "مدونة السلوك المهني" : "Code of Ethics",
-    factchecking: isArabic ?  "سياسة التحقق من المعلومات" : "Fact-Checking Policy",
+    codeEthics: isArabic ? "مدونة السلوك المهني" : "Code of Ethics",
+    factchecking: isArabic
+        ? "سياسة التحقق من المعلومات"
+        : "Fact-Checking Policy",
 };
 ---
 
@@ -134,7 +93,7 @@ const t = {
             <h4>{t.quickLinks}</h4>
             <ul>
                 <li><a href={lang === "ar" ? "/" : `/${lang}`}>{t.home}</a></li>
-                 <li>
+                <li>
                     <a href={lang === "ar" ? "/category" : `/${lang}/category`}
                         >{t.category}</a
                     >
@@ -185,8 +144,7 @@ const t = {
                     <a
                         href={lang === "ar"
                             ? "/disclaimer"
-                            : `/${lang}/disclaimer`}
-                        >{t.disclaimer}</a
+                            : `/${lang}/disclaimer`}>{t.disclaimer}</a
                     >
                 </li>
                 <li>
@@ -201,8 +159,7 @@ const t = {
                     <a
                         href={lang === "ar"
                             ? "/code-of-ethics"
-                            : `/${lang}/code-of-ethics`}
-                        >{t.codeEthics}</a
+                            : `/${lang}/code-of-ethics`}>{t.codeEthics}</a
                     >
                 </li>
                 <li>
@@ -215,40 +172,6 @@ const t = {
                 </li>
             </ul>
         </div>
-
-        <!-- Categories -->
-        <!-- <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
-            <h4>{t.explore}</h4>
-            <ul>
-                {
-                    categoryList?.map((cat) => (
-                        <li>
-                            <a
-                                href={`${lang === "ar" ? "" : `/${lang}`}/category/${cat.slug}`}
-                            >
-                                {cat.title}
-                            </a>
-                        </li>
-                    ))
-                }
-            </ul>
-        </div> -->
-        <!-- <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
-            <h4>{t.tags}</h4>
-            <ul>
-                {
-                    slugList?.map((cat:CatResponse) => (
-                        <li>
-                            <a
-                                href={`${lang === "ar" ? "" : `/${lang}`}/category/${cat.slug}`}
-                            >
-                                {cat.title}
-                            </a>
-                        </li>
-                    ))
-                }
-            </ul>
-        </div> -->
     </div>
 
     <div class="copyright">
