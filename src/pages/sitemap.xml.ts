@@ -60,6 +60,10 @@ export async function GET({ url }) {
     { path: "contact", changefreq: "daily", priority: "0.9" },
     { path: "privacy-policy", changefreq: "daily", priority: "0.9" },
     { path: "terms-and-conditions", changefreq: "daily", priority: "0.9" },
+    { path: "disclaimer", changefreq: "daily", priority: "0.9" },
+    { path: "correction-policy", changefreq: "daily", priority: "0.9" },
+    { path: "code-of-ethics", changefreq: "daily", priority: "0.9" },
+    { path: "fact-checking-policy", changefreq: "daily", priority: "0.9" },
     { path: "author/motiur-rehman", changefreq: "weekly", priority: "0.6" },
   ];
 
