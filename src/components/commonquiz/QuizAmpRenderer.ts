@@ -14,8 +14,6 @@ import { generateBreadcrumb, generateItemList } from "@lib/postmethodService";
 import type { QuizSlide } from "@lib/pojo/responsemodel/QuizSlide";
 import type { QuizResultMeterResponse } from "@lib/pojo/responsemodel/QuizResultMeterResponse";
 
-// Cache compiled template to improve performance
-let cachedTemplate: HandlebarsTemplateDelegate | null = null;
 export interface QuizAmpRendererProps {
   quiz: QuizStoryResponse;
   lang?: string;
@@ -229,17 +227,13 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const commonBg = `/api/gradient?c1=${encodeURIComponent('#FF7E5F')}&c2=${encodeURIComponent('#FEB47B')}`;
   const allPages = firstPage + slideHtml + generateResultPage(commonBg, quiz.result);
 
-  // Load or cache Handlebars template
-  if (!cachedTemplate) {
     const templatePath = path.join(process.cwd(), "src/components/commonquiz/quiz.html");
     const templateSource = fs.readFileSync(templatePath, "utf-8");
-    cachedTemplate = Handlebars.compile(templateSource);
-  }
-
+  const template = Handlebars.compile(templateSource);
   const [c1, c2] = gradients[5 % gradients.length];
   const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
 
-  const html = cachedTemplate({
+  const html = template({
     lang: lang,
     title: quiz.title,
     metaTitle: quiz.metaTitle || quiz.title,
