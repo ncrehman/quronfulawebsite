@@ -27,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
     const imageMobile = payload.data.image_mobile;
     const imageSquare = payload.data.image_square;
     const imageDesktop = payload.data.image_desktop;
-    let selectedImage = payload.data.image || '/category_og.jpg'; // fallback
+    let selectedImage = payload.data.image || '/category_og.webp'; // fallback
 
     try {
         // Detect approximate screen shape

@@ -49,8 +49,8 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
     url: canonicalUrl,
     description: description,
     inLanguage: lang,
-    image: `${apiServer.websiteUrl}ogicon.jpg`,
-    logo: { "@type": "ImageObject", url: `${apiServer.websiteUrl}footerlogo.png` },
+    image: `${apiServer.websiteUrl}ogicon.webp`,
+    logo: { "@type": "ImageObject", url: `${apiServer.websiteUrl}footerlogo.webp` },
     sameAs: [
       "https://www.facebook.com/storycircuit",
       "https://x.com/thestorycircuit",

@@ -172,7 +172,7 @@ export function generateItemList({
           "url": itemUrl,
           "headline": item.title,
           "name": item.title,
-          "image": item.image || creatorUrl + "poster.jpg",
+          "image": item.image || creatorUrl + "poster.webp",
 
           "author": {
             "@type": "Person",
