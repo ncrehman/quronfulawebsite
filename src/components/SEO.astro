@@ -15,6 +15,12 @@ export interface Props {
   media?: Record<string, string>;
   author?: string;
   publishDate?: string;
+  keywords?: Array<string>;
+  section?: string;
+  updatedTime?: string;
+  ogImages?: Array<any>;
+  imageAlt?: string;
+  readingTime?: any;
 }
 const p = Astro.props;
 
@@ -26,6 +32,17 @@ const alternateEn =
 
 const siteName = "Quronfula";
 const canonical = ensureTrailingSlash(p.canonical);
+
+function getOgImageType(url = "") {
+  const cleanUrl = url.split("?")[0].toLowerCase();
+
+  if (cleanUrl.endsWith(".jpg") || cleanUrl.endsWith(".jpeg"))
+    return "image/jpeg";
+  if (cleanUrl.endsWith(".png")) return "image/png";
+  if (cleanUrl.endsWith(".webp")) return "image/webp";
+  if (cleanUrl.endsWith(".gif")) return "image/gif";
+  return "image/jpeg";
+}
 ---
 
 <head>
@@ -49,6 +66,7 @@ const canonical = ensureTrailingSlash(p.canonical);
       <meta property="article:published_time" content={p.publishDate} />
     )
   }
+  {p.updatedTime && <meta property="og:updated_time" content={p.updatedTime} />}
   <!-- FAVICON -->
   <link rel="icon" href="/favicon.ico" />
   <meta name="theme-color" content="#CC4144" />
@@ -57,20 +75,60 @@ const canonical = ensureTrailingSlash(p.canonical);
   <meta property="og:title" content={p.title} />
   <meta property="og:description" content={p.description} />
   <meta property="og:type" content={p.type} />
+  {
+    p.type === "article" && (
+      <>
+        {p.section && <meta property="article:section" content={p.section} />}
+        {p.keywords?.map((keyword, index) => (
+          <meta property="article:tag" content={keyword} />
+        ))}
+        {p.ogImages.map((img) => (
+          <>
+            <meta property="og:image" content={img.url} />
+            <meta property="og:image:secure_url" content={img.url} />
+            <meta property="og:image:width" content={img.width} />
+            <meta property="og:image:height" content={img.height} />
+            <meta property="og:image:type" content={getOgImageType(img.url)} />
+            {p.imageAlt && (
+              <meta property="og:image:alt" content={p.imageAlt} />
+            )}
+          </>
+        ))}
+        <meta property="article:published_time" content={p.publishedTime} />
+        <meta property="article:modified_time" content={p.modifiedTime} />
+        {p.author && (
+          <>
+            <meta name="twitter:label1" content="Written by" />
+            <meta name="twitter:data1" content={p.author} />
+          </>
+        )}
+
+        {p.readingTime && (
+          <>
+            <meta name="twitter:label2" content="Time to read" />
+            <meta name="twitter:data2" content={`${p.readingTime} minutes`} />
+          </>
+        )}
+      </>
+    )
+  }
+  {
+    p.type != "article" && (
+      <>
+        <meta property="og:image" content={p.image} />
+        <meta property="og:image:secure_url" content={p.image} />
+        {p.imageAlt && <meta property="og:image:alt" content={p.imageAlt} />}
+      </>
+    )
+  }
+
   <meta property="og:site_name" content={siteName} />
   <meta property="og:url" content={p.url} />
   <meta property="og:locale" content={p.lang === "ar" ? "ar_AR" : "en_US"} />
-  {p.image && <meta property="og:image" content={p.image} />}
-  {
-    p.type === "article" && p.publishedTime && (
-      <meta property="article:published_time" content={p.publishedTime} />
-    )
-  }
-  {
-    p.type === "article" && p.modifiedTime && (
-      <meta property="article:modified_time" content={p.modifiedTime} />
-    )
-  }
+  <meta
+    property="og:locale:alternate"
+    content={p.lang === "ar" ? "en_US" : "ar_AR"}
+  />
 
   <!-- TWITTER -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -78,6 +136,7 @@ const canonical = ensureTrailingSlash(p.canonical);
   <meta name="twitter:description" content={p.description} />
   {p.image && <meta name="twitter:image" content={p.image} />}
   <meta name="twitter:site" content="@thestorycircuit" />
+  <meta name="twitter:creator" content="@thestorycircuit" />
 
   <!-- STRUCTURED DATA (JSON-LD) -->
   {

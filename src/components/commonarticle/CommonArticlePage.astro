@@ -104,10 +104,14 @@ const jsonLd = [];
 let keywords = [];
 let relatedArticle: Array<ArticleResponse>;
 let cleanHtml: any;
+let ogImages=[];
 if (!!article) {
     cleanHtml = cleanHtmlString(article.description);
     relatedArticle = await fetchRelatedData(lang, article.id);
-    keywords = article.keywords?.split(",").map((k) => k.trim()) || [];
+    keywords  = article.keywords
+  ? article.keywords.split(/[,\u060C\uFF0C]/) .map(k => k.trim()).filter(Boolean): [];
+  keywords.push(article.cat_name)
+  keywords.push(article.sub_catTitle)
     const about = [...new Set(keywords.map((k) => k.trim()))].map(
         (keyword) => ({
             "@type": "Thing",
@@ -321,7 +325,27 @@ if (!!article) {
 
     if (faqSchema) jsonLd.push(faqSchema);
     if (howToSchema) jsonLd.push(howToSchema);
+
+    
+ogImages = [
+  {
+    url: article.landScapeBanner,
+    width: 1200,
+    height: 630,
+  },
+  {
+    url: article.bannerImage,
+    width: 720,
+    height: 1280,
+  },
+  {
+    url: article.squareBanner,
+    width: 720,
+    height: 720,
+  },
+].filter(img => img.url);
 }
+
 ---
 
 {
@@ -341,6 +365,12 @@ if (!!article) {
             }}
             author={article.author_name}
             publishDate={new Date(article.publishDate).toISOString()}
+            keywords={keywords}
+            section={article.sub_catTitle}
+            updatedTime={new Date(article.updatedAt).toISOString()}
+            ogImages ={ogImages }
+            imageAlt={article.imageAlt}
+            readingTime={article.readingTime}
         />
     )
 }
