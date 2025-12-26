@@ -17,145 +17,160 @@ const navItems = [
 ---
 
 <style>
-/* ===============================
-   HEADER (CLS SAFE)
+  /* ===============================
+   THEME VARIABLES
 ================================ */
-
-header {
-  height: 72px;                 /* LOCKED HEIGHT */
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-sizing: border-box;
-  border-bottom: 1px solid #eee;
-
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #f1efef;
-}
-
-/* ===============================
-   LOGO (FIXED BOX)
-================================ */
-
-.logo {
-  width: 88px;
-  height: 88px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-
-.header-logo {
-  width: 66px;
-  height: 66px;
-  display: block;
-}
-
-/* ===============================
-   DESKTOP NAV (LOCKED)
-================================ */
-
-nav.desktop {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  white-space: nowrap;
-}
-
-nav.desktop a {
-  text-decoration: none;
-  color: #333;
-  font-size: 15px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-}
-
-/* Language switch space reserved */
-.lang-switch {
-  min-width: 88px;
-  text-align: center;
-  background: #f4f4f4;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: none;
-  color: #333;
-  white-space: nowrap;
-}
-
-/* ===============================
-   HAMBURGER
-================================ */
-
-.hamburger {
-  display: none;
-  font-size: 28px;
-  cursor: pointer;
-  line-height: 1;
-}
-
-/* ===============================
-   MOBILE MENU (NO CLS)
-================================ */
-
-.mobile-menu {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 260px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,.15);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  z-index: 1001;
-
-  transform: translateX(var(--menu-pos));
-  transition: transform .3s ease;
-  will-change: transform;
-}
-
-.mobile-menu a {
-  text-decoration: none;
-  font-size: 17px;
-  color: #333;
-}
-
-.close-btn {
-  font-size: 32px;
-  cursor: pointer;
-  line-height: 1;
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
-
-@media (max-width: 768px) {
-  nav.desktop {
-    display: none;
+  :root {
+    --bg-header: #b6babd;
+    --bg-menu: #ffffff;
+    --text-primary: #222;
+    --border-color: #e5e5e5;
   }
 
-  .hamburger {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-header: #b6babd;
+      --bg-menu: #ffffff;
+      --text-primary: #222;
+      --border-color: #e5e5e5;
+    }
+  }
+
+  /* ===============================
+   HEADER
+================================ */
+  header {
+    position: sticky;
+    top: 0;
+    inset-inline: 0; /* logical left + right */
+
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-inline: 16px;
+
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1000;
+  }
+
+  header {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  /* @media (max-width: 768px) {
+    header {
+      width: 100vw;
+      max-width: 100vw;
+
+      padding-left: calc(16px + env(safe-area-inset-left));
+      padding-right: calc(16px + env(safe-area-inset-right));
+    }
+  } */
+  /* ===============================
+   LOGO
+================================ */
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-logo {
+    width: 40px;
+    height: auto;
     display: block;
   }
-}
 
-/* ===============================
-   MENU STATE
+  /* ===============================
+   DESKTOP NAV
 ================================ */
+  nav.desktop {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-body.menu-open .mobile-menu {
-  transform: translateX(0);
-}
+  nav.desktop a {
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 15px;
+  }
+
+  /* ===============================
+   HAMBURGER
+================================ */
+  .hamburger {
+    display: none;
+    font-size: 26px;
+    padding: 10px;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+
+  /* ===============================
+   MOBILE MENU
+================================ */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: var(--bg-menu);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 1100;
+    transition: transform 0.3s ease;
+    will-change: transform;
+  }
+
+  .mobile-menu a {
+    font-size: 18px;
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+
+  .close-btn {
+    font-size: 30px;
+    cursor: pointer;
+    align-self: flex-end;
+  }
+
+  /* RTL / LTR SLIDE */
+  .mobile-menu.ltr {
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .mobile-menu.rtl {
+    left: 0;
+    transform: translateX(-100%);
+  }
+
+  body.menu-open .mobile-menu {
+    transform: translateX(0);
+  }
+
+  body.menu-open {
+   overflow: hidden;
+  }
+
+  /* ===============================
+   RESPONSIVE
+================================ */
+  @media (max-width: 768px) {
+    nav.desktop {
+      display: none;
+    }
+
+    .hamburger {
+      display: block;
+    }
+  }
 </style>
 
 <header dir={isArabic ? "rtl" : "ltr"}>
@@ -165,7 +180,7 @@ body.menu-open .mobile-menu {
       <Image
         src="/headerlogo.webp"
         alt="Quronfula Logo"
-        width={140}
+        width={40}
         height={40}
         loading="eager"
         fetchpriority="high"
@@ -187,15 +202,12 @@ body.menu-open .mobile-menu {
   </nav>
 
   <!-- HAMBURGER -->
-  <div class="hamburger">☰</div>
+  <div class="hamburger" aria-label="Menu">☰</div>
 </header>
 
 <!-- MOBILE MENU -->
-<div
-  class="mobile-menu"
-  style={`--menu-pos: ${isArabic ? "100%" : "-100%"};`}
->
-  <span class="close-btn">×</span>
+<div class={`mobile-menu ${isArabic ? "rtl" : "ltr"}`}>
+  <span class="close-btn" aria-label="Close Menu">×</span>
 
   {
     navItems.map((item) => (
@@ -207,28 +219,29 @@ body.menu-open .mobile-menu {
 
   <LanguageSwitcher lang={lang} currentPath={currentPath} />
 </div>
-
 <script>
   const body = document.body;
   const hamburger = document.querySelector(".hamburger");
   const closeBtn = document.querySelector(".close-btn");
-  const mobileMenu = document.querySelector(".mobile-menu");
+  const mobileLinks = document.querySelectorAll(".mobile-menu a");
 
-  hamburger?.addEventListener("click", (e) => {
-    e.stopPropagation();
+  hamburger?.addEventListener("click", () => {
     body.classList.add("menu-open");
   });
 
-  closeBtn?.addEventListener("click", (e) => {
-    e.stopPropagation();
+  closeBtn?.addEventListener("click", () => {
     body.classList.remove("menu-open");
   });
 
-  mobileMenu?.addEventListener("click", (e) => {
-    e.stopPropagation();
+  mobileLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      body.classList.remove("menu-open");
+    });
   });
 
-  document.addEventListener("click", () => {
-    body.classList.remove("menu-open");
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      body.classList.remove("menu-open");
+    }
   });
 </script>

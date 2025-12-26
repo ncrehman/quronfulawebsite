@@ -1,46 +1,9 @@
-/* :root {
-    --content-max-width: 780px;
-}
-
-html[dir="rtl"] {
-    direction: rtl;
-}
-
-h1 {
-    font-size: 2rem;
+html,
+body {
     margin: 0;
-    line-height: 1.3;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
 }
-
-nav a,
-footer a,
-.nav a,
-.menu a,
-.breadcrumb a,
-.site-links a {
-    speak: none;
-    font-weight: inherit;
-    font-size: inherit;
-}
-
-nav,
-footer,
-.header,
-.site-header,
-.site-footer {
-    speak: none;
-}
-
-a, button, .clickable {
-    min-height: 28px;
-    min-width: 28px;
-    padding: 4px 6px; 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2px; 
-}
-
-a + a, button + button {
-    margin-left: 3px; 
-} */

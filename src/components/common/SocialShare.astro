@@ -133,9 +133,9 @@ const encodedTitle = encodeURIComponent(title);
 
 <style>
     /* =========================================
-       SOCIAL SHARE – NO FLASH / NO BREAK ON LOAD
-       Removed entrance animations that cause FOUC in Astro
-       Kept beautiful hover effects
+       SOCIAL SHARE – DARK MODE COMPATIBLE
+       Uses global vars from article CSS for consistency
+       Works on iOS/iPhone via prefers-color-scheme
     ========================================= */
 
     .social-share-container {
@@ -148,7 +148,7 @@ const encodedTitle = encodeURIComponent(title);
         margin-bottom: 1.8rem;
         font-size: 1.4rem;
         font-weight: 700;
-        color: #1f2937;
+        color: var(--text-color); /* Uses global var for light/dark */
     }
 
     .social-buttons {
@@ -169,7 +169,7 @@ const encodedTitle = encodeURIComponent(title);
         color: white;
         text-decoration: none;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow; works in both modes */
         min-width: 160px;
         justify-content: center;
     }
@@ -184,13 +184,13 @@ const encodedTitle = encodeURIComponent(title);
         white-space: nowrap;
     }
 
-    /* Hover effects – still beautiful and animated */
+    /* Hover effects */
     .social-btn:hover {
         transform: translateY(-6px) scale(1.05);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
     }
 
-    /* Brand colors */
+    /* Brand colors (fixed for branding) */
     .twitter {
         background-color: #000000;
     }
@@ -205,6 +205,16 @@ const encodedTitle = encodeURIComponent(title);
     }
     .whatsapp {
         background-color: #25d366;
+    }
+
+    /* Optional: Adjust shadows for dark mode if needed */
+    @media (prefers-color-scheme: dark) {
+        .social-btn {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Slightly darker base shadow */
+        }
+        .social-btn:hover {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
     }
 
     @media (max-width: 640px) {

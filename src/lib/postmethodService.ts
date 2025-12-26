@@ -303,10 +303,10 @@ export function cleanHtmlString(input: string): string {
     });
 
   // 🌟 Add spacing before heading-like paragraphs
-  cleanedHtml = cleanedHtml
-    .replace(/(<p[^>]*>[^<]*<\/p>)\s*(<p[^>]*>\s*<(strong|b)>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
-    .replace(/(<\/p>)\s*(<p[^>]*>\s*<(strong|b|em)[^>]*>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
-    .replace(/(<br\/?>\s*){3,}/g, '<br/><br/>');
+  // cleanedHtml = cleanedHtml
+  //   .replace(/(<p[^>]*>[^<]*<\/p>)\s*(<p[^>]*>\s*<(strong|b)>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
+  //   .replace(/(<\/p>)\s*(<p[^>]*>\s*<(strong|b|em)[^>]*>[^<]+<\/\3>\s*<\/p>)/gi, '$1<br/><br/>$2')
+  //   .replace(/(<br\/?>\s*){3,}/g, '<br/><br/>');
 
   // === Style Mapping to Tailwind ===
   const styleToTailwindMap = [

@@ -1,12 +1,11 @@
 ---
 import Footer from "@components/Footer.astro";
-import Header from "../components/Header.astro";
-
+import Header from "@components/Header.astro";
 import ClientAfterLoad from "@components/ClientAfterLoad.astro";
 import "@fontsource/almarai";
 
 const currentPath = Astro.url.pathname;
-let lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
 ---
 
 <!doctype html>
@@ -15,172 +14,150 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 		<meta charset="UTF-8" />
 		<meta name="generator" content="Quronfula" />
 		<meta name="google-adsense-account" content="ca-pub-4100521225351324" />
-		<link
-			rel="stylesheet"
-			href="/styles/theme.css"
-			media="print"
-			onload="this.media='all'"
-		/>
-		<noscript><link rel="stylesheet" href="/styles/theme.css" /></noscript>
+
 		<link rel="icon" href="/favicon.ico" />
-		<link
-			rel="apple-touch-icon"
-			sizes="57x57"
-			href="/icons/apple-icon-57x57.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="60x60"
-			href="/icons/apple-icon-60x60.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="72x72"
-			href="/icons/apple-icon-72x72.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="76x76"
-			href="/icons/apple-icon-76x76.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="114x114"
-			href="/icons/apple-icon-114x114.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="120x120"
-			href="/icons/apple-icon-120x120.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="144x144"
-			href="/icons/apple-icon-144x144.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="152x152"
-			href="/icons/apple-icon-152x152.png"
-		/>
-		<link
-			rel="apple-touch-icon"
-			sizes="180x180"
-			href="/icons/apple-icon-180x180.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="192x192"
-			href="/icons/android-icon-192x192.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="32x32"
-			href="/icons/favicon-32x32.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="96x96"
-			href="/icons/favicon-96x96.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="16x16"
-			href="/icons/favicon-16x16.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="144x144"
-			href="/icons/android-icon-144x144.png"
-		/>
-		<link
-			rel="icon"
-			type="image/png"
-			sizes="192x192"
-			href="/icons/android-icon-192x192.png"
-		/>
 		<link rel="manifest" href="/icons/manifest.json" />
-		<meta name="msapplication-TileColor" content="#ffffff" />
-		<meta
-			name="msapplication-TileImage"
-			content="/icons/ms-icon-144x144.png"
-		/>
 		<meta name="theme-color" content="#ffffff" />
-		<meta
-			name="p:domain_verify"
-			content="63128a8d24e6efaa851d8e236013a715"
-		/>
 
 		<style>
+			/* ===============================
+       FONT FALLBACK
+    ================================ */
 			@font-face {
 				font-family: "Almarai Fallback";
 				src: local("Tahoma"), local("Arial");
 				ascent-override: 93%;
 				descent-override: 24%;
 				line-gap-override: 0%;
-				size-adjust: 103.5%; /* This is the most important for width matching */
+				size-adjust: 103.5%;
 			}
+
 			html {
 				font-family:
 					system-ui,
 					-apple-system,
-					sans-serif; /* English */
+					sans-serif;
+				overflow-x: hidden;
 			}
 
 			html[lang="ar"] {
 				font-family:
-					"Almarai",
-					"Almarai Fallback",
-					system-ui,
-					-apple-system,
-					sans-serif;
+					"Almarai", "Almarai Fallback", system-ui, sans-serif;
 			}
+
+			/* ===============================
+       THEME VARIABLES
+    ================================ */
 			:root {
 				--bg: #ffffff;
 				--text: #0f172a;
-				--card: #ffffff;
 				--border: #e5e7eb;
-				--card-bg: #ffffff;
-				--card-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-				--footer-bg: var(--bg);
-				--footer-text: var(--text);
-				--bg-surface: #ffffff;
-				--bg-surface-elevated: #f9fafb;
-				--text-primary: #111827;
-				--text-secondary: #6b7280;
-				--border-subtle: rgba(0, 0, 0, 0.08);
-				--shadow-card: 0 6px 16px rgba(0, 0, 0, 0.1);
+				--ad-bg: #ffffff;
 			}
 
-			html.dark {
-				--bg: #0b0f19;
-				--text: #e5e7eb;
-				--card: #111827;
-				--border: #1f2937;
-			}
-			[data-theme="dark"] {
-				--card-bg: #0f172a;
-				--card-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
-			}
-
-			.article-card {
-				background: var(--card-bg);
-				box-shadow: var(--card-shadow);
-			}
 			@media (prefers-color-scheme: dark) {
-				html {
-					color-scheme: dark;
-				}
-				html {
+				:root {
 					--bg: #0b0f19;
 					--text: #e5e7eb;
-					--card: #111827;
 					--border: #1f2937;
+					--ad-bg: #0f172a;
+				}
+			}
+
+			/* ===============================
+       GLOBAL RESET
+    ================================ */
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				max-width: 100%;
+				overflow-x: hidden;
+			}
+
+			body {
+				background: var(--bg);
+				color: var(--text);
+			}
+
+			/* ===============================
+       HEADER SAFETY FIX
+    ================================ */
+			header {
+				width: 100%;
+				max-width: 100vw;
+				overflow-x: hidden;
+			}
+
+			/* ===============================
+       MAIN GRID LAYOUT
+    ================================ */
+			main {
+				display: grid;
+				grid-template-columns: minmax(0, 2fr) minmax(0, 8fr) minmax(
+						0,
+						2fr
+					);
+				gap: 16px;
+
+				width: 100%;
+				max-width: 100vw;
+				margin: 0 auto;
+				padding: 16px;
+
+				overflow-x: hidden;
+			}
+
+			/* ===============================
+       ADS
+    ================================ */
+			.ad-left,
+			.ad-right {
+				position: sticky;
+				top: 88px;
+				height: fit-content;
+				max-width: 100%;
+			}
+
+			.ad-placeholder {
+				width: 100%;
+				aspect-ratio: 300 / 600;
+				background: var(--ad-bg);
+				border: 1px solid var(--border);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 14px;
+				color: #6b7280;
+			}
+
+			/* ===============================
+       CONTENT
+    ================================ */
+			.content {
+				width: 100%;
+				min-width: 0;
+			}
+
+			/* ===============================
+       MOBILE
+    ================================ */
+			@media (max-width: 1024px) {
+				main {
+					grid-template-columns: 1fr;
+					padding: 12px;
+				}
+
+				.ad-left,
+				.ad-right {
+					display: none;
 				}
 			}
 		</style>
@@ -189,18 +166,15 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 	<body>
 		<Header lang={lang} currentPath={Astro.url.pathname} />
 
-		<main class="layout-grid">
-			<!-- LEFT AD (Desktop only) -->
+		<main>
 			<aside class="ad-left">
 				<div class="ad-placeholder"></div>
 			</aside>
 
-			<!-- MAIN CONTENT -->
 			<section class="content">
 				<slot />
 			</section>
 
-			<!-- RIGHT AD (Desktop only) -->
 			<aside class="ad-right">
 				<div class="ad-placeholder"></div>
 			</aside>
@@ -210,54 +184,3 @@ let lang = currentPath.startsWith("/en") ? "en" : "ar";
 		<ClientAfterLoad />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	/* Desktop Grid: 2 - 8 - 2 */
-	.layout-grid {
-		display: grid;
-		grid-template-columns: 2fr 8fr 2fr;
-		gap: 16px;
-		width: 100%;
-		padding: 0;
-		min-height: 100vh;
-	}
-
-	/* Sticky Sidebars */
-	.ad-left,
-	.ad-right {
-		position: sticky;
-		top: 80px; /* Dfistance from top while scrolling (adjust as needed) */
-		height: fit-content;
-	}
-
-	/* Hide ads completely on mobile */
-	@media (max-width: 768px) {
-		.layout-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.ad-left,
-		.ad-right {
-			display: none !important;
-		}
-	}
-
-	/* CLS-safe placeholder */
-	.ad-placeholder {
-		width: 100%;
-		aspect-ratio: 300 / 600;
-		background: #fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #999;
-		font-size: 14px;
-	}
-</style>
