@@ -45,6 +45,9 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        inlineStylesheets: 'always',  // Inlines ALL CSS into <style> tags in HTML
+    },
 });
 // import { defineConfig } from "astro/config";
 // import sitemap from "@astrojs/sitemap";

@@ -35,6 +35,7 @@ const t = {
     disclaimer: isArabic ? "إخلاء المسؤولية" : "Disclaimer",
     correctionPolicy: isArabic ? "سياسة التصحيح" : "Correction Policy",
     codeEthics: isArabic ? "مدونة السلوك المهني" : "Code of Ethics",
+    policies: isArabic ? "السياسات" : "Policies",
     factchecking: isArabic
         ? "سياسة التحقق من المعلومات"
         : "Fact-Checking Policy",
@@ -125,6 +126,13 @@ const t = {
                         >{t.contact}</a
                     >
                 </li>
+                
+            </ul>
+        </div>
+        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+            <h4>{t.policies}</h4>
+            <ul>
+                
                 <li>
                     <a
                         href={lang === "ar"
