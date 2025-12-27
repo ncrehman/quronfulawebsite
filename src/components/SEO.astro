@@ -79,9 +79,9 @@ function getOgImageType(url = "") {
     p.type === "article" && (
       <>
         {p.section && <meta property="article:section" content={p.section} />}
-        {p.keywords?.map((keyword, index) => (
-          <meta property="article:tag" content={keyword} />
-        ))}
+          {p.keywords?.map((keyword, index) => (
+            <meta property="article:tag" content={keyword} />
+          ))}
         {p.ogImages.map((img) => (
           <>
             <meta property="og:image" content={img.url} />

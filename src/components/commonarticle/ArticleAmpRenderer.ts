@@ -99,6 +99,47 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   const alternatesLanguagesAMP = Object.fromEntries(
     Object.entries(alternatesLanguages).map(([lang, url]) => [lang, `${url}`])
   );
+
+
+  function getOgImageType(url = "") {
+    const cleanUrl = url.split("?")[0].toLowerCase();
+
+    if (cleanUrl.endsWith(".webp") || cleanUrl.endsWith(".jpeg"))
+      return "image/jpeg";
+    if (cleanUrl.endsWith(".png")) return "image/png";
+    if (cleanUrl.endsWith(".webp")) return "image/webp";
+    if (cleanUrl.endsWith(".gif")) return "image/gif";
+    return "image/jpeg";
+  }
+  let ogImages = [
+    {
+      url: article.landScapeBanner,
+      width: 1200,
+      height: 630,
+      imageAlt: article.imageAlt,
+      type: getOgImageType(article.landScapeBanner),
+    },
+    {
+      url: article.bannerImage,
+      width: 720,
+      height: 1280,
+      imageAlt: article.imageAlt,
+      type: getOgImageType(article.bannerImage),
+    },
+    {
+      url: article.squareBanner,
+      width: 720,
+      height: 720,
+      imageAlt: article.imageAlt,
+      type: getOgImageType(article.squareBanner),
+    },
+  ].filter(img => img.url);
+
+  let keywords = article.keywords
+    ? article.keywords.split(/[,\u060C\uFF0C]/).map(k => k.trim()).filter(Boolean) : [];
+  keywords.push(article.cat_name);
+  keywords.push(article.sub_catTitle);
+
   const templatePath = path.join(
     process.cwd(),
     "src/components/commonarticle/article.html"
@@ -120,7 +161,18 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     jsonLd: JSON.stringify(jsonLd),
     faqJsonLD: JSON.stringify(faqSchema),
     langPrefix: langPrefix,
-    hrefData: alternatesLanguagesAMP
+    hrefData: alternatesLanguagesAMP,
+    author: article.author_name,
+    updatedTime: new Date(article.updatedAt).toISOString(),
+    publishedTime: new Date(article.publishDate).toISOString(),
+    modified_time: new Date(article.updatedAt).toISOString(),
+    section: article.sub_catTitle,
+    keywords: keywords,
+    ogImages: ogImages,
+    readingTime: article.readingTime,
+    locale: lang === "ar" ? "ar_AR" : "en_US",
+    alternate: lang === "ar" ? "en_US" : "ar_AR",
+    siteName: siteName,
   });
 
   return new Response(html, {

@@ -9,23 +9,52 @@
     <meta name="description" content="{{metaDescription}}">
 
     <!-- Essential SEO meta tags -->
-    <meta name="robots" content="index, follow">
-    <!-- <meta name="keywords" content="{{keywords}}"> -->
     <meta property="og:title" content="{{metaTitle}}">
     <meta property="og:description" content="{{metaDescription}}">
-    <meta property="og:image" content="{{featuredImage}}">
     <meta property="og:url" content="{{canonicalUrl}}">
     <meta property="og:type" content="article">
+
+    <meta name="author" content="{{author}}" />
+    <meta property="og:updated_time" content="{{updatedTime}}" />
+    <meta property="article:section" content="{{section}}" />
+    {{#each keywords}}
+    <meta property="article:tag" content="{{this}}" />
+    {{/each}}
+
+    {{#each ogImages}}
+    <meta property="og:image" content="{{this.url}}" />
+    <meta property="og:image:secure_url" content="{{this.url}}" />
+    <meta property="og:image:width" content="{{this.width}}" />
+    <meta property="og:image:height" content="{{this.height}}" />
+    <meta property="og:image:type" content="{{this.type}}" />
+    <meta property="og:image:alt" content="{{this.imageAlt}}" />
+    {{/each}}
+    <meta property="article:published_time" content="{{publishedTime}}" />
+    <meta property="article:modified_time" content="{{modifiedTime}}" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="{{author}}" />
+    <meta name="twitter:label2" content="Time to read" />
+    <meta name="twitter:data2" content="{{readingTime}} minutes" />
+
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta property="og:site_name" content="{{siteName}}" />
+    <meta property="og:locale" content="{{locale}}" />
+    <meta property="og:locale:alternate" content="{{alternate}}" />
+
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{metaTitle}}">
     <meta name="twitter:description" content="{{metaDescription}}">
     <meta name="twitter:image" content="{{featuredImage}}">
+    <meta name="twitter:site" content="@thestorycircuit" />
+    <meta name="twitter:creator" content="@thestorycircuit" />
+
 
     <!-- Canonical MUST point to normal article -->
     <link rel="canonical" href="{{canonicalUrl}}">
     {{#each hrefData}}
     <link rel="alternate" hreflang="{{@key}}" href="{{this}}">
     {{/each}}
+
     <!-- <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
         rel="stylesheet"> -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
