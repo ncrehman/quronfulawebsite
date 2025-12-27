@@ -15,7 +15,7 @@ const lang = currentPath.startsWith("/en") ? "en" : "ar";
 		<meta name="generator" content="Quronfula" />
 		<meta name="google-adsense-account" content="ca-pub-4100521225351324" />
 		<meta name="referrer" content="no-referrer-when-downgrade" />
-		
+
 		<link rel="icon" href="/favicon.ico" />
 		<link rel="manifest" href="/icons/manifest.json" />
 		<meta name="theme-color" content="#ffffff" />
@@ -162,6 +162,19 @@ const lang = currentPath.startsWith("/en") ? "en" : "ar";
 				}
 			}
 		</style>
+
+		<script type="text/partytown" define:vars={{ gaID: "G-KSSCTHQE28" }}>
+			window.dataLayer = window.dataLayer || [];
+			window.gtag = function () {
+				dataLayer.push(arguments);
+			};
+			gtag("js", new Date());
+			gtag("config", gaID);
+		</script>
+		<script
+			type="text/partytown"
+			src="https://www.googletagmanager.com/gtag/js?id=G-KSSCTHQE28"
+		></script>
 	</head>
 
 	<body>
