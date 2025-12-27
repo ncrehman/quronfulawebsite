@@ -14,10 +14,14 @@ const isArabic = currentLang === "ar";
 // Build SWITCH URL
 // AR → EN: /en + same path
 // EN → AR: remove /en prefix
-const switchTo = isArabic
-	? `/en${currentPath}`
-	: currentPath.replace(/^\/en/, "") || "/";
+const normalizePath = (path) =>
+  path !== "/" ? path.replace(/\/+$/, "") : "/";
 
+const switchTo = normalizePath(
+  isArabic
+    ? `/en${currentPath}`
+    : currentPath.replace(/^\/en/, "") || "/"
+);
 ---
 
 <style>
