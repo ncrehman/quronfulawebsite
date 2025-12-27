@@ -16,5 +16,9 @@ export default defineConfig({
         optimizeDeps: {
             include: ['axobject-query'],
         },
+        build: {
+            minify: 'esbuild', // default but explicit is better
+             sourcemap: false,
+        }
     },
 });

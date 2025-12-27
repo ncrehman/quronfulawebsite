@@ -70,7 +70,12 @@ function getOgImageType(url = "") {
   <!-- FAVICON -->
   <link rel="icon" href="/favicon.ico" />
   <meta name="theme-color" content="#CC4144" />
-
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="robots"
+    content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+  />
+  <meta name="msapplication-TileImage" content="/270x270.webp" />
   <!-- OPEN GRAPH -->
   <meta property="og:title" content={p.title} />
   <meta property="og:description" content={p.description} />
@@ -79,9 +84,9 @@ function getOgImageType(url = "") {
     p.type === "article" && (
       <>
         {p.section && <meta property="article:section" content={p.section} />}
-          {p.keywords?.map((keyword, index) => (
-            <meta property="article:tag" content={keyword} />
-          ))}
+        {p.keywords?.map((keyword, index) => (
+          <meta property="article:tag" content={keyword} />
+        ))}
         {p.ogImages.map((img) => (
           <>
             <meta property="og:image" content={img.url} />
