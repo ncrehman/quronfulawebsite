@@ -132,103 +132,113 @@ const encodedTitle = encodeURIComponent(title);
 </div>
 
 <style>
-    /* =========================================
-       SOCIAL SHARE – DARK MODE COMPATIBLE
-       Uses global vars from article CSS for consistency
-       Works on iOS/iPhone via prefers-color-scheme
-    ========================================= */
+   /* =========================================
+   SOCIAL SHARE – DARK MODE COMPATIBLE
+   Uses global vars from article CSS for consistency
+   Works on iOS/iPhone via prefers-color-scheme
+========================================= */
 
-    .social-share-container {
-        margin: 4rem 0;
-        text-align: center;
-        padding: 2rem;
-    }
+.social-share-container {
+    margin: 4rem 0;
+    text-align: center;
+    padding: 2rem;
+}
 
-    .share-label {
-        margin-bottom: 1.8rem;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--text-color); /* Uses global var for light/dark */
-    }
+.share-label {
+    margin-bottom: 1.8rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-color); /* Uses global var for light/dark */
+}
 
-    .social-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1.2rem;
-        flex-wrap: wrap;
-    }
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
 
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1.4rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white; /* Default text color for dark brand backgrounds */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-width: 160px;
+    justify-content: center;
+}
+
+.social-btn svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    fill: currentColor; /* Ensures icon matches text color */
+}
+
+.btn-text {
+    white-space: nowrap;
+}
+
+/* Hover effects */
+.social-btn:hover {
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    opacity: 0.95; /* Slight dim on hover for better feedback */
+}
+
+/* Brand background colors */
+.twitter {
+    background-color: #000000;
+}
+.facebook {
+    background-color: #1877f2;
+}
+.linkedin {
+    background-color: #0a66c2;
+}
+.reddit {
+    background-color: #ff4500;
+}
+.whatsapp {
+    background-color: #25d366;
+}
+
+/* FIX: Dark text + icons for light/bright brand backgrounds to meet WCAG contrast (≥4.5:1) */
+.facebook,
+.reddit,
+.whatsapp {
+    color: #1a1a1a; /* Very dark gray – excellent contrast on light backgrounds */
+}
+
+/* Optional: Adjust shadows for dark mode */
+@media (prefers-color-scheme: dark) {
     .social-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        padding: 0.9rem 1.4rem;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow; works in both modes */
-        min-width: 160px;
-        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
-
-    .social-btn svg {
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-    }
-
-    .btn-text {
-        white-space: nowrap;
-    }
-
-    /* Hover effects */
     .social-btn:hover {
-        transform: translateY(-6px) scale(1.05);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
     }
+}
 
-    /* Brand colors (fixed for branding) */
-    .twitter {
-        background-color: #000000;
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .social-buttons {
+        gap: 1rem;
     }
-    .facebook {
-        background-color: #1877f2;
+    .social-btn {
+        min-width: 140px;
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
     }
-    .linkedin {
-        background-color: #0a66c2;
+    .social-btn svg {
+        width: 22px;
+        height: 22px;
     }
-    .reddit {
-        background-color: #ff4500;
-    }
-    .whatsapp {
-        background-color: #25d366;
-    }
-
-    /* Optional: Adjust shadows for dark mode if needed */
-    @media (prefers-color-scheme: dark) {
-        .social-btn {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Slightly darker base shadow */
-        }
-        .social-btn:hover {
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
-        }
-    }
-
-    @media (max-width: 640px) {
-        .social-buttons {
-            gap: 1rem;
-        }
-        .social-btn {
-            min-width: 140px;
-            padding: 0.8rem 1.2rem;
-            font-size: 0.95rem;
-        }
-        .social-btn svg {
-            width: 22px;
-            height: 22px;
-        }
-    }
+}
 </style>

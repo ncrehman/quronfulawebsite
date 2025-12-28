@@ -24,6 +24,18 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   lang = lang ?? 'ar';
   const baseUrl = lang !== "ar" ? `${apiServer.websiteUrl}${lang}/` : apiServer.websiteUrl;
   const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`.replace(/\/$/, "");
+  const website = apiServer.websiteUrl.replace(/\/$/, "");
+  const alternatesLanguages = {
+    en: `${website}/quiz/${quiz.slug}`,
+    hi: `${website}/hi/quiz/${quiz.slug}`,
+    "x-default": `${website}/quiz/${quiz.slug}`,
+  };
+  const hreflangLinks = Object.entries(alternatesLanguages)
+    .map(
+      ([lang, url]) =>
+        `<link rel="alternate" hreflang="${lang}" href="${url}" />`
+    )
+    .join("\n");
   const rssUrl = `${baseUrl}quiz/rss.xml`;
   const siteName = metaConfig.siteName[lang];
   const description = metaConfig.description[lang];
@@ -109,7 +121,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const breadCrumb = generateBreadcrumb("Menu", [
     { name: siteName, url: "https://www.quronfula.com/" },
     { name: "Quiz Visual Story", url: "https://www.quronfula.com/quiz/" },
-    { name: quiz.metaTitle, url: canonicalUrl}
+    { name: quiz.metaTitle, url: canonicalUrl }
   ]);
 
   const gradients = [
@@ -227,8 +239,8 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const commonBg = `/api/gradient?c1=${encodeURIComponent('#FF7E5F')}&c2=${encodeURIComponent('#FEB47B')}`;
   const allPages = firstPage + slideHtml + generateResultPage(commonBg, quiz.result);
 
-    const templatePath = path.join(process.cwd(), "src/components/commonquiz/quiz.html");
-    const templateSource = fs.readFileSync(templatePath, "utf-8");
+  const templatePath = path.join(process.cwd(), "src/components/commonquiz/quiz.html");
+  const templateSource = fs.readFileSync(templatePath, "utf-8");
   const template = Handlebars.compile(templateSource);
   const [c1, c2] = gradients[5 % gradients.length];
   const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
@@ -239,6 +251,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     metaTitle: quiz.metaTitle || quiz.title,
     metaDescription: quiz.metaDescription,
     canonicalUrl,
+    hreflangLinks,
     rssUrl,
     storyTitle: quiz.title,
     posterImage: quiz.bannerImage,

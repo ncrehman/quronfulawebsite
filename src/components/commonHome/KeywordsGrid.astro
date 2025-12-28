@@ -9,9 +9,9 @@ interface Props {
 const { items, lang } = Astro.props;
 ---
 <div class="keywords-section">
-    <h3 class="keywords-title">
+    <h2 class="keywords-title">
         {lang === "ar" ? "استكشف المواضيع الرئيسية" : "Explore Key Themes"}
-    </h3>
+    </h2>
 
     <div class="keywords-grid">
         {items.map((item, index) => (
