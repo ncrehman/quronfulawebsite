@@ -26,8 +26,8 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`.replace(/\/$/, "");
   const website = apiServer.websiteUrl.replace(/\/$/, "");
   const alternatesLanguages = {
-    en: `${website}/quiz/${quiz.slug}`,
-    hi: `${website}/hi/quiz/${quiz.slug}`,
+    ar: `${website}/quiz/${quiz.slug}`,
+    en: `${website}/en/quiz/${quiz.slug}`,
     "x-default": `${website}/quiz/${quiz.slug}`,
   };
   const hreflangLinks = Object.entries(alternatesLanguages)
