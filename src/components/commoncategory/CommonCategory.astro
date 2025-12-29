@@ -121,7 +121,7 @@ if (articles) {
     const itemListJson = generateItemList({
         name: categoryObj.title + " Article Collection",
         description:
-            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights",
         baseUrl: baseUrl + "article/",
         listUrl: baseUrl + "article/",
         items: articles.map((a: ArticleResponse) => ({
@@ -141,7 +141,7 @@ if (subCatList) {
     const itemListJson = generateItemList({
         name: categoryObj.title + " Sub Category Collection",
         description:
-            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+            "Explore in-depth articles on culture, trends, lifestyle, creativity, and modern storytelling—fresh insights and inspiration, updated regularly.",
         baseUrl: baseUrl + "category/" + categoryObj.slug,
         listUrl: baseUrl + "category/" + categoryObj.slug,
         items: subCatList.map((a: SubCategoryResponse) => ({

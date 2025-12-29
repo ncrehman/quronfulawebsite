@@ -25,10 +25,12 @@ export interface Props {
 const p = Astro.props;
 
 const alternateAr = p.url.replace("/en/", "/");
+const pathname = new URL(p.url).pathname.replace(/\/$/, "");
+
 const alternateEn =
   p.lang === "en"
-    ? p.url
-    : `https://www.quronfula.com/en${new URL(p.url).pathname}`;
+    ? p.url.replace(/\/$/, "")
+    : `https://www.quronfula.com/en${pathname}`;
 
 const siteName = "Quronfula";
 const canonical = ensureTrailingSlash(p.canonical);
