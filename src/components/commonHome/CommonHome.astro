@@ -26,6 +26,7 @@ import KeywordsGrid from "./KeywordsGrid.astro";
 import CategoryFeature from "./CategoryFeature.astro";
 import SocialShare from "@components/common/SocialShare.astro";
 import SampleDesign from "./SampleDesign.astro";
+import AdPlaceholder from "@components/AdPlaceholder.astro";
 const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -287,6 +288,18 @@ const data = content[lang];
 				</section>
 			) : null
 		}
+		<section>
+			<AdPlaceholder
+				calledFrom="home1"
+				slot="2578599202"
+				layout="display"
+				format="auto"
+				display="block"
+				textAlign="center"
+				height={200}
+				width="100%"
+			/>
+		</section>
 		{
 			stories ? (
 				<section>
@@ -334,6 +347,18 @@ const data = content[lang];
 				</section>
 			) : null
 		}
+		<section>
+			<AdPlaceholder
+				calledFrom="home1"
+				slot="4358584730"
+				layout="display"
+				format="auto"
+				display="block"
+				textAlign="center"
+				height={200}
+				width="100%"
+			/>
+		</section>
 		{
 			quizzes ? (
 				<section>
@@ -379,7 +404,18 @@ const data = content[lang];
 				</section>
 			) : null
 		}
-
+		<section>
+			<AdPlaceholder
+				calledFrom="home1"
+				slot="1732421390"
+				layout="display"
+				format="auto"
+				display="block"
+				textAlign="center"
+				height={200}
+				width="100%"
+			/>
+		</section>
 		<section
 			class="seo-intro"
 			lang={lang}

@@ -5,6 +5,8 @@ Allow: /
 Allow: /articles/
 Allow: /category/
 Allow: /tags/
+Allow: /stories/
+Allow: /quizs/
 Allow: /author/
 
 # Block only junk/technical folders (these should never be indexed)

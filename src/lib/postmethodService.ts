@@ -400,6 +400,53 @@ export function cleanHtmlString(input: string): string {
 }
 
 
+export const adSlots = [
+  "2055198487",
+  "7115953471",
+  "1401248909",
+  "6065761531",
+  "4222837450",
+  "1863626797",
+  "1596674113",
+  "8162082462"
+];
+
+export function insertAdsBetweenBlocks(blocks, interval = 2) {
+  const result = [];
+
+  blocks.forEach((block, index) => {
+    result.push({ type: 'content', html: block });
+
+    // Insert an ad after every block except the last
+    if (index !== blocks.length - 1) {
+      const adIndex = index % adSlots.length;
+      result.push({ type: 'ad', slot: adSlots[adIndex] });
+    }
+  });
+
+  return result;
+}
+
+
+export function splitHtmlIntoBlocks(htmlString, numberOfBlocks = 5) {
+  // console.log('cleanHtml:' + htmlString);
+  const allBlocks = htmlString
+    .split(/(?=<p[^>]*>|<h[1-6][^>]*>)/g)
+    .filter(block => block.trim() !== '');
+
+  const total = allBlocks.length;
+  const blocks = [];
+  const chunkSize = Math.ceil(total / numberOfBlocks);
+
+  for (let i = 0; i < total; i += chunkSize) {
+    const chunk = allBlocks.slice(i, i + chunkSize).join('');
+    blocks.push(chunk);
+  }
+
+  return blocks;
+}
+
+
 
 
 
