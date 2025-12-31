@@ -2,6 +2,7 @@ export class AppConfigModel {
     public runLocalService: Boolean = false;
     public localWebServicesUrl: string = '';
     public webServicesUrl: string = '';
+    public tenant: string = '';
     public title: string = '';
     public subTitle: string = '';
     public description: string = '';

@@ -69,6 +69,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Accept-Language": "en",
+      'X-TENANT': appConfig.tenant,
       "Content-Language": reqObj.lang ? reqObj.lang : "en",
     },
   };
