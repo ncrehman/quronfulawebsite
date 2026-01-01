@@ -221,14 +221,14 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   </amp-story-grid-layer>
   <amp-story-grid-layer template="vertical" class="quiz-center">
     <div class="result-wrapper">
-      <h1>
+      <h3>
         <amp-story-interactive-results
           id="results-1"
           prompt-text=""
           ${ampResultsAttributes}
           style="--interactive-background-color: rgba(255,255,255,0.05); --interactive-font-color: #fff; --interactive-border-radius: 16px;">
         </amp-story-interactive-results>
-      </h1>
+      </h3>
       <p>Celebrate your knowledge! Share your score with friends or try again to improve.</p>
     </div>
   </amp-story-grid-layer>

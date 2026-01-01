@@ -452,16 +452,14 @@ const data = content[lang];
 				<div class="card-content">
 					<h3 class="promo-title">The Story Circuit</h3>
 					<p class="promo-tagline">
-						Deep Stories • Healing Journeys • Meaningful
-						Conversations
+						{lang==='en'?'Deep Stories • Healing Journeys • Meaningful Conversations'
+						:'قصص عميقة • رحلات شفاء • حوارات هادفة محادثات'}
 					</p>
 					<p class="promo-desc">
-						Explore thoughtful articles, web stories, interactive
-						quizzes, and free online tools on emotional healing,
-						lifestyle, creativity, Sudanese culture, tech, side
-						hustles, and personal growth.
+						{lang==='en'?'Explore thoughtful articles, web stories, interactive quizzes, and free online tools on emotional healing, lifestyle, creativity, Sudanese culture, tech, side hustles, and personal growth.'
+						:'استكشف المقالات القيّمة، والقصص الإلكترونية، والاختبارات التفاعلية، والأدوات المجانية عبر الإنترنت حول الشفاء العاطفي، وأسلوب الحياة، والإبداع، والثقافة السودانية، والتكنولوجيا، والمشاريع الجانبية، والنمو الشخصي.'}
 					</p>
-					<span class="promo-cta">Discover Inspiring Stories →</span>
+					<span class="promo-cta">{lang==='en'?'Discover Inspiring Stories':'اكتشف قصصًا ملهمة'} →</span>
 				</div>
 			</div>
 		</a>
