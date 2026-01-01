@@ -250,7 +250,7 @@ export function cleanHtmlString(input: string): string {
     .replace(/<span(?![^>]*font-weight)[^>]*>/g, '')
     .replace(/<\/span>/g, '')
     .replace(/&nbsp;/g, ' ')
-
+    .replace(/—/g, ' ')
     // === Fix <a> tags ===
     .replace(/<strong>\s*<a([^>]+)>(.*?)<\/a>\s*<\/strong>/g, '<a$1 class="backlink underline"><strong>$2</strong></a>')
     .replace(/<a\s+(?![^>]*style=)([^>]+)>/g, '<a class="backlink underline" $1>')
