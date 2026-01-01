@@ -113,14 +113,21 @@ jsonLd.push(itemListJson);
                         />
                     </div>
                     <div class="card-content">
-                        <h2></h2>
+                        <p class="section-title"></p>
+                       
                     </div>
                 </a>
             </article>
         </template>
 
         <section>
-            <h1>{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}</h1>
+            <h1>
+                {
+                    lang === "ar"
+                        ? "مقالات جديدة عن الثقافة والرياضة والأخبار"
+                        : "Latest Articles on Culture, Sports & News"
+                }
+            </h1>
 
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
@@ -142,7 +149,7 @@ jsonLd.push(itemListJson);
                                         />
                                     </div>
                                     <div class="card-content">
-                                        <h2>{item.title}</h2>
+                                        <p class="section-title">{item.title}</p>
                                     </div>
                                 </a>
                             </article>
@@ -165,6 +172,10 @@ jsonLd.push(itemListJson);
                 height: 1px;
                 grid-column: 1 / -1; /* span full width */
                 visibility: hidden; /* invisible but still detectable */
+            }
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 600;
             }
             .articles-grid {
                 display: grid;
@@ -253,7 +264,7 @@ jsonLd.push(itemListJson);
                 <img loading="lazy" width="400" height="225" />
             </div>
             <div class="card-content">
-                <h2></h2>
+              <p class="section-title"></p>
             </div>
         </a>
     </article>

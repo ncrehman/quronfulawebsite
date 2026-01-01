@@ -12,7 +12,7 @@ export const metaConfig = {
     keywordsMap: {
         en: [
             "latest articles", "blog posts", "AMP web stories",
-            "AMP quizzes", "quiz challenges", "visual stories",
+            "AMP quizes", "quiz challenges", "visual stories",
             "health articles", "beauty tips", "lifestyle blogs",
             "food recipes", "culture stories", "wellness guides",
             "jobs and opportunities", "self improvement",

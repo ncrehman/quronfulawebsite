@@ -131,7 +131,7 @@ jsonLd.push(itemListJson);
                         />
                     </div>
                     <div class="card-content">
-                        <h2></h2>
+                        <p class="section-title"></p>
                     </div>
                 </a>
             </article>
@@ -160,7 +160,7 @@ jsonLd.push(itemListJson);
                                         />
                                     </div>
                                     <div class="card-content">
-                                        <h2>{item.title}</h2>
+                                        <p class="section-title">{item.title}</p>
                                     </div>
                                 </a>
                             </article>
@@ -177,7 +177,7 @@ jsonLd.push(itemListJson);
             </section>
         </section>
 
-          <style>
+        <style>
             /* =========================
    INFINITE SCROLL TRIGGER
 ========================== */
@@ -187,7 +187,10 @@ jsonLd.push(itemListJson);
                 grid-column: 1 / -1;
                 visibility: hidden;
             }
-
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
             /* =========================
    GRID
 ========================== */
@@ -303,7 +306,7 @@ jsonLd.push(itemListJson);
                 <img loading="lazy" width="400" height="225" />
             </div>
             <div class="card-content">
-                <h2></h2>
+               <p class="section-title"></p>
             </div>
         </a>
     </article>
