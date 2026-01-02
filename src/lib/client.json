@@ -1,5 +1,5 @@
 {
-    "runLocalService": true,
+    "runLocalService": false,
     "useLanguage": false,
     "localWebServicesUrl": "http://localhost:8080/blogs/portal/",
     "webServicesUrl": "https://www.quronfula.com/blogs/portal/",

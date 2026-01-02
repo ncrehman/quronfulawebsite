@@ -16,6 +16,7 @@ export async function loadAppConfig(): Promise<AppConfigModel> {
         config.webServicesUrl = config.localWebServicesUrl;
         // config.isConsole = false;
     } else if (!config.runLocalService && isLocal) {
+          config.webServicesUrl = config.webServicesUrl;
         // config.isConsole = false;
     } else {
         config.isConsole = false;
