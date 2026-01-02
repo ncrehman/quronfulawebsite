@@ -8,6 +8,7 @@ export class FeedContent {
     public id: string;
     public en_title: string;
     public secondary_title: string;
+    public secondary_lang: string;
     public en_subTitle: string;
     public secondary_subTitle: string;
     public en_description: string;

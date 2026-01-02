@@ -4,6 +4,7 @@ import Header from "@components/Header.astro";
 import ClientAfterLoad from "@components/ClientAfterLoad.astro";
 import "@fontsource/almarai";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
+import "../styles/global.css";
 
 const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";

@@ -1,0 +1,360 @@
+---
+import SEO from "@components/SEO.astro";
+import Layout from "@layouts/Layout.astro";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import type { SocialLinks } from "@lib/pojo/models/SocialLinks";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+import type { AuthorResponse } from "@lib/pojo/responsemodel/AuthorResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { apiCalls, buildLangUrl, checkForDecode } from "@lib/postmethodService";
+import { Image } from "astro:assets";
+
+interface Props {
+  slug: string;
+  lang: string;
+}
+
+const { slug, lang } = Astro.props;
+const langPrefix = lang === "ar" ? "" : `en/`;
+
+const authorCache: Map<string, AuthorResponse> = new Map();
+
+async function getAuthorArticles(
+  lang: string,
+  slug: string,
+): Promise<ArticleResponse[]> {
+  try {
+    const finalSlug = await checkForDecode(slug);
+    const request = new RequestModel();
+    request.lang = lang;
+    request.slug = finalSlug;
+    request.limit = 6;
+    request.offset = 0;
+
+    const responseResult: ApiResponse = await apiCalls(
+      request,
+      EndPointPaths.getarticlesbyauthor,
+    );
+    if (responseResult.status === 0) {
+      const response: ResponseModel = responseResult.data;
+      if (response.statusCode === 0) {
+        return response.respList as ArticleResponse[];
+      }
+    }
+  } catch (err) {
+    console.error("Articles fetch error:", err);
+  }
+
+  return [];
+}
+async function getAuthorBySlug(
+  lang: string,
+  slug: string,
+): Promise<AuthorResponse | null> {
+  slug = await checkForDecode(slug);
+  const cacheKey = `${lang}_${slug}`;
+  if (authorCache.has(cacheKey)) return authorCache.get(cacheKey)!;
+  try {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.slug = slug;
+    const responseResult: ApiResponse = await apiCalls(
+      request,
+      EndPointPaths.getauthorbyslug,
+    );
+    if (responseResult.status === 0) {
+      const response: ResponseModel = responseResult.data;
+      if (response.statusCode === 0) {
+        const author: AuthorResponse = response.respObject;
+        authorCache.set(cacheKey, author); // ✅ cache the result
+        return author;
+      }
+    }
+  } catch (err) {
+    console.error("Author fetch error:", err);
+  }
+
+  return null;
+}
+const author = await getAuthorBySlug(lang, slug);
+let articles: Array<ArticleResponse> = [];
+if (author) {
+  articles = await getAuthorArticles(lang, author.slug);
+}
+const baseUrl = await buildLangUrl(lang);
+const canonicalUrl = baseUrl + "author/" + author.slug;
+---
+
+<SEO
+  title={author.fullName + "- author"}
+  description={author.bio}
+  image={author.profileImage}
+  url={canonicalUrl}
+  lang={lang}
+  canonical={canonicalUrl}
+  noindex={false}
+  type={"WebSite"}
+  jsonLd={null}
+/>
+<Layout>
+
+  <div class="max-w-5xl mx-auto px-4 py-16 md:py-5">
+    <main class="min-h-screen bg-white dark:bg-gray-900 flex justify-center">
+      <div class="max-w-3xl w-full px-6 py-16 text-center">
+        <!-- Profile Image -->
+        <div class="flex justify-center">
+          <Image
+            src={author.profileImage}
+            alt={author.fullName}
+            width={240}
+            height={240}
+            class="rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
+          />
+        </div>
+
+        <!-- Name -->
+        <h1
+          class="mt-6 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white"
+        >
+          {author.fullName}
+        </h1>
+
+        <!-- Short Bio -->
+        <p class="mt-3 text-lg text-gray-600 dark:text-gray-300">
+          {author.bio}
+        </p>
+
+        <!-- Social Links -->
+        <div class="mt-6 flex justify-center gap-6">
+          {
+            author.socialLinks.map((link) => (
+              <a
+                href={link.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+              >
+                {link.title}
+              </a>
+            ))
+          }
+        </div>
+
+        <!-- Divider -->
+        <hr class="my-10 border-gray-200 dark:border-gray-700" />
+
+        <!-- Full Bio -->
+        <div
+          class="prose prose-lg mx-auto text-center dark:prose-invert"
+          set:html={author.bioDescription}
+        />
+      </div>
+      <br/>
+      
+    </main>
+    <section class="full-bio mt-20 max-w-4xl mx-auto px-6">
+      {
+        articles.length > 0 && (
+          <section>
+            <span style="font-weight:700;">
+              {lang === "ar"
+                ? "مقالات أحدث مقالات الكاتب"
+                : "The author's latest articles"}{" "}
+              - {author.fullName}
+            </span>
+            <section class="articles-grid">
+              {articles?.length ? (
+                articles.map((item) => (
+                  <article class="article-card">
+                    <a
+                      href={`/${langPrefix}article/${item.slug}`}
+                      class="card-link"
+                    >
+                      <div class="card-image">
+                        <img
+                          src={item.landScapeBanner}
+                          alt={item.imageAlt || item.title}
+                          loading="lazy"
+                          width="400"
+                          height="225"
+                        />
+                      </div>
+                      <div class="card-content" style="font-weight:600;">
+                        {item.title}
+                      </div>
+                    </a>
+                  </article>
+                ))
+              ) : (
+                <p class="no-articles">
+                  {lang === "ar" ? "لا توجد مقالات." : "No articles available."}
+                </p>
+              )}
+            </section>
+          </section>
+        )
+      }
+    </section>
+
+    <!-- Top Articles -->
+  </div>
+
+  <style>
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 16px 0;
+    }
+    .article-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-card);
+
+      /* iOS GPU FIX */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      will-change: transform;
+
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    @media (hover: hover) {
+      .article-card:hover {
+        transform: translateY(-6px);
+      }
+    }
+
+    /* ===============================
+   LINK RESET
+================================ */
+    .card-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ===============================
+   IMAGE (iOS SAFE)
+================================ */
+    .card-image {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+
+      /* Prevent iOS dark overlay bug */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+
+      transition: transform 0.4s ease;
+    }
+
+    @media (hover: hover) {
+      .article-card:hover img {
+        transform: scale(1.05);
+      }
+    }
+
+    /* ===============================
+   CARD CONTENT
+================================ */
+    .card-content {
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text-main);
+
+      /* Text clarity on iOS */
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===============================
+   EMPTY STATE
+================================ */
+    .no-articles {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out forwards;
+    }
+    .animate-slide-up {
+      animation: slideUp 0.8s ease-out forwards;
+    }
+    .animate-fade-up {
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out forwards;
+    }
+
+    .animation-delay-200 {
+      animation-delay: 0.2s;
+    }
+    .animation-delay-400 {
+      animation-delay: 0.4s;
+    }
+    .animation-delay-600 {
+      animation-delay: 0.6s;
+    }
+  </style>
+</Layout>
+<script is:inline>
+  // Optional: Simple scroll-triggered refinement (no extra deps)
+  document.querySelectorAll(".animate-fade-up").forEach((el) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("opacity-100");
+          }
+        });
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+  });
+</script>

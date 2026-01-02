@@ -64,7 +64,7 @@ export async function GET({ url }) {
     { path: "correction-policy", changefreq: "daily", priority: "0.9" },
     { path: "code-of-ethics", changefreq: "daily", priority: "0.9" },
     { path: "fact-checking-policy", changefreq: "daily", priority: "0.9" },
-    { path: "author/motiur-rehman", changefreq: "weekly", priority: "0.6" },
+    { path: "author/anjar-ahsan", changefreq: "weekly", priority: "0.6" },
   ];
 
   const staticPagesXml = STATIC_PAGES.flatMap(page =>

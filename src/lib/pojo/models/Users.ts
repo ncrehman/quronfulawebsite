@@ -4,13 +4,16 @@ import { Status } from './Status';
 
 export class Users {
     public id: string;
-    public fullName: string;
+    public en_fullName: string;
+    public secondary_fullName: string;
     public emailAddress: string;
     public mobileNumber: string;
     public profileImage: string;
     public slug: string;
-    public bio: string;
-    public bioDescription: string;
+    public en_bio: string;
+    public secondary_bio: string;
+    public en_bioDescription: string;
+    public secondary_bioDescription: string;
     public socialLinks: Array<SocialLinks>;
     public password: string;
     public rolesObj: Roles;

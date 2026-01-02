@@ -1,0 +1,9 @@
+---
+import AuthorIndexPage from "@components/commonauthor/AuthorIndexPage.astro";
+
+
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "ar";
+---
+
+<AuthorIndexPage {lang}/>

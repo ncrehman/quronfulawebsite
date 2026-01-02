@@ -6,8 +6,8 @@ import { Roles } from './Roles';
 import { Status } from './Status';
 
 export class MasterObjects {
-    public subCategorys: SubCategory;
-    public categorys: Category;
+    public subCategoryId: SubCategory;
+    public categoryId: Category;
     public languagess: Languages;
     public feedContents: FeedContent;
     public subCategoryLists: Array<SubCategory>;
