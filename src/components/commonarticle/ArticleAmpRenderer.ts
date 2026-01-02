@@ -90,15 +90,15 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     faqSchema = generateFAQJsonLd(article.faqSchema);
   }
 
-  const website = apiServer.websiteUrl.replace(/\/$/, "");
-  const alternatesLanguages = {
-    ar: `${website}/article/${article.slug}`,
-    en: `${website}/en/article/${article.slug}`,
-    "x-default": `${website}/article/${article.slug}`,
-  };
-  const alternatesLanguagesAMP = Object.fromEntries(
-    Object.entries(alternatesLanguages).map(([lang, url]) => [lang, `${url}`])
-  );
+  // const website = apiServer.websiteUrl.replace(/\/$/, "");
+  // const alternatesLanguages = {
+  //   ar: `${website}/article/${article.slug}`,
+  //   en: `${website}/en/article/${article.slug}`,
+  //   "x-default": `${website}/article/${article.slug}`,
+  // };
+  // const alternatesLanguagesAMP = Object.fromEntries(
+  //   Object.entries(alternatesLanguages).map(([lang, url]) => [lang, `${url}`])
+  // );
 
 
   function getOgImageType(url = "") {
@@ -161,7 +161,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     jsonLd: JSON.stringify(jsonLd),
     faqJsonLD: JSON.stringify(faqSchema),
     langPrefix: langPrefix,
-    hrefData: alternatesLanguagesAMP,
+    // hrefData: alternatesLanguagesAMP,
     author: article.author_name,
     updatedTime: new Date(article.updatedAt).toISOString(),
     publishedTime: new Date(article.publishDate).toISOString(),
