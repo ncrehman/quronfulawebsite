@@ -207,24 +207,25 @@ if (articles) {
 
 const content = {
 	en: {
-		title: "Quronfula - Latest Articles, Stories & Daily Insights",
-		h1: "Latest Articles, Stories & Daily Insights from Quronfula",
+		title: "Quronfula – Articles, Web Stories, Quizzes & Daily Insights",
+		h1: "Latest Articles, Web Stories, Quizzes & Daily Insights from Quronfula",
 
-		p1: "Quronfula is your premier digital platform for the latest articles, stories, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
+		p1: "Quronfula is your premier digital platform for the latest articles, web stories, quizzes, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
 
-		p2: "Through meticulously researched articles and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
+		p2: "Through meticulously researched articles, interactive quizzes, and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
 
-		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles and stories. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
+		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles, web stories, and quizzes. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
 	},
+
 	ar: {
-		title: "قرنفلة - أحدث المقالات والقصص والمعلومات اليومية",
-		h1: "أحدث المقالات والقصص والمعلومات اليومية من قرنفلة",
+		title: "قرنفلة – مقالات، قصص ويب، مسابقات ومعلومات يومية",
+		h1: "أحدث المقالات وقصص الويب والمسابقات والمعلومات اليومية من قرنفلة",
 
-		p1: "قرنفلة منصة رقمية تقدم أحدث المقالات والقصص والمعلومات اليومية التي تواكب الحياة المعاصرة. ننشر يوميًا محتوى متنوعًا يشمل الثقافة، ونمط الحياة، والمعرفة، والتكنولوجيا، والصحة، وقضايا المجتمع.",
+		p1: "قرنفلة منصة رقمية تقدم أحدث المقالات وقصص الويب والمسابقات والمعلومات اليومية التي تواكب الحياة المعاصرة. ننشر يوميًا محتوى متنوعًا يشمل الثقافة، ونمط الحياة، والمعرفة، والتكنولوجيا، والصحة، وقضايا المجتمع.",
 
-		p2: "من خلال مقالات مدروسة بعمق وسرد قصصي أصيل، تقدم قرنفلة معلومات يومية ورؤى معرفية تساعد القراء على فهم العالم من حولهم. سواء كنتم تبحثون عن تحليلات معمقة، أو قصص ملهمة، أو نصائح عملية للحياة اليومية، فإن محتوى قرنفلة صُمم ليكون موثوقًا وهادفًا.",
+		p2: "من خلال مقالات مدروسة بعمق، ومسابقات تفاعلية، وسرد قصصي أصيل، تقدم قرنفلة معلومات يومية ورؤى معرفية تساعد القراء على فهم العالم من حولهم. سواء كنتم تبحثون عن تحليلات معمقة، أو قصص ملهمة، أو نصائح عملية للحياة اليومية، فإن محتوى قرنفلة صُمم ليكون موثوقًا وهادفًا.",
 
-		p3: "انضموا إلى مجتمع قرنفلة المتنامي الذي يزور المنصة يوميًا لاكتشاف أحدث المقالات والقصص. تابعوا المعلومات اليومية، واستلهموا أفكارًا جديدة، وابقوا على اطلاع دائم بما يساعدكم على مواجهة تحديات الحياة الحديثة بثقة ووعي.",
+		p3: "انضموا إلى مجتمع قرنفلة المتنامي الذي يزور المنصة يوميًا لاكتشاف أحدث المقالات وقصص الويب والمسابقات. تابعوا المعلومات اليومية، واستلهموا أفكارًا جديدة، وابقوا على اطلاع دائم بما يساعدكم على مواجهة تحديات الحياة الحديثة بثقة ووعي.",
 	},
 };
 
@@ -256,9 +257,9 @@ const data = content[lang];
 		{
 			articles ? (
 				<section>
-					<span style="font-weight:700;">
+					<div style="font-weight:700;">
 						{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}
-					</span>
+					</div>
 					<section class="articles-grid">
 						{articles?.length ? (
 							articles.map((item) => (
@@ -266,6 +267,7 @@ const data = content[lang];
 									<a
 										href={`/${langPrefix}article/${item.slug}`}
 										class="card-link"
+										aria-label={`Read article: ${item.title}`}
 									>
 										<div class="card-image">
 											<img
@@ -313,11 +315,11 @@ const data = content[lang];
 		{
 			stories ? (
 				<section>
-					<span style="font-weight:700;">
+					<div style="font-weight:700;">
 						{lang === "ar"
 							? "أحدث قصص الويب"
-							: "Latest Web stories"}
-					</span>
+							: "Latest Web Stories"}
+					</div>
 					<section class="articles-grid">
 						{stories?.length ? (
 							stories.map((item) => (
@@ -325,6 +327,7 @@ const data = content[lang];
 									<a
 										href={`/${langPrefix}stories/${item.slug}`}
 										class="card-link"
+										aria-label={`Read web story: ${item.title}`}
 									>
 										<div class="card-image">
 											<img
@@ -372,9 +375,9 @@ const data = content[lang];
 		{
 			quizzes ? (
 				<section>
-					<span style="font-weight:700;">
-						{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}
-					</span>
+					<div style="font-weight:700;">
+						{lang === "ar" ? "أحدث المسابقات" : "Latest Quizzes"}
+					</div>
 					<section class="articles-grid">
 						{quizzes?.length ? (
 							quizzes.map((item) => (
@@ -382,6 +385,7 @@ const data = content[lang];
 									<a
 										href={`/${langPrefix}quiz/${item.slug}`}
 										class="card-link"
+										aria-label={`Take quiz: ${item.title}`}
 									>
 										<div class="card-image">
 											<img
