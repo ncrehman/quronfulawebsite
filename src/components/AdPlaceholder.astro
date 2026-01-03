@@ -8,7 +8,7 @@ interface AdPlaceholderProps {
   textAlign?: string;
   width?: number | string;
   height?: number | string;
-  position?: 'inline' | 'sidebar';
+  position?: "inline" | "sidebar";
 }
 
 const {
@@ -16,38 +16,40 @@ const {
   slot,
   layout,
   format,
-  display = 'block',
-  textAlign = 'center',
+  display = "block",
+  textAlign = "center",
   width,
   height,
-  position = 'inline',
+  position = "inline",
 } = Astro.props as AdPlaceholderProps;
 
 // Environment detection (safe on server)
-const host =
-  Astro.request?.url
-    ? new URL(Astro.request.url).hostname
-    : 'localhost';
+const host = Astro.request?.url
+  ? new URL(Astro.request.url).hostname
+  : "localhost";
 
-const isLocal =
-  host.includes('localhost') || host.includes('192.168.1');
+const isLocal = host.includes("localhost") || host.includes("192.168.1");
 
-const isTest = isLocal ? 'on' : 'off';
-const background = isLocal ? '#dbd6d6ff' : '';
+const isTest = isLocal ? "on" : "off";
+const background = isLocal ? "#dbd6d6ff" : "";
 
 // Default dimensions
-const defaultWidth = position === 'sidebar' ? 300 : '100%';
-const defaultHeight = position === 'sidebar' ? 600 : 250;
-
+const defaultWidth = position === "sidebar" ? 300 : "100%";
+const defaultHeight = position === "sidebar" ? 600 : 250;
 const containerStyle = `
   display:flex;
   justify-content:${textAlign};
-  width:${typeof (width ?? defaultWidth) === 'number'
-    ? `${width ?? defaultWidth}px`
-    : width ?? defaultWidth};
-  min-height:${typeof (height ?? defaultHeight) === 'number'
-    ? `${height ?? defaultHeight}px`
-    : height ?? defaultHeight};
+  width:${
+    typeof (width ?? defaultWidth) === "number"
+      ? `${width ?? defaultWidth}px`
+      : (width ?? defaultWidth)
+  };
+  min-width:250px;
+  min-height:${
+    typeof (height ?? defaultHeight) === "number"
+      ? `${height ?? defaultHeight}px`
+      : (height ?? defaultHeight)
+  };
   overflow:hidden;
   background:${background};
   margin:1rem 0;
@@ -66,14 +68,58 @@ const insStyle = `
     style={insStyle}
     data-ad-client="ca-pub-4100521225351324"
     data-ad-slot={slot}
-    data-full-width-responsive={position === 'inline' ? 'true' : 'false'}
+    data-full-width-responsive={position === "inline" ? "true" : "false"}
     data-adtest={isTest}
-    {...(layout ? { 'data-ad-layout': layout } : {})}
-    {...(format ? { 'data-ad-format': format } : {})}
-  ></ins>
+    {...layout ? { "data-ad-layout": layout } : {}}
+    {...format ? { "data-ad-format": format } : {}}></ins>
 </div>
 
 <script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+
+    window.adsbygoogle = window.adsbygoogle || [];
+
+    const ins =
+      document.currentScript?.previousElementSibling?.querySelector(
+        ".adsbygoogle",
+      );
+
+    if (!ins || ins.dataset.pushed) return;
+
+    let attempts = 0;
+    const MAX_ATTEMPTS = 20;
+
+    const tryPush = () => {
+      const width = ins.offsetWidth;
+
+      if (width > 0) {
+        try {
+          window.adsbygoogle.push({});
+          ins.dataset.pushed = "true";
+        } catch (e) {
+          console.warn("[AdPlaceholder] AdSense push error:", e);
+        }
+        return;
+      }
+
+      if (attempts < MAX_ATTEMPTS) {
+        attempts++;
+        requestAnimationFrame(tryPush);
+      } else {
+        console.warn("[AdPlaceholder] Ad not pushed: container width stayed 0");
+      }
+    };
+
+    if (document.readyState === "complete") {
+      tryPush();
+    } else {
+      window.addEventListener("load", tryPush, { once: true });
+    }
+  })();
+</script>
+
+<!-- <script is:inline>
   (function () {
     if (typeof window === 'undefined') return;
 
@@ -100,4 +146,4 @@ const insStyle = `
       window.addEventListener('load', pushAd, { once: true });
     }
   })();
-</script>
+</script> -->
