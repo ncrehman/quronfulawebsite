@@ -58,7 +58,7 @@ function escAttr(s: string | undefined | null): string {
 }
 
 function generateSlidesHtml(quiz: QuizStoryResponse): string {
-  const backendEndpoint = `${apiServer.websiteUrl}quronfula/interact/submit`;
+  const backendEndpoint = `${apiServer.websiteUrl}blogs/interact/submit`;
   const slides = (quiz.slides || []) as QuizSlide[];
   let html = `<amp-story-page id="banner" auto-advance-after="3s">
     <amp-story-grid-layer template="fill">

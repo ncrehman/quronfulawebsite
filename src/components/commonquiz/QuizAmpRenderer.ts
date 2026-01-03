@@ -152,8 +152,8 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   </amp-story-grid-layer>
 </amp-story-page>
 `;
-
-  const backendEndpoint = `${apiServer.websiteUrl}quronfula/interact/submit`;
+const backendEndpoint = `${apiServer.websiteUrl}api/quiz-proxy`;
+  // const backendEndpoint = `${apiServer.websiteUrl}blogs/interact/submit`;
   // const backendEndpoint = `http://localhost:8080/storsycircuit/interact/submit`;
 
   function generateDynamicQuizSlide(slide: QuizSlide, bgImage: string, index: number, id: string, icon: string) {
