@@ -1,7 +1,7 @@
 // src/pages/api/quiz-proxy.ts (Astro endpoint or Next.js API route)
 import type { APIRoute } from 'astro';
 
-export const post: APIRoute = async ({ request, url }) => {
+export const GET: APIRoute = async ({ url }) => {
     try {
         const queryString = url.searchParams.toString();
 
