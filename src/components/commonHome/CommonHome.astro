@@ -208,17 +208,23 @@ if (articles) {
 const content = {
 	en: {
 		title: "Quronfula - Latest Articles, Stories & Daily Insights",
-		h1: "Discover the Latest Articles, Inspiring Stories & Daily Insights on Quronfula",
-		p1: "Quronfula is your premier digital destination for the latest articles, captivating stories, and thought-provoking daily insights. We curate exceptional content spanning culture, lifestyle, knowledge, technology, wellness, and contemporary issues, bringing you fresh perspectives that inform, inspire, and spark meaningful conversations every single day.",
-		p2: "Through meticulously researched articles and authentic storytelling, Quronfula connects readers with ideas that matter. Whether you're seeking in-depth analysis, heartwarming personal stories, practical life advice, or cutting-edge insights into today's world, our platform delivers high-quality, trustworthy content designed to enrich your mind and elevate your daily experience.",
-		p3: "Join a growing community of curious minds who turn to Quronfula for their daily dose of inspiration and knowledge. Explore our ever-growing collection of latest articles and stories, and stay ahead with insights that help you navigate modern life with confidence and clarity.",
+		h1: "Latest Articles, Stories & Daily Insights from Quronfula",
+
+		p1: "Quronfula is your premier digital platform for the latest articles, stories, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
+
+		p2: "Through meticulously researched articles and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
+
+		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles and stories. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
 	},
 	ar: {
 		title: "قرنفلة - أحدث المقالات والقصص والمعلومات اليومية",
-		h1: "اكتشف أحدث المقالات والقصص الملهمة والمعلومات اليومية على قرنفلة",
-		p1: "قرنفلة هي وجهتكم الرقمية المفضلة لأحدث المقالات، والقصص الآسرة، والمعلومات اليومية المفيدة والملهمة. نختار بعناية محتوى متميز يغطي مجالات الثقافة، ونمط الحياة، والمعرفة، والتكنولوجيا، والصحة النفسية والجسدية، والموضوعات المعاصرة، لنقدم لكم رؤى جديدة تثري الفكر وتحفز الحوار الهادف كل يوم.",
-		p2: "من خلال مقالات مدروسة بعمق وسرد قصصي أصيل، تربط قرنفلة القراء بالأفكار التي تهم حقًا. سواء كنتم تبحثون عن تحليلات معمقة، أو قصص شخصية مؤثرة، أو نصائح عملية للحياة اليومية، أو معلومات يومية حول أبرز مستجدات العالم، فإن منصتنا تقدم محتوى عالي الجودة وموثوق يهدف إلى إثراء عقولكم ورفع مستوى تجربتكم اليومية.",
-		p3: "انضموا إلى مجتمع متزايد من العقول الفضولية التي تعتمد على قرنفلة لجرعتها اليومية من الإلهام والمعرفة. استكشفوا مجموعتنا المتجددة باستمرار من أحدث المقالات والقصص، وابقوا في صدارة الأحداث مع معلومات يومية تساعدكم على مواجهة تحديات الحياة الحديثة بثقة ووعي.",
+		h1: "أحدث المقالات والقصص والمعلومات اليومية من قرنفلة",
+
+		p1: "قرنفلة منصة رقمية تقدم أحدث المقالات والقصص والمعلومات اليومية التي تواكب الحياة المعاصرة. ننشر يوميًا محتوى متنوعًا يشمل الثقافة، ونمط الحياة، والمعرفة، والتكنولوجيا، والصحة، وقضايا المجتمع.",
+
+		p2: "من خلال مقالات مدروسة بعمق وسرد قصصي أصيل، تقدم قرنفلة معلومات يومية ورؤى معرفية تساعد القراء على فهم العالم من حولهم. سواء كنتم تبحثون عن تحليلات معمقة، أو قصص ملهمة، أو نصائح عملية للحياة اليومية، فإن محتوى قرنفلة صُمم ليكون موثوقًا وهادفًا.",
+
+		p3: "انضموا إلى مجتمع قرنفلة المتنامي الذي يزور المنصة يوميًا لاكتشاف أحدث المقالات والقصص. تابعوا المعلومات اليومية، واستلهموا أفكارًا جديدة، وابقوا على اطلاع دائم بما يساعدكم على مواجهة تحديات الحياة الحديثة بثقة ووعي.",
 	},
 };
 
@@ -242,6 +248,10 @@ const data = content[lang];
 			<!-- <SampleDesign /> -->
 			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
 			<!-- <section><CategoryFeature lang={lang} /> -->
+			<h2 class="sr-only">
+				Explore the latest articles, stories, and insights on culture,
+				lifestyle, and modern living
+			</h2>
 		</>
 		{
 			articles ? (
@@ -452,14 +462,26 @@ const data = content[lang];
 				<div class="card-content">
 					<h3 class="promo-title">The Story Circuit</h3>
 					<p class="promo-tagline">
-						{lang==='en'?'Deep Stories • Healing Journeys • Meaningful Conversations'
-						:'قصص عميقة • رحلات شفاء • حوارات هادفة محادثات'}
+						{
+							lang === "en"
+								? "Deep Stories • Healing Journeys • Meaningful Conversations"
+								: "قصص عميقة • رحلات شفاء • حوارات هادفة محادثات"
+						}
 					</p>
 					<p class="promo-desc">
-						{lang==='en'?'Explore thoughtful articles, web stories, interactive quizes, and free online tools on emotional healing, lifestyle, creativity, Sudanese culture, tech, side hustles, and personal growth.'
-						:'استكشف المقالات القيّمة، والقصص الإلكترونية، والاختبارات التفاعلية، والأدوات المجانية عبر الإنترنت حول الشفاء العاطفي، وأسلوب الحياة، والإبداع، والثقافة السودانية، والتكنولوجيا، والمشاريع الجانبية، والنمو الشخصي.'}
+						{
+							lang === "en"
+								? "Explore thoughtful articles, web stories, interactive quizes, and free online tools on emotional healing, lifestyle, creativity, Sudanese culture, tech, side hustles, and personal growth."
+								: "استكشف المقالات القيّمة، والقصص الإلكترونية، والاختبارات التفاعلية، والأدوات المجانية عبر الإنترنت حول الشفاء العاطفي، وأسلوب الحياة، والإبداع، والثقافة السودانية، والتكنولوجيا، والمشاريع الجانبية، والنمو الشخصي."
+						}
 					</p>
-					<span class="promo-cta">{lang==='en'?'Discover Inspiring Stories':'اكتشف قصصًا ملهمة'} →</span>
+					<span class="promo-cta"
+						>{
+							lang === "en"
+								? "Discover Inspiring Stories"
+								: "اكتشف قصصًا ملهمة"
+						} →</span
+					>
 				</div>
 			</div>
 		</a>
