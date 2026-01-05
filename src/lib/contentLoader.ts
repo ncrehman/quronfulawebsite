@@ -25,11 +25,9 @@ export async function loadContent(
         }
     } else {
         try {
-            console.log('fina: ' + `${dataPath}/data/${type}/${fileName}`)
             const res = await fetch(
                 `${dataPath}/data/${type}/${fileName}`
             );
-            console.log('response: ' + JSON.stringify(res))
             if (res.ok) {
                 return await res.json();
             }

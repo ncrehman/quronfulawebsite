@@ -99,10 +99,8 @@ const baseUrl = await buildLangUrl(lang);
 const decodedSlug = await checkForDecode(slug);
 const apiServer = getAppConfig();
 const siteName = metaConfig.siteName[lang];
-console.log('ok articlepage')
 let article: FeedContentResponse = await loadContent("article", slug, lang);
 if (!article) {
-  console.log('artt: '+JSON.stringify(article))
   article = await getArticles(lang, slug);
   if (!article) {
     return new Response("Article not found", { status: 404 });
