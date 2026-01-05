@@ -6,6 +6,7 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { checkForDecode, apiCalls } from "@lib/postmethodService";
+import { loadContent } from "@lib/contentLoader";
 
 const { slug } = Astro.params;
 const currentPath = Astro.url.pathname;
@@ -40,9 +41,12 @@ export async function getQuizStory(
   return null;
 }
 
-const quiz: QuizStoryResponse = await getQuizStory(lang, slug);
+let quiz: QuizStoryResponse = await loadContent("quiz", slug, lang);
 if (!quiz) {
-  return new Response("Quiz not found", { status: 404 });
+  quiz = await getQuizStory(lang, slug);
+  if (!quiz) {
+    return new Response("Quiz not found", { status: 404 });
+  }
 }
 const response = await QuizAmpRenderer({ quiz, lang });
 return response;

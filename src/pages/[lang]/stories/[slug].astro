@@ -1,7 +1,12 @@
 ---
 import WebStoryAmpRenderer from "@components/commonstories/WebStoryAmpRenderer";
-import { getWebStory } from "@components/commonstories/CommonStoriesAmp copy.astro";
 import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
+import { loadContent } from "@lib/contentLoader";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { checkForDecode, apiCalls } from "@lib/postmethodService";
 
 const { slug } = Astro.params;
 const currentPath = Astro.url.pathname;
@@ -11,9 +16,36 @@ if (!slug) {
     return new Response("Not Found", { status: 404 });
 }
 
-const story: WebStoryResponse = await getWebStory(lang, slug);
+export async function getWebStory(
+    lang: string,
+    slug: string | undefined,
+): Promise<WebStoryResponse | null> {
+    if (!slug) return null;
+    try {
+        const request = new RequestModel();
+        request.lang = lang;
+        request.slug = await checkForDecode(slug);
+        const responseResult: ApiResponse = await apiCalls(
+            request,
+            EndPointPaths.getstorybyslug,
+        );
+        if (responseResult.status === 0) {
+            const response: ResponseModel = responseResult.data;
+            if (response.statusCode === 0) {
+                return response.respObject as WebStoryResponse;
+            }
+        }
+    } catch (err) {
+        console.error("Story error:", err);
+    }
+    return null;
+}
+let story: WebStoryResponse = await loadContent("stories", slug, lang);
 if (!story) {
-    return new Response("Story not found", { status: 404 });
+    story = await getWebStory(lang, slug);
+    if (!story) {
+        return new Response("Story not found", { status: 404 });
+    }
 }
 const response = await WebStoryAmpRenderer({ story, lang });
 return response;

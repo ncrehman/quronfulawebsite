@@ -20,7 +20,7 @@ export interface QuizAmpRendererProps {
 }
 
 export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererProps) {
-  const apiServer = await getAppConfig();
+  const apiServer = getAppConfig();
   lang = lang ?? 'ar';
   const baseUrl = lang !== "ar" ? `${apiServer.websiteUrl}${lang}/` : apiServer.websiteUrl;
   const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`.replace(/\/$/, "");

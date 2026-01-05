@@ -22,9 +22,10 @@ import {
     buildLangUrl,
 } from "@lib/postmethodService";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
-import RelatedArticleGrid from "./RelatedArticleGrid.astro";
+// import RelatedArticleGrid from "./RelatedArticleGrid.astro";
 import SocialShare from "@components/common/SocialShare.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
+import { loadContent } from "@lib/contentLoader";
 
 interface Props {
     slug: string;
@@ -98,8 +99,15 @@ const baseUrl = await buildLangUrl(lang);
 const decodedSlug = await checkForDecode(slug);
 const apiServer = getAppConfig();
 const siteName = metaConfig.siteName[lang];
-
-const article: FeedContentResponse = await getArticles(lang, slug);
+console.log('ok articlepage')
+let article: FeedContentResponse = await loadContent("article", slug, lang);
+if (!article) {
+  console.log('artt: '+JSON.stringify(article))
+  article = await getArticles(lang, slug);
+  if (!article) {
+    return new Response("Article not found", { status: 404 });
+  }
+}
 
 const canonicalUrl = baseUrl + "article/" + decodedSlug;
 const ampUrl = canonicalUrl + "/amp";
@@ -114,8 +122,8 @@ let ogImages=[];
 if (!!article) {
     cleanHtml = cleanHtmlString(article.description);
      const blocks = splitHtmlIntoBlocks(cleanHtml);
-    blocksWithAds = await insertAdsBetweenBlocks(blocks, 2);
-    relatedArticle = await fetchRelatedData(lang, article.id);
+    blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
+    // relatedArticle = await fetchRelatedData(lang, article.id);
     keywords  = article.keywords
   ? article.keywords.split(/[,\u060C\uFF0C]/) .map(k => k.trim()).filter(Boolean): [];
   keywords.push(article.cat_name)
