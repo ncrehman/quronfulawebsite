@@ -16,6 +16,7 @@ import { checkForDecode } from "@lib/postmethodService";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryResponse";
+import { loadContent } from "@lib/contentLoader";
 
 interface Params {
     lang: string;
@@ -32,7 +33,7 @@ async function getSubCategory(
     request.lang = lang;
     request.slug = slug;
     request.extraVariable = "article";
-    const response:ApiResponse = await apiCalls(
+    const response: ApiResponse = await apiCalls(
         request,
         EndPointPaths.getsubcategorybyslugtopic,
     );
@@ -67,10 +68,19 @@ const siteName = metaConfig.siteName[lang];
 const jsonLd = [];
 const decodedCatslug = await checkForDecode(catslug);
 const decodedSubCatSlug = await checkForDecode(slug);
-const [subCategoryObj, articles] = await Promise.all([
-    getSubCategory(lang, decodedSubCatSlug),
-    getArticleList(lang, decodedSubCatSlug),
-]);
+
+let subCategoryObj: SubCategoryResponse = await loadContent(
+    "subcategory",
+    decodedSubCatSlug,
+    lang,
+);
+if (!subCategoryObj) {
+    subCategoryObj = await getSubCategory(lang, decodedSubCatSlug);
+    if (!subCategoryObj) {
+        return new Response("sub category not found", { status: 404 });
+    }
+}
+const [articles] = await Promise.all([getArticleList(lang, decodedSubCatSlug)]);
 let canonicalUrl: string = null;
 if (!!subCategoryObj) {
     canonicalUrl =
@@ -108,7 +118,7 @@ if (articles) {
     const itemListJson = generateItemList({
         name: subCategoryObj.title + " Article Collection",
         description:
-          "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights",
+            "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights",
         baseUrl: baseUrl + "article/",
         listUrl: baseUrl + "article/",
         items: articles.map((a: ArticleResponse) => ({

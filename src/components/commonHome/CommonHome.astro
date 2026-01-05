@@ -27,6 +27,8 @@ import CategoryFeature from "./CategoryFeature.astro";
 import SocialShare from "@components/common/SocialShare.astro";
 import SampleDesign from "./SampleDesign.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
+import type { HomeDataResponse } from "@lib/pojo/responsemodel/HomeDataResponse";
+import { loadContent } from "@lib/contentLoader";
 const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -124,14 +126,26 @@ async function getQuizStories(
 		return null;
 	}
 }
+let articles: Array<ArticleResponse>;
+let featureList: Array<ArticleResponse>;
+let stories: Array<WebStoryResponse>;
+let quizzes: Array<QuizStoryResponse>;
+let homeData: HomeDataResponse = await loadContent("home", "homepage", lang);
+if (homeData) {
+	articles = homeData.articleList ?? (await getArticle(lang));
+	stories = homeData.storyList ?? (await getStories(lang, null, null));
+	quizzes = homeData.quizList ?? (await getQuizStories(lang, null, null));
+	featureList = homeData.featureList ?? null;
+} else {
+	articles = await getArticle(lang);
+	stories = await getStories(lang, null, null);
+	quizzes = await getQuizStories(lang, null, null);
+}
 
-const articles: Array<ArticleResponse> = await getArticle(lang);
-const stories: Array<WebStoryResponse> = await getStories(lang, null, null);
-const quizzes: Array<QuizStoryResponse> = await getQuizStories(
-	lang,
-	null,
-	null,
-);
+if (!featureList) {
+	featureList = articles.slice(0, 3);
+}
+
 const langPrefix = getLangPrefix(lang);
 const apiServer = getAppConfig();
 const baseUrl = await buildLangUrl(lang);
@@ -247,7 +261,7 @@ const data = content[lang];
 	<main>
 		<>
 			<!-- <SampleDesign /> -->
-			<HeroFeatured articles={articles.slice(0, 3)} lang={lang} />
+			<HeroFeatured articles={featureList} lang={lang} />
 			<!-- <section><CategoryFeature lang={lang} /> -->
 			<h2 class="sr-only">
 				Explore the latest articles, stories, and insights on culture,

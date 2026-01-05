@@ -4,8 +4,8 @@ export class CompanyConfig {
     public companyName: string;
     public imagePath: string;
     public imageUrl: string;
-    public xmlPath: string;
-    public xmlUrl: string;
+    public jsonPath: string;
+    public jsonUrl: string;
     public uploadCsvPath: string;
     public uploadCsvUrl: string;
     public extraVariable: string;

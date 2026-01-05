@@ -19,6 +19,7 @@ import { getLangPrefix } from "@lib/postmethodService";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import type { CategoryResponse } from "@lib/pojo/responsemodel/CategoryResponse";
 import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryResponse";
+import { loadContent } from "@lib/contentLoader";
 
 interface Props {
     catslug: string;
@@ -91,8 +92,17 @@ const apiServer = getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];
-
-const categoryObj: CategoryResponse = await getCategory(lang, catslug);
+let categoryObj: CategoryResponse = await loadContent(
+    "category",
+    catslug,
+    lang,
+);
+if (!categoryObj) {
+    categoryObj = await getCategory(lang, catslug);
+    if (!categoryObj) {
+        return new Response("Category not found", { status: 404 });
+    }
+}
 const subCatList: Array<SubCategoryResponse> = await getSubCategories(
     lang,
     catslug,
@@ -176,7 +186,6 @@ if (subCatList) {
     <main>
         <!-- HERO BANNER -->
         <section class="category-hero">
-            
             <div
                 class="category-hero-bg"
                 style={`background-image: url('${categoryObj.bannerImage}')`}

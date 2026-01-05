@@ -10,7 +10,7 @@ if (isLocal) {
     dataPath = '/var/www/html/quronfula/data';
 }
 export async function loadContent(
-    type: "article" | "quiz" | "stories" | "category" | "home",
+    type: "article" | "quiz" | "stories" | "category" | "subcategory" | "home",
     slug: string,
     lang: string
 ) {
@@ -25,9 +25,8 @@ export async function loadContent(
         }
     } else {
         try {
-            const res = await fetch(
-                `${dataPath}/data/${type}/${fileName}`
-            );
+            const path = `${dataPath}/data/${type}/${fileName}`;
+            const res = await fetch(path);
             if (res.ok) {
                 return await res.json();
             }

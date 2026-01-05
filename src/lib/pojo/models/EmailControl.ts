@@ -2,9 +2,9 @@
 export class EmailControl {
     public id: string;
     public emailEnabled: Boolean;
-    public lastEmailSentAt: LocalDateTime;
+    public lastEmailSentAt: Date;
     public throttleMinutes: number = 0;
     public environment: string;
     public updatedBy: string;
-    public updatedAt: LocalDateTime;
+    public updatedAt: Date;
 }

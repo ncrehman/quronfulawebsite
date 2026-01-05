@@ -12,7 +12,7 @@ export class ErrorLog {
     public methodName: string;
     public lineNumber: number = 0;
     public stackTrace: string;
-    public createdAt: LocalDateTime;
+    public createdAt: Date;
     public billingPeriod: string;
     public date: string;
     public localDate: string;
