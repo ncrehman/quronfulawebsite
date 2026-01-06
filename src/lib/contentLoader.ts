@@ -14,24 +14,25 @@ export async function loadContent(
     slug: string,
     lang: string
 ) {
-    const fileName = `${lang}-${slug}.json`;
-    if (!isLocal) {
-        try {
-            const filePath = path.join(dataPath, type, fileName);
-            const json = await fs.readFile(filePath, "utf-8");
-            return JSON.parse(json);
-        } catch {
-            // file not found → fallback
-        }
-    } else {
-        try {
-            const path = `${dataPath}/data/${type}/${fileName}`;
-            const res = await fetch(path);
-            if (res.ok) {
-                return await res.json();
-            }
-        } catch {
-            // silent
-        }
-    }
+    // const fileName = `${lang}-${slug}.json`;
+    // if (!isLocal) {
+    //     try {
+    //         const filePath = path.join(dataPath, type, fileName);
+    //         const json = await fs.readFile(filePath, "utf-8");
+    //         return JSON.parse(json);
+    //     } catch {
+    //         // file not found → fallback
+    //     }
+    // } else {
+    //     try {
+    //         const path = `${dataPath}/data/${type}/${fileName}`;
+    //         const res = await fetch(path);
+    //         if (res.ok) {
+    //             return await res.json();
+    //         }
+    //     } catch {
+    //         // silent
+    //     }
+    // }
+    return null;
 }

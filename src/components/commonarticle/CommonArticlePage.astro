@@ -119,6 +119,7 @@ let relatedArticle: Array<ArticleResponse>;
 let cleanHtml: any;
 let blocksWithAds: any;
 let ogImages = [];
+console.log('article: ',article)
 if (!!article) {
   cleanHtml = cleanHtmlString(article.description);
   const blocks = splitHtmlIntoBlocks(cleanHtml);
@@ -132,11 +133,17 @@ if (!!article) {
     : [];
   keywords.push(article.cat_name);
   keywords.push(article.sub_catTitle);
-  const about = [...new Set(keywords.map((k) => k.trim()))].map((keyword) => ({
-    "@type": "Thing",
-    name: keyword,
-  }));
-
+const about = [
+  ...new Set(
+    keywords
+      .filter(k => typeof k === "string")   // remove null/undefined
+      .map(k => k.trim())
+      .filter(k => k.length > 0)             // remove empty strings
+  )
+].map(keyword => ({
+  "@type": "Thing",
+  name: keyword,
+}));
   const allInOneJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
