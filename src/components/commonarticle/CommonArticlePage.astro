@@ -1,8 +1,4 @@
 ---
-
-
-
-
 import { Image } from "astro:assets";
 import SEO from "@components/SEO.astro";
 import { metaConfig } from "@components/metaConfig";
@@ -13,23 +9,29 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { cleanHtmlString,splitHtmlIntoBlocks,insertAdsBetweenBlocks, getLangPrefix } from "@lib/postmethodService";
+import {
+  cleanHtmlString,
+  splitHtmlIntoBlocks,
+  insertAdsBetweenBlocks,
+  getLangPrefix,
+} from "@lib/postmethodService";
 
 import {
-    apiCalls,
-    checkForDecode,
-    generateFAQJsonLd,
-    buildLangUrl,
+  apiCalls,
+  checkForDecode,
+  generateFAQJsonLd,
+  buildLangUrl,
 } from "@lib/postmethodService";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 // import RelatedArticleGrid from "./RelatedArticleGrid.astro";
 import SocialShare from "@components/common/SocialShare.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { loadContent } from "@lib/contentLoader";
+import RelatedArticlesCarousel from "./RelatedArticlesCarousel.astro";
 
 interface Props {
-    slug: string;
-    lang: string;
+  slug: string;
+  lang: string;
 }
 
 const { slug = "", lang = "ar" } = Astro.props;
@@ -38,59 +40,59 @@ const { slug = "", lang = "ar" } = Astro.props;
 const articleCache: Map<string, FeedContentResponse> = new Map();
 
 async function getArticles(
-    language: string,
-    articleSlug: string,
+  language: string,
+  articleSlug: string,
 ): Promise<FeedContentResponse | null> {
-    const cacheKey = `${language}_home_${"article"}`;
-    if (articleCache.has(cacheKey)) {
-        return articleCache.get(cacheKey)!;
+  const cacheKey = `${language}_home_${"article"}`;
+  if (articleCache.has(cacheKey)) {
+    return articleCache.get(cacheKey)!;
+  }
+  const request = new RequestModel();
+  request.lang = lang;
+  request.slug = articleSlug;
+  const responseResult: ApiResponse = await apiCalls(
+    request,
+    EndPointPaths.getarticlebyslug,
+  );
+  if (responseResult.status !== 0) return null;
+  const response: ResponseModel = responseResult.data;
+  if (response.statusCode === 0) {
+    const article: FeedContentResponse = response.respObject;
+    if (article) {
+      articleCache.set(cacheKey, article);
     }
-    const request = new RequestModel();
-    request.lang = lang;
-    request.slug = articleSlug;
-    const responseResult: ApiResponse = await apiCalls(
-        request,
-        EndPointPaths.getarticlebyslug,
-    );
-    if (responseResult.status !== 0) return null;
-    const response: ResponseModel = responseResult.data;
-    if (response.statusCode === 0) {
-        const article: FeedContentResponse = response.respObject;
-        if (article) {
-            articleCache.set(cacheKey, article);
-        }
-        return article;
-    } else {
-        return null;
-    }
+    return article;
+  } else {
+    return null;
+  }
 }
 
 async function fetchRelatedData(
-    lang: string,
-    articleId: string,
+  lang: string,
+  articleId: string,
 ): Promise<Array<ArticleResponse> | null> {
-    try {
-        const request = new RequestModel();
-        request.lang = lang;
-        request.extraVariable = articleId;
-        request.offset = 0;
-        request.limit = 6;
-        const responseResult: ApiResponse = await apiCalls(
-            request,
-            EndPointPaths.getrelatedarticles,
-        );
-        if (responseResult.status === 0) {
-            const response: ResponseModel = responseResult.data;
-            if (response.statusCode === 0) {
-                const article: Array<ArticleResponse> = response.respList;
-                return article;
-            }
-        }
-    } catch (err) {
-        console.error("Error fetching related articles:", err);
+  try {
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = articleId;
+    request.offset = 0;
+    request.limit = 6;
+    const responseResult: ApiResponse = await apiCalls(
+      request,
+      EndPointPaths.getrelatedarticles,
+    );
+    if (responseResult.status === 0) {
+      const response: ResponseModel = responseResult.data;
+      if (response.statusCode === 0) {
+        const article: Array<ArticleResponse> = response.respList;
+        return article;
+      }
     }
+  } catch (err) {
+    console.error("Error fetching related articles:", err);
+  }
 
-    return null;
+  return null;
 }
 
 const langPrefix = getLangPrefix(lang);
@@ -114,307 +116,370 @@ const jsonLd = [];
 
 let keywords = [];
 let relatedArticle: Array<ArticleResponse>;
-let cleanHtml:any;
+let cleanHtml: any;
 let blocksWithAds: any;
-let ogImages=[];
+let ogImages = [];
 if (!!article) {
-    cleanHtml = cleanHtmlString(article.description);
-     const blocks = splitHtmlIntoBlocks(cleanHtml);
-    blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
-    // relatedArticle = await fetchRelatedData(lang, article.id);
-    keywords  = article.keywords
-  ? article.keywords.split(/[,\u060C\uFF0C]/) .map(k => k.trim()).filter(Boolean): [];
-  keywords.push(article.cat_name)
-  keywords.push(article.sub_catTitle)
-    const about = [...new Set(keywords.map((k) => k.trim()))].map(
-        (keyword) => ({
-            "@type": "Thing",
-            name: keyword,
-        }),
-    );
+  cleanHtml = cleanHtmlString(article.description);
+  const blocks = splitHtmlIntoBlocks(cleanHtml);
+  blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
+  relatedArticle = await fetchRelatedData(lang, article.id);
+  keywords = article.keywords
+    ? article.keywords
+        .split(/[,\u060C\uFF0C]/)
+        .map((k) => k.trim())
+        .filter(Boolean)
+    : [];
+  keywords.push(article.cat_name);
+  keywords.push(article.sub_catTitle);
+  const about = [...new Set(keywords.map((k) => k.trim()))].map((keyword) => ({
+    "@type": "Thing",
+    name: keyword,
+  }));
 
-    const allInOneJsonLd = {
-        "@context": "https://schema.org",
-        "@graph": [
-            /* ---------------- Organization ---------------- */
-            {
-                "@type": "Organization",
-                "@id": `${baseUrl}#organization`,
-                name: siteName,
-                url: baseUrl,
-                logo: {
-                    "@type": "ImageObject",
-                    url: `${apiServer.websiteUrl}logo.webp`,
-                    width: 192,
-                    height: 192,
-                },
-            },
+  const allInOneJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      /* ---------------- Organization ---------------- */
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
+        name: siteName,
+        url: baseUrl,
+        logo: {
+          "@type": "ImageObject",
+          url: `${apiServer.websiteUrl}logo.webp`,
+          width: 192,
+          height: 192,
+        },
+      },
 
-            /* ---------------- WebSite ---------------- */
-            {
-                "@type": "WebSite",
-                "@id": `${baseUrl}#website`,
-                url: baseUrl,
-                name: siteName,
-                publisher: {
-                    "@id": `${baseUrl}#organization`,
-                },
-            },
+      /* ---------------- WebSite ---------------- */
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}#website`,
+        url: baseUrl,
+        name: siteName,
+        publisher: {
+          "@id": `${baseUrl}#organization`,
+        },
+      },
 
-            /* ---------------- WebPage ---------------- */
-            {
-                "@type": "WebPage",
-                "@id": canonicalUrl,
-                url: canonicalUrl,
-                name: article.title,
-                isPartOf: {
-                    "@id": `${baseUrl}#website`,
-                },
-                breadcrumb: {
-                    "@id": `${canonicalUrl}#breadcrumb`,
-                },
-                primaryImageOfPage: {
-                    "@id": `${canonicalUrl}#primaryimage`,
-                },
-            },
+      /* ---------------- WebPage ---------------- */
+      {
+        "@type": "WebPage",
+        "@id": canonicalUrl,
+        url: canonicalUrl,
+        name: article.title,
+        isPartOf: {
+          "@id": `${baseUrl}#website`,
+        },
+        breadcrumb: {
+          "@id": `${canonicalUrl}#breadcrumb`,
+        },
+        primaryImageOfPage: {
+          "@id": `${canonicalUrl}#primaryimage`,
+        },
+      },
 
-            /* ---------------- Primary Image ---------------- */
-            {
-                "@type": "ImageObject",
-                "@id": `${canonicalUrl}#primaryimage`,
-                url: article.landScapeBanner,
-                width: 1200,
-                height: 630,
-            },
+      /* ---------------- Primary Image ---------------- */
+      {
+        "@type": "ImageObject",
+        "@id": `${canonicalUrl}#primaryimage`,
+        url: article.landScapeBanner,
+        width: 1200,
+        height: 630,
+      },
 
-            /* ---------------- Breadcrumb ---------------- */
-            {
-                "@type": "BreadcrumbList",
-                "@id": `${canonicalUrl}#breadcrumb`,
-                itemListElement: [
-                    {
-                        "@type": "ListItem",
-                        position: 1,
-                        name: siteName,
-                        item: baseUrl,
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 2,
-                        name: article.cat_name,
-                        item: `${baseUrl}category/${article.cat_slug}`,
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 3,
-                        name: article.sub_catTitle,
-                        item: `${baseUrl}category/${article.cat_slug}/${article.sub_catslug}`,
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 4,
-                        name: article.title,
-                        item: canonicalUrl,
-                    },
-                ],
-            },
-
-            /* ---------------- Article ---------------- */
-            {
-                "@type": ["Article", "BlogPosting"],
-                "@id": `${canonicalUrl}#article`,
-                isPartOf: {
-                    "@id": canonicalUrl,
-                },
-                headline: article.title,
-                alternativeHeadline: article.metaTitle,
-                description: article.metaDescription,
-                articleSection: [article.cat_name, article.sub_catTitle],
-
-                inLanguage: article.lang || apiServer.defaultLanguage,
-                wordCount: article.wordCount || 1200,
-                readingTime:
-                    article.readingTime ||
-                    Math.ceil((article.wordCount || 1200) / 200),
-                image: {
-                    "@id": `${canonicalUrl}#primaryimage`,
-                },
-
-                author: {
-                    "@type": "Person",
-                    name: article.author_name,
-                    url: `${baseUrl}author/${article.author_slug}/`,
-                },
-                publisher: {
-                    "@id": `${baseUrl}#organization`,
-                },
-                keywords: keywords,
-                about: about,
-                datePublished: new Date(article.publishDate).toISOString(),
-                dateModified: new Date(
-                    article.updatedAt || article.publishDate,
-                ).toISOString(),
-                mainEntityOfPage: {
-                    "@id": canonicalUrl,
-                },
-            },
+      /* ---------------- Breadcrumb ---------------- */
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: siteName,
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: article.cat_name,
+            item: `${baseUrl}category/${article.cat_slug}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: article.sub_catTitle,
+            item: `${baseUrl}category/${article.cat_slug}/${article.sub_catslug}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: article.title,
+            item: canonicalUrl,
+          },
         ],
+      },
+
+      /* ---------------- Article ---------------- */
+      {
+        "@type": ["Article", "BlogPosting"],
+        "@id": `${canonicalUrl}#article`,
+        isPartOf: {
+          "@id": canonicalUrl,
+        },
+        headline: article.title,
+        alternativeHeadline: article.metaTitle,
+        description: article.metaDescription,
+        articleSection: [article.cat_name, article.sub_catTitle],
+
+        inLanguage: article.lang || apiServer.defaultLanguage,
+        wordCount: article.wordCount || 1200,
+        readingTime:
+          article.readingTime || Math.ceil((article.wordCount || 1200) / 200),
+        image: {
+          "@id": `${canonicalUrl}#primaryimage`,
+        },
+
+        author: {
+          "@type": "Person",
+          name: article.author_name,
+          url: `${baseUrl}author/${article.author_slug}/`,
+        },
+        publisher: {
+          "@id": `${baseUrl}#organization`,
+        },
+        keywords: keywords,
+        about: about,
+        datePublished: new Date(article.publishDate).toISOString(),
+        dateModified: new Date(
+          article.updatedAt || article.publishDate,
+        ).toISOString(),
+        mainEntityOfPage: {
+          "@id": canonicalUrl,
+        },
+      },
+    ],
+  };
+
+  let howToSchema: any = null;
+  if (article.howToSchema != null) {
+    howToSchema = {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      name: article.howToSchema.name,
+      description: article.howToSchema.description,
+      image: article.landScapeBanner,
+      step: article.howToSchema.step.map((s) => ({
+        "@type": "HowToStep",
+        name: s.name,
+        text: s.text,
+      })),
     };
+  } else {
+    howToSchema = null;
+  }
+  let faqSchema: any = null;
+  if (article.faqSchema != null) {
+    faqSchema = generateFAQJsonLd(article.faqSchema);
+  } else {
+    faqSchema = null;
+  }
 
-    let howToSchema: any = null;
-    if (article.howToSchema != null) {
-        howToSchema = {
-            "@context": "https://schema.org",
-            "@type": "HowTo",
-            name: article.howToSchema.name,
-            description: article.howToSchema.description,
-            image: article.landScapeBanner,
-            step: article.howToSchema.step.map((s) => ({
-                "@type": "HowToStep",
-                name: s.name,
-                text: s.text,
-            })),
-        };
-    } else {
-        howToSchema = null;
-    }
-    let faqSchema: any = null;
-    if (article.faqSchema != null) {
-        faqSchema = generateFAQJsonLd(article.faqSchema);
-    } else {
-        faqSchema = null;
-    }
+  jsonLd.push(allInOneJsonLd);
+  // jsonLd.push(articleJsonLd);
+  // jsonLd.push(breadCrumb);
 
-    jsonLd.push(allInOneJsonLd);
-    // jsonLd.push(articleJsonLd);
-    // jsonLd.push(breadCrumb);
+  if (faqSchema) jsonLd.push(faqSchema);
+  if (howToSchema) jsonLd.push(howToSchema);
 
-    if (faqSchema) jsonLd.push(faqSchema);
-    if (howToSchema) jsonLd.push(howToSchema);
-
-    
-ogImages = [
-  {
-    url: article.landScapeBanner,
-    width: 1200,
-    height: 630,
-  },
-  {
-    url: article.bannerImage,
-    width: 720,
-    height: 1280,
-  },
-  {
-    url: article.squareBanner,
-    width: 720,
-    height: 720,
-  },
-].filter(img => img.url);
+  ogImages = [
+    {
+      url: article.landScapeBanner,
+      width: 1200,
+      height: 630,
+    },
+    {
+      url: article.bannerImage,
+      width: 720,
+      height: 1280,
+    },
+    {
+      url: article.squareBanner,
+      width: 720,
+      height: 720,
+    },
+  ].filter((img) => img.url);
 }
 
+const published = new Date(article.publishDate);
+const updated = article.updatedAt ? new Date(article.updatedAt) : null;
+
+const showUpdated =
+  updated && updated.getTime() - published.getTime() > 24 * 60 * 60 * 1000; // 1 day
 ---
 
 {
-    article && (
-        <SEO
-            title={article.title}
-            description={article.metaDescription}
-            image={article.landScapeBanner}
-            url={canonicalUrl}
-            lang={lang}
-            canonical={canonicalUrl}
-            noindex={false}
-            type="article"
-            jsonLd={jsonLd}
-            media={{
-                amphtml: ampUrl,
-            }}
-            author={article.author_name}
-            publishDate={new Date(article.publishDate).toISOString()}
-            publishedTime={new Date(article.publishDate).toISOString()}
-            keywords={keywords}
-            section={article.sub_catTitle}
-            updatedTime={new Date(article.updatedAt).toISOString()}
-            ogImages ={ogImages }
-            imageAlt={article.imageAlt}
-            readingTime={article.readingTime}
-        />
-    )
+  article && (
+    <SEO
+      title={article.title}
+      description={article.metaDescription}
+      image={article.landScapeBanner}
+      url={canonicalUrl}
+      lang={lang}
+      canonical={canonicalUrl}
+      noindex={false}
+      type="article"
+      jsonLd={jsonLd}
+      media={{
+        amphtml: ampUrl,
+      }}
+      author={article.author_name}
+      publishDate={new Date(article.publishDate).toISOString()}
+      publishedTime={new Date(article.publishDate).toISOString()}
+      keywords={keywords}
+      section={article.sub_catTitle}
+      updatedTime={new Date(article.updatedAt).toISOString()}
+      ogImages={ogImages}
+      imageAlt={article.imageAlt}
+      readingTime={article.readingTime}
+    />
+  )
 }
 <Layout>
-  {article ? (
-    <div class="article-grid">
-        <!-- CENTER ARTICLE -->
+  {
+    article ? (
+      <div class="article-grid">
         <main>
-            <h1 class="title">{article.title}</h1>
+          <h1 class="title">{article.title}</h1>
 
-            {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
+          {article.subTitle && <h2 class="subtitle">{article.subTitle}</h2>}
 
-            <div class="meta">
-                <span
-                    >{
-                        new Date(article.publishDate).toLocaleDateString(lang)
-                    }</span
-                >
-            </div>
-            <div>
-            {
-                article.landScapeBanner && (
-                    <figure class="hero-figure">
-                        <div class="hero-image-wrapper">
-                            <Image
-                                src={article.landScapeBanner}
-                                alt={article.imageAlt}
-                                width={1200}
-                                height={630}
-                                loading="eager"
-                                fetchpriority="high"
-                                class="hero-image"
-                            />
-                        </div>
-                        {article.caption && (
-                            <figcaption class="hero-caption">
-                                {article.caption}
-                            </figcaption>
-                        )}
-                    </figure>
-                )
-            }
-            </div>
-           
-                              <div class="article-content" >
-                                {blocksWithAds.map((block, idx) => (
-                                    <div  style={{ marginBottom: '1.5rem' }}>
-                                        {block.type === 'content' ? (
-                                            <div class="text-[clamp(16px,2vw,20px)] max-w-full leading-[1.6] text-justify"
-                                               set:html={block.html}
-                                            />
-                                        ) : (
-                                          <div class="ad-inline-wrapper">
-                                            <AdPlaceholder
-                                              calledFrom="content_blocks_ad"
-                                              slot={block.slot}
-                                              layout="display"
-                                              format="auto"
-                                              height={200}
-                                              width="100%"
-                                            />
-                                          </div>
-                                        )}
-                                    </div>
-                                ))}
-                              </div>
-            <SocialShare title={article.title} url={canonicalUrl} lang={lang} />
-           
+          <div
+            class="flex flex-wrap items-center gap-3  text-sm mt-4 mb-6  text-gray-600 dark:text-gray-400"  >
+            <a  href={`/${langPrefix}author/${article.author_slug}`}  class="shrink-0"  >
+              <Image
+                src={article.author_profile}
+                alt={article.author_name || article.title}
+                width={40}
+                height={40}
+                loading="lazy"
+                class="rounded-full object-cover border border-gray-300 dark:border-neutral-600"
+              />
+            </a>
+            <!-- Meta info -->
+  <div
+    class="flex flex-wrap items-center gap-x-3 gap-y-1 leading-snug" >
+    <!-- Author name -->
+    <span
+      class="font-medium text-gray-900 dark:text-gray-100">
+      {article.author_name}
+    </span>
+
+    <!-- Separator -->
+    <span class="text-gray-400 dark:text-neutral-600">•</span>
+
+    <!-- Publish date -->
+    <time datetime={new Date(article.publishDate).toISOString()} class="whitespace-nowrap">
+      {new Date(article.publishDate).toLocaleDateString(lang, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })}
+    </time>
+
+    {showUpdated && (
+      <>
+        <span class="text-gray-400 dark:text-neutral-600">•</span>
+
+        <span class="italic text-gray-500 dark:text-gray-400">
+          {lang === "ar" ? "تم التحديث" : "Updated"}
+        </span>
+
+        <time
+          datetime={new Date(article.updatedAt).toISOString()}
+          class="whitespace-nowrap"
+        >
+          {new Date(article.updatedAt).toLocaleDateString(lang, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </time>
+      </>
+    )}
+
+    {article.readingTime > 0 && (
+      <>
+        <span class="text-gray-400 dark:text-neutral-600">•</span>
+
+        <span class="whitespace-nowrap">
+          {article.readingTime}{" "}
+          {lang === "ar" ? "دقائق قراءة" : "min read"}
+        </span>
+      </>
+    )}
+  </div>
+          </div>
+          <div>
+            {article.landScapeBanner && (
+              <figure class="hero-figure">
+                <div class="hero-image-wrapper">
+                  <Image
+                    src={article.landScapeBanner}
+                    alt={article.imageAlt}
+                    width={1200}
+                    height={630}
+                    loading="eager"
+                    fetchpriority="high"
+                    class="hero-image"
+                  />
+                </div>
+                {article.caption && (
+                  <figcaption class="hero-caption">
+                    {article.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )}
+          </div>
+
+          <div class="article-content">
+            {blocksWithAds.map((block, idx) => (
+              <div style={{ marginBottom: "1.5rem" }}>
+                {block.type === "content" ? (
+                  <div
+                    class="text-[clamp(16px,2vw,20px)] max-w-full leading-[1.6] text-justify"
+                    set:html={block.html}
+                  />
+                ) : (
+                  <div class="ad-inline-wrapper">
+                    <AdPlaceholder
+                      calledFrom="content_blocks_ad"
+                      slot={block.slot}
+                      layout="display"
+                      format="auto"
+                      height={200}
+                      width="100%"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <RelatedArticlesCarousel items={relatedArticle} lang={lang} />
+          <SocialShare title={article.title} url={canonicalUrl} lang={lang} />
         </main>
-    </div>
-  ):(
-    <div class="not-found-container">
-  <div class="particles" aria-hidden="true">
-    {
-      [...Array(12)].map((_, i) => (
-        <div
-          style={`
+      </div>
+    ) : (
+      <div class="not-found-container">
+        <div class="particles" aria-hidden="true">
+          {[...Array(12)].map((_, i) => (
+            <div
+              style={`
             position: absolute;
             width: 8px;
             height: 8px;
@@ -425,236 +490,238 @@ ogImages = [
             left: ${Math.random() * 100}%;
             top: -20px;
           `}
-        />
-      ))
-    }
-  </div>
+            />
+          ))}
+        </div>
 
-  <div class="not-found-content">
-    <h1 class="not-found-title">
-      {lang === "en" ? "Article Not Found" : "المقال غير موجود"}
-    </h1>
-    <p class="not-found-text">
-      {lang === "en" 
-        ? "Sorry, the article you're looking for doesn't exist or has been removed." 
-        : "عذراً، المقال الذي تبحث عنه غير موجود أو تم حذفه."}
-    </p>
-    <a href="/" class="back-home-btn">
-      {lang === "en" ? "Back to Main Page" : "العودة إلى الرئيسية"}
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-      </svg>
-    </a>
-  </div>
-  </div>
-  )}
-    
+        <div class="not-found-content">
+          <h1 class="not-found-title">
+            {lang === "en" ? "Article Not Found" : "المقال غير موجود"}
+          </h1>
+          <p class="not-found-text">
+            {lang === "en"
+              ? "Sorry, the article you're looking for doesn't exist or has been removed."
+              : "عذراً، المقال الذي تبحث عنه غير موجود أو تم حذفه."}
+          </p>
+          <a href="/" class="back-home-btn">
+            {lang === "en" ? "Back to Main Page" : "العودة إلى الرئيسية"}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   <style>
     /* ===============================
    GLOBAL SAFETY
 ================================ */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg-color);
-  color: var(--text-color);
-  line-height: 1.7;
-}
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.7;
+    }
 
-/* ===============================
+    /* ===============================
    COLOR VARIABLES
 ================================ */
 
-:root {
-  --bg-color: #ffffff;
-  --text-color: #333333;
-  --accent-color: #007bff;
-  --meta-color: #666666;
-}
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --accent-color: #007bff;
+      --meta-color: #666666;
+    }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #121212;
-    --text-color: #e0e0e0;
-    --accent-color: #4da6ff;
-    --meta-color: #aaaaaa;
-  }
-}
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #121212;
+        --text-color: #e0e0e0;
+        --accent-color: #4da6ff;
+        --meta-color: #aaaaaa;
+      }
+    }
 
-/* ===============================
+    /* ===============================
    LAYOUT
 ================================ */
 
-.article-grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr;
-}
+    .article-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
 
-main {
-  max-width: 800px;
-  margin: 0 auto;
-}
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-/* ===============================
+    /* ===============================
    TYPOGRAPHY
 ================================ */
 
-.title {
-  font-size: clamp(2rem, 5vw, 2.5rem);
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
+    .title {
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
 
-.subtitle {
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-  margin-bottom: 1rem;
-  color: var(--meta-color);
-}
+    .subtitle {
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      margin-bottom: 1rem;
+      color: var(--meta-color);
+    }
 
-.meta {
-  font-size: 0.95rem;
-  color: var(--meta-color);
-  margin-bottom: 2rem;
-}
+    .meta {
+      font-size: 0.95rem;
+      color: var(--meta-color);
+      margin-bottom: 2rem;
+    }
 
-/* ===============================
+    /* ===============================
    HERO IMAGE
 ================================ */
 
-.hero-figure {
-  margin: 2rem 0;
-}
+    .hero-figure {
+      margin: 2rem 0;
+    }
 
-.hero-image-wrapper {
-  width: 100%;
-  aspect-ratio: 1200 / 630;
-  overflow: hidden;
-  border-radius: 12px;
-}
+    .hero-image-wrapper {
+      width: 100%;
+      aspect-ratio: 1200 / 630;
+      overflow: hidden;
+      border-radius: 12px;
+    }
 
-.hero-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-.hero-caption {
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--meta-color);
-  margin-top: 0.5rem;
-}
+    .hero-caption {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--meta-color);
+      margin-top: 0.5rem;
+    }
 
-/* ===============================
+    /* ===============================
    ARTICLE CONTENT (CRITICAL)
 ================================ */
 
-.article-content {
-  width: 100%;
-  max-width: 100%;
-}
+    .article-content {
+      width: 100%;
+      max-width: 100%;
+    }
 
-.article-text {
-  font-size: clamp(16px, 2.2vw, 20px);
-  line-height: 1.6;
-  overflow-wrap: break-word;
-  word-break: normal;
-  hyphens: auto;
-}
+    .article-text {
+      font-size: clamp(16px, 2.2vw, 20px);
+      line-height: 1.6;
+      overflow-wrap: break-word;
+      word-break: normal;
+      hyphens: auto;
+    }
 
-/* Desktop justify ONLY */
-@media (min-width: 769px) {
-  .article-text {
-    text-align: justify;
-  }
-}
+    /* Desktop justify ONLY */
+    @media (min-width: 769px) {
+      .article-text {
+        text-align: justify;
+      }
+    }
 
-/* Mobile fix — STOP WIDTH SHIFT */
-@media (max-width: 768px) {
-  .article-text {
-    text-align: start;
-    hyphens: none;
-  }
+    /* Mobile fix — STOP WIDTH SHIFT */
+    @media (max-width: 768px) {
+      .article-text {
+        text-align: start;
+        hyphens: none;
+      }
 
-  .article-grid {
-    padding: 1rem;
-  }
-}
+      .article-grid {
+        padding: 1rem;
+      }
+    }
 
-/* RTL support */
-html[dir="rtl"] .article-text {
-  direction: rtl;
-}
+    /* RTL support */
+    html[dir="rtl"] .article-text {
+      direction: rtl;
+    }
 
-@media (max-width: 768px) {
-  html[dir="rtl"] .article-text {
-    text-align: right;
-  }
-}
+    @media (max-width: 768px) {
+      html[dir="rtl"] .article-text {
+        text-align: right;
+      }
+    }
 
-/* ===============================
+    /* ===============================
    MEDIA INSIDE CONTENT
 ================================ */
 
-.article-text img,
-.article-text iframe,
-.article-text video,
-.article-text table {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
+    .article-text img,
+    .article-text iframe,
+    .article-text video,
+    .article-text table {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
 
-/* ===============================
+    /* ===============================
    INLINE ADS (FINAL FIX)
 ================================ */
 
-.ad-inline-wrapper {
-  width: 100%;
-  max-width: 100%;
-  min-height: 200px;     /* matches AdPlaceholder */
-  margin: 1.5rem 0;
-  overflow: hidden;
-  contain: layout paint;
-  display: flex;
-  justify-content: center;
-}
+    .ad-inline-wrapper {
+      width: 100%;
+      max-width: 100%;
+      min-height: 200px; /* matches AdPlaceholder */
+      margin: 1.5rem 0;
+      overflow: hidden;
+      contain: layout paint;
+      display: flex;
+      justify-content: center;
+    }
 
-/* Lock AdSense iframe */
-.ad-inline-wrapper iframe {
-  max-width: 100% !important;
-  width: 100% !important;
-}
+    /* Lock AdSense iframe */
+    .ad-inline-wrapper iframe {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
 
-/* ===============================
+    /* ===============================
    LINKS & LISTS
 ================================ */
 
-.article-text p {
-  margin: 1.5rem 0;
-}
+    .article-text p {
+      margin: 1.5rem 0;
+    }
 
-.article-text ul,
-.article-text ol {
-  padding-left: 1.5rem;
-  margin: 1.5rem 0;
-}
+    .article-text ul,
+    .article-text ol {
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+    }
 
-.article-text a {
-  color: var(--accent-color);
-  text-decoration: underline;
-}
-
+    .article-text a {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
   </style>
 </Layout>

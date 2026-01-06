@@ -20,6 +20,8 @@ import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import type { CategoryResponse } from "@lib/pojo/responsemodel/CategoryResponse";
 import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryResponse";
 import { loadContent } from "@lib/contentLoader";
+import AdPlaceholder from "@components/AdPlaceholder.astro";
+import { Image } from "astro:assets";
 
 interface Props {
     catslug: string;
@@ -28,6 +30,11 @@ interface Props {
 const { catslug = "", lang = "ar" } = Astro.props;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 // Fetch homepage data or articles specific to home page
+
+const pageParam = Astro.url.searchParams.get("page");
+const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
+const limit = 10;
+const offset = (currentPage - 1) * limit;
 
 const categoryCache: Map<string, CatResponse[]> = new Map();
 
@@ -55,11 +62,13 @@ async function getCategory(
 async function getArticleList(
     lang: string,
     catslug: string,
+    limit: number,
+    offset: number,
 ): Promise<ArticleResponse[]> {
     const request = new RequestModel();
     request.lang = lang;
-    request.limit = 5;
-    request.offset = 0;
+    request.limit = limit;
+    request.offset = offset;
     request.slug = await checkForDecode(catslug);
     const response = await apiCalls(
         request,
@@ -107,10 +116,18 @@ const subCatList: Array<SubCategoryResponse> = await getSubCategories(
     lang,
     catslug,
 );
-const articles: Array<ArticleResponse> = await getArticleList(lang, catslug);
+const articles: Array<ArticleResponse> = await getArticleList(
+    lang,
+    catslug,
+    limit,
+    offset,
+);
 let canonicalUrl: string = null;
 if (!!categoryObj) {
-    canonicalUrl = baseUrl + "category/" + categoryObj.slug;
+    canonicalUrl =
+        currentPage === 1
+            ? `${baseUrl}category/${categoryObj.slug}`
+            : `${baseUrl}category/${categoryObj.slug}?page=${currentPage}`;
     const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
         {
             name: lang === "ar" ? "الرئيسية" : "Home",
@@ -231,7 +248,7 @@ if (subCatList) {
                                     class="card-link"
                                 >
                                     <div class="card-image">
-                                        <img
+                                        <Image
                                             src={item.landScapeBanner}
                                             alt={item.imageAlt || item.title}
                                             loading="lazy"
@@ -254,57 +271,133 @@ if (subCatList) {
                         </p>
                     )}
                 </section>
+                <section>
+                                <AdPlaceholder
+                                    calledFrom="category"
+                                    slot="2578599202"
+                                    layout="display"
+                                    format="auto"
+                                    display="block"
+                                    textAlign="center"
+                                    height={200}
+                                    width="100%"
+                                />
+                            </section>
+                <nav class="pagination">
+    {currentPage > 1 && (
+        <a
+            href={`/${langPrefix}category/${categoryObj.slug}?page=${currentPage - 1}`}
+            rel="prev"
+            class="pagination-btn"
+        >
+            ← {lang === "ar" ? "السابق" : "Previous"}
+        </a>
+    )}
+
+    <span class="page-number">
+        {lang === "ar"
+            ? `صفحة ${currentPage}`
+            : `Page ${currentPage}`}
+    </span>
+
+    {articles.length === limit && (
+        <a
+            href={`/${langPrefix}category/${categoryObj.slug}?page=${currentPage + 1}`}
+            rel="next"
+            class="pagination-btn"
+        >
+            {lang === "ar" ? "التالي" : "Next"} →
+        </a>
+    )}
+</nav>
             ) : null
         }
     </main>
 
     <!-- PAGE CSS -->
     <style>
+        
+        /* ================================
+       Pagination
+    ================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 3rem 0;
+}
+
+.pagination-btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+.page-number {
+    font-weight: 700;
+}
         /* ================================
        HERO
     ================================ */
-        .category-hero {
-            position: relative;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow: hidden;
-        }
+     .category-hero {
+    position: relative;
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
         .category-hero-bg {
-            position: absolute;
-            inset: 0;
-            background-image: var(--hero-bg);
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
-            aspect-ratio: 5 / 3; /* ✅ keeps rectangle on mobile */
-        }
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
 
-        .category-hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            padding: 2rem;
-        }
+/* Dark gradient overlay */
+.category-hero-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55),
+        rgba(0, 0, 0, 0.75)
+    );
+}
 
-        .category-title {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            letter-spacing: -1px;
-        }
+     .category-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    padding: 3rem 2rem;
+    color: #fff;
+}
 
-        .category-description {
-            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-            max-width: 700px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
-            font-weight: 300;
-        }
+      .category-title {
+    font-size: clamp(2.8rem, 6vw, 4.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+       .category-description {
+    font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    line-height: 1.75;
+    max-width: 720px;
+    margin: 0 auto 2.5rem;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
 
         /* ================================
        SUBCATEGORY PILLS
@@ -318,21 +411,25 @@ if (subCatList) {
             padding: 0 1rem;
         }
 
-        .subcat-pill {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.85rem 1.8rem;
-            border-radius: 9999px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            text-decoration: none;
-            border: 1.5px solid;
-            transition: transform 0.3s ease;
-        }
+       .subcat-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.6rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
 
-        .subcat-pill:hover {
-            transform: translateY(-4px) scale(1.05);
-        }
+.subcat-pill:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-3px);
+}
 
         /* ================================
        HERO WAVE

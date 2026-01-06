@@ -8,6 +8,8 @@ import "../styles/global.css";
 
 const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const isLocal =
+	Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
 ---
 
 <!doctype html>
@@ -16,9 +18,6 @@ const lang = currentPath.startsWith("/en") ? "en" : "ar";
 		<meta charset="UTF-8" />
 		<meta name="generator" content="Quronfula" />
 		<meta name="google-adsense-account" content="ca-pub-4100521225351324" />
-	
-		
-		
 
 		<style>
 			/* ===============================
@@ -166,10 +165,14 @@ const lang = currentPath.startsWith("/en") ? "en" : "ar";
 			gtag("js", new Date());
 			gtag("config", gaID);
 		</script>
-		<script
-			type="text/partytown"
-			src="https://www.googletagmanager.com/gtag/js?id=G-KSSCTHQE28"
-		></script>
+		{
+			!isLocal && (
+				<script
+					type="text/partytown"
+					src="https://www.googletagmanager.com/gtag/js?id=G-KSSCTHQE28"
+				/>
+			)
+		}
 		<script
 			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4100521225351324"
 		></script>

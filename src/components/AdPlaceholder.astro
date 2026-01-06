@@ -28,8 +28,8 @@ const host = Astro.request?.url
   ? new URL(Astro.request.url).hostname
   : "localhost";
 
-const isLocal = host.includes("localhost") || host.includes("192.168.1");
-
+const isLocal =
+  host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.");
 const isTest = isLocal ? "on" : "off";
 const background = isLocal ? "#dbd6d6ff" : "";
 
@@ -61,89 +61,76 @@ const insStyle = `
   height:100%;
 `;
 ---
+{!isLocal ? (
+  <>
+    <div style={containerStyle}>
+      <ins
+        class="adsbygoogle"
+        style={insStyle}
+        data-ad-client="ca-pub-4100521225351324"
+        data-ad-slot={slot}
+        data-full-width-responsive={position === "inline" ? "true" : "false"}
+        {...layout ? { "data-ad-layout": layout } : {}}
+        {...format ? { "data-ad-format": format } : {}}
+      ></ins>
+    </div>
 
-<div style={containerStyle}>
-  <ins
-    class="adsbygoogle"
-    style={insStyle}
-    data-ad-client="ca-pub-4100521225351324"
-    data-ad-slot={slot}
-    data-full-width-responsive={position === "inline" ? "true" : "false"}
-    data-adtest={isTest}
-    {...layout ? { "data-ad-layout": layout } : {}}
-    {...format ? { "data-ad-format": format } : {}}></ins>
-</div>
+    <script is:inline>
+      (function () {
+        if (typeof window === "undefined") return;
 
-<script is:inline>
-  (function () {
-    if (typeof window === "undefined") return;
+        window.adsbygoogle = window.adsbygoogle || [];
 
-    window.adsbygoogle = window.adsbygoogle || [];
+        const ins =
+          document.currentScript?.previousElementSibling?.querySelector(
+            ".adsbygoogle"
+          );
 
-    const ins =
-      document.currentScript?.previousElementSibling?.querySelector(
-        ".adsbygoogle",
-      );
+        if (!ins || ins.dataset.pushed) return;
 
-    if (!ins || ins.dataset.pushed) return;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 20;
 
-    let attempts = 0;
-    const MAX_ATTEMPTS = 20;
+        const tryPush = () => {
+          const width = ins.offsetWidth;
 
-    const tryPush = () => {
-      const width = ins.offsetWidth;
+          if (width > 0) {
+            try {
+              window.adsbygoogle.push({});
+              ins.dataset.pushed = "true";
+            } catch (e) {
+              console.warn("[AdPlaceholder] AdSense push error:", e);
+            }
+            return;
+          }
 
-      if (width > 0) {
-        try {
-          window.adsbygoogle.push({});
-          ins.dataset.pushed = "true";
-        } catch (e) {
-          console.warn("[AdPlaceholder] AdSense push error:", e);
+          if (attempts < MAX_ATTEMPTS) {
+            attempts++;
+            requestAnimationFrame(tryPush);
+          }
+        };
+
+        if (document.readyState === "complete") {
+          tryPush();
+        } else {
+          window.addEventListener("load", tryPush, { once: true });
         }
-        return;
-      }
-
-      if (attempts < MAX_ATTEMPTS) {
-        attempts++;
-        requestAnimationFrame(tryPush);
-      } else {
-        console.warn("[AdPlaceholder] Ad not pushed: container width stayed 0");
-      }
-    };
-
-    if (document.readyState === "complete") {
-      tryPush();
-    } else {
-      window.addEventListener("load", tryPush, { once: true });
-    }
-  })();
-</script>
-
-<!-- <script is:inline>
-  (function () {
-    if (typeof window === 'undefined') return;
-
-    window.adsbygoogle = window.adsbygoogle || [];
-
-    const ins = document.currentScript
-      ?.previousElementSibling
-      ?.querySelector('.adsbygoogle');
-
-    if (!ins || ins.dataset.pushed) return;
-
-    const pushAd = () => {
-      try {
-        window.adsbygoogle.push({});
-        ins.dataset.pushed = 'true';
-      } catch (e) {
-        console.warn('[AdPlaceholder] AdSense push error:', e);
-      }
-    };
-
-    if (document.readyState === 'complete') {
-      pushAd();
-    } else {
-      window.addEventListener('load', pushAd, { once: true });
-    }
-  })();
-</script> -->
+      })();
+    </script>
+  </>
+) : (
+  /* LOCAL DEV PLACEHOLDER (SAFE) */
+  <div
+    style={`
+      ${containerStyle}
+      align-items:center;
+      justify-content:center;
+      color:#555;
+      font-size:14px;
+      font-weight:600;
+      border:1px dashed #aaa;
+    `}
+  >
+    Ad Placeholder ({position})
+  </div>
+)}

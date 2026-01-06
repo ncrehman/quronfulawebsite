@@ -12,7 +12,7 @@ import HeroFeatured from "@components/commonHome/HeroFeatured.astro";
 import Layout from "@layouts/Layout.astro";
 import SEO from "@components/SEO.astro";
 import { metaConfig } from "@components/metaConfig";
-import { getAppConfig } from "@lib/AppConfig";
+import { getAppConfig, loadAppConfig } from "@lib/AppConfig";
 import { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
 import { checkForDecode } from "@lib/postmethodService";
@@ -29,6 +29,7 @@ import SampleDesign from "./SampleDesign.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import type { HomeDataResponse } from "@lib/pojo/responsemodel/HomeDataResponse";
 import { loadContent } from "@lib/contentLoader";
+import { Image } from "astro:assets";
 const keyData = keywordsData as KeywordsData;
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -147,7 +148,10 @@ if (!featureList) {
 }
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+let apiServer = getAppConfig();
+if (!apiServer) {
+	apiServer = await loadAppConfig();
+}
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl.replace(/\/$/, "");
 const siteName = metaConfig.siteName[lang];
@@ -284,7 +288,7 @@ const data = content[lang];
 										aria-label={`Read article: ${item.title}`}
 									>
 										<div class="card-image">
-											<img
+											<Image
 												src={item.landScapeBanner}
 												alt={
 													item.imageAlt || item.title
@@ -344,14 +348,14 @@ const data = content[lang];
 										aria-label={`Read web story: ${item.title}`}
 									>
 										<div class="card-image">
-											<img
+											<Image
 												src={item.landScapeBanner}
 												alt={
 													item.imageAlt || item.title
 												}
 												loading="lazy"
-												width="400"
-												height="225"
+												width={400}
+												height={225}
 											/>
 										</div>
 										<div
@@ -402,7 +406,7 @@ const data = content[lang];
 										aria-label={`Take quiz: ${item.title}`}
 									>
 										<div class="card-image">
-											<img
+											<Image
 												src={item.landScapeBanner}
 												alt={
 													item.imageAlt || item.title

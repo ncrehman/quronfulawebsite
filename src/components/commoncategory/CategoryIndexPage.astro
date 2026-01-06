@@ -7,19 +7,15 @@ import {
 } from "@lib/postmethodService";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
-import { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
-import HeroFeatured from "@components/commonHome/HeroFeatured.astro";
 import Layout from "@layouts/Layout.astro";
 import SEO from "@components/SEO.astro";
 import { metaConfig } from "@components/metaConfig";
 import { getAppConfig } from "@lib/AppConfig";
-import { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
-import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
-import { checkForDecode } from "@lib/postmethodService";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
+import { Image } from "astro:assets";
 
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
@@ -136,7 +132,7 @@ if (categories) {
                     class="card-link"
                   >
                     <div class="card-image">
-                      <img
+                      <Image
                         src={item.bannerImage}
                         alt={item.imageAlt || item.title}
                         loading="lazy"

@@ -52,29 +52,32 @@ const categoryList: Array<CatResponse> = await getCategory(lang);
     <!-- MAIN RECTANGULAR FEATURED ARTICLE -->
     <a href={`/${langPrefix}article/${main.slug}`} class="hero-main">
       <div class="img-wrapper">
-        <img
-          src={main.landScapeBanner || main.landScapeBanner}
-          alt={main.imageAlt}
-          loading="lazy"
-        />
-        <div class="overlay">
-          <div class="text-content">
-            <h2 class="hero-title">{main.title}</h2>
-            <p class="hero-excerpt">{main.subTitle || main.subTitle}</p>
-          </div>
-        </div>
-      </div>
+  <Image
+    src={main.landScapeBanner}
+    alt={main.imageAlt || main.title}
+    loading="lazy"
+    inferSize={true}
+  />
+
+  <div class="overlay">
+    <div class="text-content">
+      <h2 class="hero-title">{main.title}</h2>
+      <p class="hero-excerpt">{main.subTitle}</p>
+    </div>
+  </div>
+</div>
     </a>
 
     <!-- STACKED SIDE ARTICLES (match main height together) -->
     <div class="hero-side">
       <a href={`/${langPrefix}article/${side1.slug}`} class="side-card">
         <div class="img-wrapper">
-          <img
-            src={side1.landScapeBanner || side1.landScapeBanner}
-            alt={side1.imageAlt}
-            loading="lazy"
-          />
+           <Image
+    src={side1.landScapeBanner || side1.landScapeBanner}
+    alt={side1.imageAlt || side1.title}
+    loading="lazy"
+    inferSize={true}
+  />
           <div class="overlay">
             <div class="text-content">
               <h3 class="side-title">{side1.title}</h3>
@@ -85,10 +88,11 @@ const categoryList: Array<CatResponse> = await getCategory(lang);
 
       <a href={`/${langPrefix}article/${side2.slug}`} class="side-card">
         <div class="img-wrapper">
-          <img
-            src={side2.landScapeBanner || side2.landScapeBanner}
-            alt={side2.imageAlt}
-            loading="lazy"
+            <Image
+    src={side2.landScapeBanner || side2.landScapeBanner}
+    alt={side2.imageAlt || main.title}
+    loading="lazy"
+    inferSize={true}
           />
           <div class="overlay">
             <div class="text-content">

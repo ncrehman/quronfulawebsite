@@ -1,0 +1,107 @@
+---
+import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+
+export interface Props {
+    items: Array<ArticleResponse>;
+}
+
+const { items = [] } = Astro.props;
+if (!items.length) return null;
+
+---
+<section class="mt-10">
+  <h3
+    class="mb-4 text-lg font-semibold
+           text-gray-900 dark:text-gray-100
+           px-4 md:px-0"
+  >
+    Related Articles
+  </h3>
+
+  <!-- FULL-WIDTH ISOLATION LAYER -->
+  <div class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+    <div class="relative overflow-x-hidden">
+
+      <!-- Desktop arrows -->
+      <div class="hidden md:block pointer-events-none">
+        <button
+          class="pointer-events-auto absolute left-4 top-1/2 -translate-y-1/2 z-10
+                 h-10 w-10 rounded-full
+                 bg-white text-gray-900
+                 shadow border border-gray-200
+                 hover:bg-gray-100
+                 dark:bg-neutral-800 dark:text-gray-100
+                 dark:border-neutral-700 dark:hover:bg-neutral-700"
+          data-prev
+          aria-label="Previous"
+        >
+          ‹
+        </button>
+        <button
+          class="pointer-events-auto absolute right-4 top-1/2 -translate-y-1/2 z-10
+                 h-10 w-10 rounded-full
+                 bg-white text-gray-900
+                 shadow border border-gray-200
+                 hover:bg-gray-100
+                 dark:bg-neutral-800 dark:text-gray-100
+                 dark:border-neutral-700 dark:hover:bg-neutral-700"
+          data-next
+          aria-label="Next"
+        >
+          ›
+        </button>
+      </div>
+
+      <!-- Carousel -->
+      <div
+        data-carousel
+        class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory
+               px-4 md:px-12 pb-2"
+      >
+        {items.map((item) => (
+          <article
+            class="snap-start shrink-0
+                   min-w-[260px] sm:min-w-[280px] md:min-w-[300px]
+                   max-w-[300px]
+                   rounded-lg
+                   bg-white dark:bg-neutral-800
+                   border border-gray-200 dark:border-neutral-700
+                   shadow-sm
+                   transition-shadow hover:shadow-md
+                   dark:hover:shadow-lg"
+          >
+            <a href={`/article/${item.slug}`} class="block">
+              <img
+                src={item.landScapeBanner}
+                alt={item.imageAlt || item.title}
+                loading="lazy"
+                width="300"
+                height="170"
+                class="h-[170px] w-full object-cover rounded-t-lg"
+              />
+              <div class="p-3">
+                <h4
+                  class="text-sm font-medium line-clamp-2
+                         text-gray-900 dark:text-gray-100"
+                >
+                  {item.title}
+                </h4>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const root = document.querySelector('[data-carousel]');
+    document.querySelector('[data-next]')?.addEventListener('click', () =>
+      root.scrollBy({ left: 320, behavior: 'smooth' })
+    );
+    document.querySelector('[data-prev]')?.addEventListener('click', () =>
+      root.scrollBy({ left: -320, behavior: 'smooth' })
+    );
+  </script>
+</section>

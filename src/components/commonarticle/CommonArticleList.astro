@@ -15,6 +15,7 @@ import { getAppConfig } from "@lib/AppConfig";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { Image } from "astro:assets";
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
 let offset = 0;
@@ -104,7 +105,7 @@ jsonLd.push(itemListJson);
             <article class="article-card">
                 <a href="" class="card-link">
                     <div class="card-image">
-                        <img
+                        <Image
                             src=""
                             alt=""
                             loading="lazy"
@@ -139,7 +140,7 @@ jsonLd.push(itemListJson);
                                     class="card-link"
                                 >
                                     <div class="card-image">
-                                        <img
+                                        <Image
                                             src={item.landScapeBanner}
                                             alt={item.imageAlt || item.title}
                                             loading="lazy"
@@ -262,7 +263,7 @@ jsonLd.push(itemListJson);
     <article class="article-card">
         <a class="card-link">
             <div class="card-image">
-                <img loading="lazy" width="400" height="225" />
+                <Image src="" alt="" loading="lazy" width="400" height="225" />
             </div>
             <div class="card-content">
                 <p class="section-title"></p>

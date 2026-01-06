@@ -1,0 +1,135 @@
+---
+import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+
+export interface Props {
+    items: Array<ArticleResponse>;
+        lang:string;
+}
+
+const { items = [] ,lang} = Astro.props;
+if (!items.length) return null;
+
+---
+<section class="mt-10">
+  <h3
+    class="mb-4 text-lg font-semibold
+           text-gray-900 dark:text-gray-100
+           px-4 md:px-0"
+  >
+    {lang==="en"?'Explore More':'استكشف المزيد'}
+  </h3>
+
+  <!-- ================= MOBILE ONLY (FULL BLEED) ================= -->
+  <div class="block md:hidden">
+    <div class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+      <div class="relative overflow-x-hidden">
+        <div
+          data-carousel
+          class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory
+                 px-4 pb-2"
+        >
+          {items.map((item) => (
+            <article
+              class="snap-start shrink-0
+                     min-w-[260px] max-w-[300px]
+                     rounded-lg
+                     bg-white dark:bg-neutral-800
+                     border border-gray-200 dark:border-neutral-700
+                     shadow-sm"
+            >
+              <a href={`/article/${item.slug}`} class="block">
+                <img
+                  src={item.landScapeBanner}
+                  alt={item.imageAlt || item.title}
+                  loading="lazy"
+                  width="300"
+                  height="170"
+                  class="h-[170px] w-full object-cover rounded-t-lg"
+                />
+                <div class="p-3">
+                  <h4 class="text-sm font-medium line-clamp-2
+                             text-gray-900 dark:text-gray-100">
+                    {item.title}
+                  </h4>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DESKTOP ONLY (CONSTRAINED) ================= -->
+  <div class="hidden md:block relative">
+    <!-- arrows -->
+    <button
+      class="absolute left-0 top-1/2 -translate-y-1/2 z-10
+             h-10 w-10 rounded-full
+             bg-white text-gray-900
+             border border-gray-200 shadow
+             dark:bg-neutral-800 dark:text-gray-100 dark:border-neutral-700"
+      data-prev
+    >
+      ‹
+    </button>
+
+    <button
+      class="absolute right-0 top-1/2 -translate-y-1/2 z-10
+             h-10 w-10 rounded-full
+             bg-white text-gray-900
+             border border-gray-200 shadow
+             dark:bg-neutral-800 dark:text-gray-100 dark:border-neutral-700"
+      data-next
+    >
+      ›
+    </button>
+
+    <div
+      data-carousel-desktop
+      class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory
+             pb-2"
+    >
+      {items.map((item) => (
+        <article
+          class="snap-start shrink-0
+                 min-w-[300px] max-w-[300px]
+                 rounded-lg
+                 bg-white dark:bg-neutral-800
+                 border border-gray-200 dark:border-neutral-700
+                 shadow-sm"
+        >
+          <a href={`/article/${item.slug}`} class="block">
+            <img
+              src={item.landScapeBanner}
+              alt={item.imageAlt || item.title}
+              loading="lazy"
+              width="300"
+              height="170"
+              class="h-[170px] w-full object-cover rounded-t-lg"
+            />
+            <div class="p-3">
+              <h4 class="text-sm font-medium line-clamp-2
+                         text-gray-900 dark:text-gray-100">
+                {item.title}
+              </h4>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const mobile = document.querySelector('[data-carousel]');
+    const desktop = document.querySelector('[data-carousel-desktop]');
+
+    document.querySelector('[data-next]')?.addEventListener('click', () =>
+      desktop?.scrollBy({ left: 320, behavior: 'smooth' })
+    );
+    document.querySelector('[data-prev]')?.addEventListener('click', () =>
+      desktop?.scrollBy({ left: -320, behavior: 'smooth' })
+    );
+  </script>
+</section>
