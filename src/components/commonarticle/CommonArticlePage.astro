@@ -119,7 +119,6 @@ let relatedArticle: Array<ArticleResponse>;
 let cleanHtml: any;
 let blocksWithAds: any;
 let ogImages = [];
-console.log('article: ',article)
 if (!!article) {
   cleanHtml = cleanHtmlString(article.description);
   const blocks = splitHtmlIntoBlocks(cleanHtml);
