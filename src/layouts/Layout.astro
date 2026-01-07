@@ -10,6 +10,20 @@ const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
 const isLocal =
 	Astro.url.hostname === "localhost" || Astro.url.hostname === "127.0.0.1";
+
+	const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://www.quronfula.com/#organization",
+  "name": "Quronfula",
+  "url": "https://www.quronfula.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://www.quronfula.com/logo.webp",
+    "width": 512,
+    "height": 512
+  }
+};
 ---
 
 <!doctype html>
@@ -177,21 +191,9 @@ const isLocal =
 			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4100521225351324"
 		></script>
 		<script type="application/ld+json">
-			{JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "Organization",
-			"@id": "https://www.quronfula.com/#organization",
-			"name": "Quronfula",
-			"url": "https://www.quronfula.com",
-			"logo": {
-				"@type": "ImageObject",
-				"url": "https://www.quronfula.com/logo.webp",
-				"width": 512,
-				"height": 512
-			}
-			})}
+  			{JSON.stringify(organizationSchema)}
 		</script>
-
+	
 	</head>
 
 	<body>
