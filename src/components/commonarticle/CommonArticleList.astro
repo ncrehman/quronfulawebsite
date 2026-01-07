@@ -105,7 +105,7 @@ jsonLd.push(itemListJson);
             <article class="article-card">
                 <a href="" class="card-link">
                     <div class="card-image">
-                        <Image
+                        <img
                             src=""
                             alt=""
                             loading="lazy"
@@ -263,7 +263,7 @@ jsonLd.push(itemListJson);
     <article class="article-card">
         <a class="card-link">
             <div class="card-image">
-                <Image src="" alt="" loading="lazy" width="400" height="225" />
+                <img src="" alt="" loading="lazy" width="400" height="225" />
             </div>
             <div class="card-content">
                 <p class="section-title"></p>
@@ -304,8 +304,8 @@ jsonLd.push(itemListJson);
 
                 const link = clone.querySelector(".card-link");
                 const img = clone.querySelector("img");
-                const title = clone.querySelector("h2");
-
+                // const title = clone.querySelector("h2");
+                const title = clone.querySelector(".section-title");
                 link.href = `/${langPrefix}article/${item.slug}`;
                 img.src = item.landScapeBanner;
                 img.alt = item.imageAlt || item.title;
