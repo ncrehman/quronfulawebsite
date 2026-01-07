@@ -14,6 +14,10 @@ export class Users {
     public secondary_bio: string;
     public en_bioDescription: string;
     public secondary_bioDescription: string;
+    public en_jobTitle: string;
+    public secondary_jobTitle: string;
+    public en_affiliation: string;
+    public secondary_affiliation: string;
     public socialLinks: Array<SocialLinks>;
     public password: string;
     public rolesObj: Roles;
