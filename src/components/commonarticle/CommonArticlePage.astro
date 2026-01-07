@@ -164,7 +164,7 @@ const about = [
       /* ---------------- WebSite ---------------- */
       {
         "@type": "WebSite",
-        "@id": `${baseUrl}#website`,
+        "@id": `${apiServer.websiteUrl}#website`,
         url: baseUrl,
         name: siteName,
         publisher: {
@@ -179,7 +179,7 @@ const about = [
         url: canonicalUrl,
         name: article.title,
         isPartOf: {
-          "@id": `${baseUrl}#website`,
+          "@id": `${apiServer.websiteUrl}#website`,
         },
         breadcrumb: {
           "@id": `${canonicalUrl}#breadcrumb`,
