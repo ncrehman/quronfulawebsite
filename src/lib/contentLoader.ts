@@ -14,38 +14,39 @@ export async function loadContent(
     slug: string,
     lang: string
 ) {
-    const fileName = `${lang}-${slug}.json`;
+    // const fileName = `${lang}-${slug}.json`;
 
-    let data: any = null;
+    // let data: any = null;
 
-    if (!isLocal) {
-        try {
-            const filePath = path.join(dataPath, type, fileName);
-            const json = await fs.readFile(filePath, "utf-8");
-            data = JSON.parse(json);
-        } catch {
-            return null;
-        }
-    } else {
-        try {
-            const url = `${dataPath}/data/${type}/${fileName}`;
-            const res = await fetch(url);
-            if (!res.ok) return null;
-            data = await res.json();
-        } catch {
-            return null;
-        }
-    }
+    // if (!isLocal) {
+    //     try {
+    //         const filePath = path.join(dataPath, type, fileName);
+    //         const json = await fs.readFile(filePath, "utf-8");
+    //         data = JSON.parse(json);
+    //     } catch {
+    //         return null;
+    //     }
+    // } else {
+    //     try {
+    //         const url = `${dataPath}/data/${type}/${fileName}`;
+    //         const res = await fetch(url);
+    //         if (!res.ok) return null;
+    //         data = await res.json();
+    //     } catch {
+    //         return null;
+    //     }
+    // }
 
-    // 🔐 FINAL GUARD
-    if (!isValidContent(data, type)) {
-        console.warn(
-            `[loadContent] Invalid ${type} JSON: ${fileName}`
-        );
-        return null;
-    }
+    // // 🔐 FINAL GUARD
+    // if (!isValidContent(data, type)) {
+    //     console.warn(
+    //         `[loadContent] Invalid ${type} JSON: ${fileName}`
+    //     );
+    //     return null;
+    // }
 
-    return data;
+    // return data;
+    return null;
 }
 export const REQUIRED_Article_FIELDS = [
     "id",
