@@ -110,6 +110,7 @@ if (!article) {
 }
 
 const canonicalUrl = baseUrl + "article/" + decodedSlug;
+const publisherId=apiServer.websiteUrl+'#organization';
 const ampUrl = canonicalUrl + "/amp";
 
 const jsonLd = [];
@@ -149,7 +150,7 @@ const about = [
       /* ---------------- Organization ---------------- */
       {
         "@type": "Organization",
-        "@id": `${baseUrl}#organization`,
+        "@id": publisherId,
         name: siteName,
         url: baseUrl,
         logo: {
@@ -167,7 +168,7 @@ const about = [
         url: baseUrl,
         name: siteName,
         publisher: {
-          "@id": `${baseUrl}#organization`,
+          "@id": publisherId,
         },
       },
 
@@ -251,11 +252,12 @@ const about = [
 
         author: {
           "@type": "Person",
+          "@id":  `${baseUrl}author/${article.author_slug}`+"#person",
           name: article.author_name,
           url: `${baseUrl}author/${article.author_slug}`,
         },
         publisher: {
-          "@id": `${baseUrl}#organization`,
+          "@id":publisherId,
         },
         keywords: keywords,
         about: about,
