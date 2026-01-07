@@ -85,6 +85,26 @@ if (author) {
 }
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "author/" + author.slug;
+
+const authorJson = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": canonicalUrl+"#person",
+  name: author.fullName,
+  url: canonicalUrl,
+  image: author.profileImage,
+  description:author.bio,
+  jobTitle: author?.jobTitle||"Quronfula",
+  affiliation: {
+    "@type": "Organization",
+    name: author?.affiliation ||"Quronfula",
+  },
+  worksFor: {
+    "@type": "Organization",
+    "@id": "https://www.quronfula.com/#organization",
+  },
+};
+const jsonLd=[authorJson];
 ---
 
 <SEO
@@ -96,10 +116,9 @@ const canonicalUrl = baseUrl + "author/" + author.slug;
   canonical={canonicalUrl}
   noindex={false}
   type={"WebSite"}
-  jsonLd={null}
+  jsonLd={jsonLd}
 />
 <Layout>
-
   <div class="max-w-5xl mx-auto px-4 py-16 md:py-5">
     <main class="min-h-screen bg-white dark:bg-gray-900 flex justify-center">
       <div class="max-w-3xl w-full px-6 py-16 text-center">
@@ -151,8 +170,7 @@ const canonicalUrl = baseUrl + "author/" + author.slug;
           set:html={author.bioDescription}
         />
       </div>
-      <br/>
-      
+      <br />
     </main>
     <section class="full-bio mt-20 max-w-4xl mx-auto px-6">
       {

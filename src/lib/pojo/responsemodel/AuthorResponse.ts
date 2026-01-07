@@ -6,6 +6,8 @@ export class AuthorResponse {
     public profileImage: string;
     public slug: string;
     public bio: string;
+    public jobTitle: string;
+    public affiliation: string;
     public bioDescription: string;
     public roleName: string;
     public socialLinks: Array<SocialLinks>;
