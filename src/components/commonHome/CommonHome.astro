@@ -12,7 +12,7 @@ import HeroFeatured from "@components/commonHome/HeroFeatured.astro";
 import Layout from "@layouts/Layout.astro";
 import SEO from "@components/SEO.astro";
 import { metaConfig } from "@components/metaConfig";
-import { getAppConfig, loadAppConfig } from "@lib/AppConfig";
+import { getAppConfig } from "@lib/AppConfig";
 import { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 import { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
 import { checkForDecode } from "@lib/postmethodService";
@@ -148,10 +148,8 @@ if (!featureList) {
 }
 
 const langPrefix = getLangPrefix(lang);
-let apiServer = await getAppConfig();
-if (!apiServer) {
-	apiServer = await loadAppConfig();
-}
+const apiServer = await getAppConfig();
+
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl.replace(/\/$/, "");
 const siteName = metaConfig.siteName[lang];
