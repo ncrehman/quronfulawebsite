@@ -148,7 +148,7 @@ if (!featureList) {
 }
 
 const langPrefix = getLangPrefix(lang);
-let apiServer = getAppConfig();
+let apiServer = await getAppConfig();
 if (!apiServer) {
 	apiServer = await loadAppConfig();
 }

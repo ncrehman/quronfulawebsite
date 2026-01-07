@@ -8,8 +8,10 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, checkSupportedLang, generateFAQJsonLd, getLangPrefix } from "@lib/postmethodService";
+import { apiCalls, checkSupportedLang, cleanHtmlString, generateFAQJsonLd, getLangPrefix } from "@lib/postmethodService";
 import { getAppConfig } from "@lib/AppConfig";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 
 
 async function fetchRelatedData(lang: string, articleId: string): Promise<Array<ArticleResponse> | null> {
@@ -49,6 +51,9 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
       ? apiServer.websiteUrl
       : `${apiServer.websiteUrl}${lang}/`;
   const langPrefix = getLangPrefix(lang);
+  const cleanHtml = cleanHtmlString(article.description);
+  let metaObj: MetaObject = generateSeo(article.title,
+    cleanHtml)
   const canonicalUrl = `${baseUrl}article/${article.slug}`.replace(/\/$/, "");
   const ampUrl = `${canonicalUrl}/amp`;
   const siteName = metaConfig.siteName[lang];
@@ -58,7 +63,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     "@id": canonicalUrl + '#article',
     "inLanguage": lang,
     headline: article.title,
-    description: article.metaDescription,
+    description: metaObj.metaDesc,
     image: [article.landScapeBanner],
     datePublished: new Date(article.publishDate).toISOString(),
     dateModified: new Date(article.updatedAt || article.publishDate).toISOString(),
@@ -140,6 +145,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   keywords.push(article.cat_name);
   keywords.push(article.sub_catTitle);
 
+
   const templatePath = path.join(
     process.cwd(),
     "src/components/commonarticle/article.html"
@@ -151,8 +157,8 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     lang,
     dir: lang === 'ar' ? 'rtl' : 'ltr',
     title: article.title,
-    metaTitle: article.metaTitle || article.title,
-    metaDescription: article.metaDescription,
+    metaTitle: metaObj.title || article.title,
+    metaDescription: metaObj.metaDesc,
     canonicalUrl,
     ampUrl,
     contentHtml: article.description, // already sanitized HTML

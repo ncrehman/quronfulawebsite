@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 const isArabic = lang === "ar";
 
 const baseUrl = await buildLangUrl(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const canonicalUrl = baseUrl + "fact-checking-policy";
 
 const siteName = metaConfig.siteName[lang];

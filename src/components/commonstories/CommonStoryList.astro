@@ -68,7 +68,7 @@ async function getStories(
 const storyList: Array<WebStoryResponse> = await getStories(lang, null, null);
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl =
     currentPage === 1

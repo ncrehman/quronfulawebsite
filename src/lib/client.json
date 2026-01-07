@@ -13,9 +13,10 @@
     "countryCode": "91",
     "timeZone": "UTC+06:00",
     "defaultLanguage": "ar",
+    "secondaryLanguage": "en",
     "supportedLang": [
-        "en",
-        "ar"
+        "ar",
+        "en"
     ],
     "isConsole": false,
     "multipleLanguage": false,

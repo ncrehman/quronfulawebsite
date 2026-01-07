@@ -71,7 +71,7 @@ const quizList: Array<QuizStoryResponse> = await getQuizStories(
 );
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl =
     currentPage === 1

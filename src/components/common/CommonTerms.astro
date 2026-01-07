@@ -9,10 +9,10 @@ interface Props {
     lang: string;
 }
 
-const { lang = "ar" } = Astro.props;
+const apiServer = await getAppConfig();
+const { lang = apiServer.defaultLanguage } = Astro.props;
 
 const baseUrl = await buildLangUrl(lang);
-const apiServer = getAppConfig();
 const canonicalUrl = baseUrl + "terms-and-conditions";
 
 const siteName = metaConfig.siteName[lang];

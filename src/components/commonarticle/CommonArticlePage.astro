@@ -28,6 +28,8 @@ import SocialShare from "@components/common/SocialShare.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { loadContent } from "@lib/contentLoader";
 import RelatedArticlesCarousel from "./RelatedArticlesCarousel.astro";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 
 interface Props {
   slug: string;
@@ -99,7 +101,7 @@ const langPrefix = getLangPrefix(lang);
 const baseUrl = await buildLangUrl(lang);
 
 const decodedSlug = await checkForDecode(slug);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const siteName = metaConfig.siteName[lang];
 let article: FeedContentResponse = await loadContent("article", slug, lang);
 if (!article) {
@@ -120,9 +122,14 @@ let relatedArticle: Array<ArticleResponse>;
 let cleanHtml: any;
 let blocksWithAds: any;
 let ogImages = [];
+let metaObj:MetaObject;
 if (!!article) {
+  
   cleanHtml = cleanHtmlString(article.description);
+    metaObj=generateSeo( article.title,
+  cleanHtml )
   const blocks = splitHtmlIntoBlocks(cleanHtml);
+  
   blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
   relatedArticle = await fetchRelatedData(lang, article.id);
   keywords = article.keywords
@@ -238,8 +245,8 @@ const about = [
           "@id": canonicalUrl,
         },
         headline: article.title,
-        alternativeHeadline: article.metaTitle,
-        description: article.metaDescription,
+        alternativeHeadline: metaObj.title,
+        description: metaObj.metaDesc,
         articleSection: [article.cat_name, article.sub_catTitle],
 
         inLanguage: article.lang || apiServer.defaultLanguage,
@@ -327,13 +334,14 @@ const updated = article.updatedAt ? new Date(article.updatedAt) : null;
 
 const showUpdated =
   updated && updated.getTime() - published.getTime() > 24 * 60 * 60 * 1000; // 1 day
+
 ---
 
 {
   article && (
     <SEO
-      title={article.title}
-      description={article.metaDescription}
+      title={metaObj.title}
+      description={metaObj.metaDesc}
       image={article.landScapeBanner}
       url={canonicalUrl}
       lang={lang}

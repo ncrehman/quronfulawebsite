@@ -1,7 +1,7 @@
 
 import axios, { type AxiosRequestConfig } from 'axios';
 import { ApiResponse } from './pojo/responsemodel/ApiResponse';
-import { getAppConfig, loadAppConfig } from './AppConfig';
+import { getAppConfig } from './AppConfig';
 import { FaqSchema } from './pojo/responsemodel/FaqSchema';
 import he from 'he';
 
@@ -26,12 +26,8 @@ export function getLangPrefix(language?: string): string {
   return (!language || language === 'ar') ? '' : `${language}/`;
 }
 export async function buildLangUrl(lang: string) {
-  let appConfig = getAppConfig();
-  if (!appConfig) {
-    appConfig = await loadAppConfig();
-  }
+  let appConfig = await getAppConfig();
   const langPrefix = lang && lang !== 'ar' ? `${lang}/` : '';
-
   return `${appConfig.websiteUrl}${langPrefix}`;
 }
 export function checkSupportedLang(lang: string) {
@@ -58,18 +54,13 @@ export async function checkForDecode(slug: string) {
 export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
   // Ensure AppConfig is loaded
 
-  let appConfig = getAppConfig();
-  if (!appConfig) {
-    appConfig = await loadAppConfig();
-  }
-  if (!appConfig) throw new Error("AppConfig not initialized");
-
-  const uri = appConfig.webServicesUrl + url;
+  let apiServer  =await getAppConfig();
+  const uri = apiServer.webServicesUrl + url;
   const options: AxiosRequestConfig = {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Accept-Language": "en",
-      'X-TENANT': appConfig.tenant,
+      'X-TENANT': apiServer.tenant,
       "Content-Language": reqObj.lang ? reqObj.lang : "en",
     },
   };
@@ -83,7 +74,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     };
 
     // Logging
-    if (appConfig.isConsole) {
+    if (apiServer.isConsole) {
       printConsole(`URL: ${uri}`);
       printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
       printConsole(`Response: ${url} -> ${JSON.stringify(resultResponse)}`);

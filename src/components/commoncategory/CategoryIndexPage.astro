@@ -54,7 +54,7 @@ async function getCategory(lang: string): Promise<CatResponse[] | null> {
 const categories: Array<CatResponse> = await getCategory(lang);
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl+'category';
 const siteName = metaConfig.siteName[lang];

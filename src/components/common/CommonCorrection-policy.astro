@@ -9,11 +9,10 @@ interface Props {
     lang: string;
 }
 
-const { lang } = Astro.props;
-const isArabic = lang === "ar";
+const apiServer = await getAppConfig();
+const { lang = apiServer.defaultLanguage } = Astro.props;
 
 const baseUrl = await buildLangUrl(lang);
-const apiServer = getAppConfig();
 const canonicalUrl = baseUrl + "correction-policy";
 
 const siteName = metaConfig.siteName[lang];
@@ -25,19 +24,17 @@ const breadCrumb = generateBreadcrumb("Correction Policy Page Breadcrumbs", [
         url: baseUrl,
     },
     {
-        name: isArabic ? "سياسة التصحيح" : "Correction Policy",
+        name: lang === "en" ? "Correction Policy" : "سياسة التصحيح",
         url: canonicalUrl,
     },
 ]);
 
-const title = isArabic
-    ? "سياسة التصحيح - قرنفلة"
-    : "Correction Policy - Quronfula";
-
-const description = isArabic
-    ? "توضح سياسة التصحيح في موقع قرنفلة التزامنا بالدقة والشفافية، وآلية تصحيح الأخطاء وتحديث المحتوى عند الحاجة."
-    : "Quronfula’s Correction Policy explains our commitment to accuracy, transparency, and how we correct errors and update content when necessary.";
-
+const title =
+    lang === "en" ? "Correction Policy - Quronfula" : "سياسة التصحيح - قرنفلة";
+const description =
+    lang === "en"
+        ? "Quronfula’s Correction Policy explains our commitment to accuracy, transparency, and how we correct errors and update content when necessary."
+        : "توضح سياسة التصحيح في موقع قرنفلة التزامنا بالدقة والشفافية، وآلية تصحيح الأخطاء وتحديث المحتوى عند الحاجة.";
 const ogBanner = apiServer.websiteUrl + "correctionpolicyog.webp";
 
 const pageJsonLd = {
@@ -63,6 +60,7 @@ const pageJsonLd = {
 jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
 ---
+
 <SEO
     title={title}
     description={description}
@@ -78,115 +76,125 @@ jsonLd.push(breadCrumb);
 <Layout>
     <section
         class="legal-page container mx-auto px-4 py-12"
-        lang={isArabic ? "ar" : "en"}
-        dir={isArabic ? "rtl" : "ltr"}
+        lang={lang}
+        dir={lang === "ar" ? "rtl" : "ltr"}
     >
-        {isArabic ? (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">
-                    سياسة التصحيح
-                </h1>
+        {
+            lang === "en" ? (
+                <>
+                    <h1 class="text-4xl font-bold mb-8 text-center">
+                        Correction Policy
+                    </h1>
 
-                <p class="mb-6">
-                    يلتزم موقع <strong>Quronfula.com</strong> بتقديم محتوى
-                    دقيق وموثوق وشفاف. وعلى الرغم من اتباعنا معايير تحريرية
-                    صارمة، قد تحدث أخطاء غير مقصودة. توضح هذه الصفحة كيفية
-                    تعاملنا مع التصحيحات والتحديثات.
-                </p>
+                    <p class="mb-6">
+                        <strong>Quronfula.com</strong> is committed to accuracy,
+                        transparency, and editorial integrity. Despite rigorous
+                        editorial standards, occasional errors may occur. This
+                        page explains how we handle corrections and updates.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">الالتزام بالدقة</h2>
-                <p class="mb-6">
-                    نعمل على التحقق من المعلومات قبل النشر باستخدام مصادر
-                    موثوقة. في حال اكتشاف أي خطأ، نتعامل معه بجدية ونقوم
-                    بتصحيحه في أسرع وقت ممكن.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">
+                        Commitment to Accuracy
+                    </h2>
+                    <p class="mb-6">
+                        We strive to verify information prior to publication
+                        using reliable sources. When errors are identified, they
+                        are addressed promptly and responsibly.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">أنواع التصحيحات</h2>
-                <p class="mb-6">
-                    <strong>الأخطاء البسيطة:</strong> مثل الأخطاء الإملائية أو
-                    اللغوية، يتم تصحيحها دون إشعار.
-                    <br />
-                    <strong>الأخطاء الجوهرية:</strong> التي تؤثر على المعنى أو
-                    الدقة، يتم تصحيحها مع توضيح التعديل داخل المحتوى عند
-                    الضرورة.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">
+                        Types of Corrections
+                    </h2>
+                    <p class="mb-6">
+                        <strong>Minor errors:</strong> Typographical or
+                        grammatical issues are corrected without notice.
+                        <br />
+                        <strong>Substantive errors:</strong> Errors affecting
+                        accuracy or meaning are corrected with appropriate
+                        clarification when necessary.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">تحديث المحتوى</h2>
-                <p class="mb-6">
-                    قد يتم تحديث المقالات لتعكس معلومات جديدة أو تطورات
-                    حديثة. يتم ذلك بما يحافظ على دقة المحتوى وسياقه الأصلي.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">Content Updates</h2>
+                    <p class="mb-6">
+                        Articles may be updated to reflect new information or
+                        developments while preserving their original context.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">مشاركة القراء</h2>
-                <p class="mb-6">
-                    نرحب بملاحظات القراء. في حال ملاحظة أي خطأ، يمكنكم
-                    التواصل معنا عبر البريد الإلكتروني الموضح في الموقع مع
-                    ذكر رابط المحتوى والتوضيح المطلوب.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">Reader Feedback</h2>
+                    <p class="mb-6">
+                        We welcome reader feedback. If you identify an error,
+                        please contact us with the relevant page link and
+                        details for review.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">الاستقلالية التحريرية</h2>
-                <p class="mb-6">
-                    تتم جميع التصحيحات بشكل مستقل دون أي تأثير من جهات
-                    خارجية أو مصالح تجارية.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">
+                        Editorial Independence
+                    </h2>
+                    <p class="mb-6">
+                        All corrections are made independently without influence
+                        from advertisers, sponsors, or external parties.
+                    </p>
 
-                <p class="mt-8 text-sm text-gray-600">
-                    آخر تحديث: 23 ديسمبر 2025
-                </p>
-            </>
-        ) : (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">
-                    Correction Policy
-                </h1>
+                    <p class="mt-8 text-sm text-gray-600">
+                        Last updated: December 23, 2025
+                    </p>
+                </>
+            ) : (
+                <>
+                    <h1 class="text-4xl font-bold mb-8 text-center">
+                        سياسة التصحيح
+                    </h1>
 
-                <p class="mb-6">
-                    <strong>Quronfula.com</strong> is committed to accuracy,
-                    transparency, and editorial integrity. Despite rigorous
-                    editorial standards, occasional errors may occur. This
-                    page explains how we handle corrections and updates.
-                </p>
+                    <p class="mb-6">
+                        يلتزم موقع <strong>Quronfula.com</strong> بتقديم محتوى
+                        دقيق وموثوق وشفاف. وعلى الرغم من اتباعنا معايير تحريرية
+                        صارمة، قد تحدث أخطاء غير مقصودة. توضح هذه الصفحة كيفية
+                        تعاملنا مع التصحيحات والتحديثات.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">Commitment to Accuracy</h2>
-                <p class="mb-6">
-                    We strive to verify information prior to publication using
-                    reliable sources. When errors are identified, they are
-                    addressed promptly and responsibly.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">الالتزام بالدقة</h2>
+                    <p class="mb-6">
+                        نعمل على التحقق من المعلومات قبل النشر باستخدام مصادر
+                        موثوقة. في حال اكتشاف أي خطأ، نتعامل معه بجدية ونقوم
+                        بتصحيحه في أسرع وقت ممكن.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">Types of Corrections</h2>
-                <p class="mb-6">
-                    <strong>Minor errors:</strong> Typographical or grammatical
-                    issues are corrected without notice.
-                    <br />
-                    <strong>Substantive errors:</strong> Errors affecting
-                    accuracy or meaning are corrected with appropriate
-                    clarification when necessary.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">أنواع التصحيحات</h2>
+                    <p class="mb-6">
+                        <strong>الأخطاء البسيطة:</strong> مثل الأخطاء الإملائية
+                        أو اللغوية، يتم تصحيحها دون إشعار.
+                        <br />
+                        <strong>الأخطاء الجوهرية:</strong> التي تؤثر على المعنى
+                        أو الدقة، يتم تصحيحها مع توضيح التعديل داخل المحتوى عند
+                        الضرورة.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">Content Updates</h2>
-                <p class="mb-6">
-                    Articles may be updated to reflect new information or
-                    developments while preserving their original context.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">تحديث المحتوى</h2>
+                    <p class="mb-6">
+                        قد يتم تحديث المقالات لتعكس معلومات جديدة أو تطورات
+                        حديثة. يتم ذلك بما يحافظ على دقة المحتوى وسياقه الأصلي.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">Reader Feedback</h2>
-                <p class="mb-6">
-                    We welcome reader feedback. If you identify an error,
-                    please contact us with the relevant page link and details
-                    for review.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">مشاركة القراء</h2>
+                    <p class="mb-6">
+                        نرحب بملاحظات القراء. في حال ملاحظة أي خطأ، يمكنكم
+                        التواصل معنا عبر البريد الإلكتروني الموضح في الموقع مع
+                        ذكر رابط المحتوى والتوضيح المطلوب.
+                    </p>
 
-                <h2 class="text-2xl font-semibold mb-4">Editorial Independence</h2>
-                <p class="mb-6">
-                    All corrections are made independently without influence
-                    from advertisers, sponsors, or external parties.
-                </p>
+                    <h2 class="text-2xl font-semibold mb-4">
+                        الاستقلالية التحريرية
+                    </h2>
+                    <p class="mb-6">
+                        تتم جميع التصحيحات بشكل مستقل دون أي تأثير من جهات
+                        خارجية أو مصالح تجارية.
+                    </p>
 
-                <p class="mt-8 text-sm text-gray-600">
-                    Last updated: December 23, 2025
-                </p>
-            </>
-        )}
+                    <p class="mt-8 text-sm text-gray-600">
+                        آخر تحديث: 23 ديسمبر 2025
+                    </p>
+                </>
+            )
+        }
     </section>
 </Layout>

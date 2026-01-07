@@ -49,7 +49,7 @@ async function getArticle(
 const articles: Array<ArticleResponse> = await getArticle(lang, offset);
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl =
     currentPage === 1

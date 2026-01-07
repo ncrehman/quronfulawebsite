@@ -71,7 +71,7 @@ async function getArticleList(
 }
 
 const langPrefix = getLangPrefix(lang);
-const apiServer = getAppConfig();
+const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];

@@ -5,12 +5,14 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import { getAppConfig } from "@lib/AppConfig";
 
 interface Props {
   lang: string;
 }
 
-const { lang = "ar" } = Astro.props;
+const apiServer = await getAppConfig();
+const { lang = apiServer.defaultLanguage } = Astro.props;
 const langPrefix = getLangPrefix(lang);
 
 const categoryCache = new Map<string, Array<CatResponse>>();

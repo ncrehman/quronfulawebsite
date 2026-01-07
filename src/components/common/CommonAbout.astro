@@ -8,11 +8,10 @@ import { generateBreadcrumb, buildLangUrl } from "@lib/postmethodService";
 interface Props {
     lang: string;
 }
-
-const { lang = "ar" } = Astro.props;
+const apiServer = await getAppConfig();
+const { lang = apiServer.defaultLanguage } = Astro.props;
 
 const baseUrl = await buildLangUrl(lang);
-const apiServer = getAppConfig();
 const canonicalUrl = baseUrl + "about";
 
 const siteName = metaConfig.siteName[lang];
@@ -23,18 +22,17 @@ const breadCrumb = generateBreadcrumb("About Page Breadcrumbs", [
         url: baseUrl,
     },
     {
-        name: lang === "ar" ? "من نحن" : "About Us",
+        name: lang === "en" ? "About Us" : "من نحن",
         url: canonicalUrl,
     },
 ]);
 
-const title = lang === "ar" ? "من نحن - قرنفلة" : "About Us - Quronfula";
+const title = lang === "en" ? "About Us - Quronfula" : "من نحن - قرنفلة";
 
 const description =
-    lang === "ar"
-        ? "تعرف على قرنفلة: منصة محتوى تقدّم مقالات وقصص وموضوعات يومية في أسلوب الحياة، الصحة، الجمال، الثقافة، الأخبار الخفيفة، الاختبارات، وقصص الويب."
-        : "Learn about Quronfula: A content platform offering daily articles, lifestyle insights, beauty, health, culture, trending news, quizes, and AMP web stories";
-
+    lang === "en"
+        ? "Learn about Quronfula: A content platform offering daily articles, lifestyle insights, beauty, health, culture, trending news, quizes, and AMP web stories"
+        : "تعرف على قرنفلة: منصة محتوى تقدّم مقالات وقصص وموضوعات يومية في أسلوب الحياة، الصحة، الجمال، الثقافة، الأخبار الخفيفة، الاختبارات، وقصص الويب.";
 const ogBanner = apiServer.websiteUrl + "aboutog.webp";
 
 const aboutJsonLd = {
