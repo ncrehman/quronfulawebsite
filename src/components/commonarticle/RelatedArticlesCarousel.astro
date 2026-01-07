@@ -1,5 +1,6 @@
 ---
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
+import { Image } from "astro:assets";
 
 export interface Props {
     items: Array<ArticleResponse>;
@@ -38,7 +39,7 @@ if (!items.length) return null;
                      shadow-sm"
             >
               <a href={`/article/${item.slug}`} class="block">
-                <img
+                <Image
                   src={item.landScapeBanner}
                   alt={item.imageAlt || item.title}
                   loading="lazy"

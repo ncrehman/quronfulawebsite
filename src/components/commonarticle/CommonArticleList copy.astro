@@ -16,13 +16,11 @@ import { getLangPrefix } from "@lib/postmethodService";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { Image } from "astro:assets";
-import AdPlaceholder from "@components/AdPlaceholder.astro";
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
-const pageParam = Astro.url.searchParams.get("page");
-const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-const limit = 10;
-const offset = (currentPage - 1) * limit;
+let offset = 0;
+// Fetch homepage data or articles specific to home page
+
 const articleCache: Map<string, ArticleResponse[]> = new Map();
 async function getArticle(
     language: string,
@@ -30,8 +28,8 @@ async function getArticle(
 ): Promise<ArticleResponse[] | null> {
     const request = new RequestModel();
     request.lang = language;
-    request.limit = limit;
     request.offset = offset;
+    request.limit = 18;
     try {
         const response: ApiResponse = await apiCalls(
             request,
@@ -51,10 +49,7 @@ const articles: Array<ArticleResponse> = await getArticle(lang, offset);
 const langPrefix = getLangPrefix(lang);
 const apiServer = getAppConfig();
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl =
-    currentPage === 1
-        ? `${baseUrl}article`
-        : `${baseUrl}article?page=${currentPage}`;
+const canonicalUrl = baseUrl + "article";
 const siteName = metaConfig.siteName[lang];
 const title = "Quronfula Article Collection";
 const description =
@@ -64,8 +59,8 @@ const jsonLd = [];
 const itemListJson = generateItemList({
     name: title,
     description: description,
-    baseUrl: canonicalUrl,
-    listUrl: canonicalUrl,
+    baseUrl: baseUrl + "article/",
+    listUrl: baseUrl + "article/",
     items: articles.map((a) => ({
         title: a.title,
         slug: a.slug,
@@ -101,11 +96,30 @@ jsonLd.push(itemListJson);
     lang={lang}
     canonical={canonicalUrl}
     noindex={false}
-    type={"CollectionPage"}
+    type={"WebSite"}
     jsonLd={jsonLd}
 />
 <Layout>
     <main>
+        <template id="article-card-template">
+            <article class="article-card">
+                <a href="" class="card-link">
+                    <div class="card-image">
+                        <img
+                            src=""
+                            alt=""
+                            loading="lazy"
+                            width="400"
+                            height="225"
+                        />
+                    </div>
+                    <div class="card-content">
+                        <p class="section-title"></p>
+                    </div>
+                </a>
+            </article>
+        </template>
+
         <section>
             <h1>
                 {
@@ -150,76 +164,16 @@ jsonLd.push(itemListJson);
                         </p>
                     )
                 }
+                <div id="trigger"></div>
             </section>
-            <section>
-                <AdPlaceholder
-                    calledFrom="articleList"
-                    slot="2578599202"
-                    layout="display"
-                    format="auto"
-                    display="block"
-                    textAlign="center"
-                    height={200}
-                    width="100%"
-                />
-            </section>
-            <nav class="pagination">
-                {
-                    currentPage > 1 && (
-                        <a
-                            href={`/${langPrefix}article?page=${currentPage - 1}`}
-                            rel="prev"
-                            class="pagination-btn"
-                        >
-                            ← {lang === "ar" ? "السابق" : "Previous"}
-                        </a>
-                    )
-                }
-
-                <span class="page-number">
-                    {
-                        lang === "ar"
-                            ? `صفحة ${currentPage}`
-                            : `Page ${currentPage}`
-                    }
-                </span>
-
-                {
-                    articles.length === limit && (
-                        <a
-                            href={`/${langPrefix}article?page=${currentPage + 1}`}
-                            rel="next"
-                            class="pagination-btn"
-                        >
-                            {lang === "ar" ? "التالي" : "Next"} →
-                        </a>
-                    )
-                }
-            </nav>
         </section>
 
         <style>
-           /* ================================
-       Pagination
-    ================================ */
-            .pagination {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 1.5rem;
-                margin: 3rem 0;
-            }
-
-            .pagination-btn {
-                padding: 0.6rem 1.4rem;
-                border-radius: 9999px;
-                text-decoration: none;
-                font-weight: 600;
-                border: 1px solid;
-            }
-
-            .page-number {
-                font-weight: 700;
+            #trigger {
+                width: 100%;
+                height: 1px;
+                grid-column: 1 / -1; /* span full width */
+                visibility: hidden; /* invisible but still detectable */
             }
             .section-title {
                 font-size: 1.5rem;
@@ -305,3 +259,68 @@ jsonLd.push(itemListJson);
         </style>
     </main>
 </Layout>
+<template id="article-card-template">
+    <article class="article-card">
+        <a class="card-link">
+            <div class="card-image">
+                <img src="" alt="" loading="lazy" width="400" height="225" />
+            </div>
+            <div class="card-content">
+                <p class="section-title"></p>
+            </div>
+        </a>
+    </article>
+</template>
+<script define:vars={{ lang, langPrefix }}>
+    if (typeof window !== "undefined") {
+        let page = 1;
+        let loading = false;
+
+        const grid = document.querySelector(".articles-grid");
+        const trigger = document.getElementById("trigger");
+        const template = document.getElementById("article-card-template");
+
+        // Safety check
+        if (!grid || !trigger || !template) {
+            console.error("Required elements missing");
+            return;
+        }
+
+        const observer = new IntersectionObserver(async ([entry]) => {
+            if (!entry.isIntersecting || loading) return;
+            loading = true;
+
+            const res = await fetch(
+                `/api/articlesapi?lang=${lang}&page=${page}`,
+            );
+            const contentList = await res.json();
+
+            if (!contentList.length) {
+                return;
+            }
+
+            contentList.forEach((item) => {
+                const clone = template.content.cloneNode(true);
+
+                const link = clone.querySelector(".card-link");
+                const img = clone.querySelector("img");
+                // const title = clone.querySelector("h2");
+                const title = clone.querySelector(".section-title");
+                link.href = `/${langPrefix}article/${item.slug}`;
+                img.src = item.landScapeBanner;
+                img.alt = item.imageAlt || item.title;
+                if (title) {
+                    title.textContent = item.title;
+                }
+                grid.insertBefore(clone, trigger);
+                // grid.appendChild(clone);
+                // grid.appendChild(trigger);
+            });
+
+            page += 1;
+            loading = false;
+        });
+
+        observer.observe(trigger);
+    }
+</script>

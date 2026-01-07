@@ -17,11 +17,14 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 import { Image } from "astro:assets";
+import AdPlaceholder from "@components/AdPlaceholder.astro";
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
-let offset = 0;
 // Fetch homepage data or articles specific to home page
-
+const pageParam = Astro.url.searchParams.get("page");
+const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
+const limit = 10;
+const offset = (currentPage - 1) * limit;
 const webStoryCache: Map<string, WebStoryResponse[]> = new Map();
 
 async function getStories(
@@ -34,8 +37,8 @@ async function getStories(
 
     const request = new RequestModel();
     request.lang = lang;
-    request.limit = 18;
-    request.offset = 0;
+    request.limit = limit;
+    request.offset = offset;
     if (catslug) {
         request.slug = await checkForDecode(catslug);
     }
@@ -67,7 +70,10 @@ const storyList: Array<WebStoryResponse> = await getStories(lang, null, null);
 const langPrefix = getLangPrefix(lang);
 const apiServer = getAppConfig();
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl = baseUrl + "stories";
+const canonicalUrl =
+    currentPage === 1
+        ? `${baseUrl}stories`
+        : `${baseUrl}stories?page=${currentPage}`;
 const siteName = metaConfig.siteName[lang];
 const title = "Quronfula Stories Collection";
 const description =
@@ -77,8 +83,8 @@ const jsonLd = [];
 const itemListJson = generateItemList({
     name: title,
     description: description,
-    baseUrl: baseUrl + "stories/",
-    listUrl: baseUrl + "stories/",
+    baseUrl: canonicalUrl,
+    listUrl: canonicalUrl,
     items: storyList.map((a) => ({
         title: a.title,
         slug: a.slug,
@@ -114,30 +120,11 @@ jsonLd.push(itemListJson);
     lang={lang}
     canonical={canonicalUrl}
     noindex={false}
-    type={"WebSite"}
+    type={"CollectionPage"}
     jsonLd={jsonLd}
 />
 <Layout>
     <main>
-        <template id="article-card-template">
-            <article class="article-card">
-                <a href="" class="card-link">
-                    <div class="card-image">
-                        <img
-                            src=""
-                            alt=""
-                            loading="lazy"
-                            width="400"
-                            height="225"
-                        />
-                    </div>
-                    <div class="card-content">
-                        <p class="section-title"></p>
-                    </div>
-                </a>
-            </article>
-        </template>
-
         <section>
             <h1>{lang === "ar" ? "أحدث القصص" : "Latest Stories"}</h1>
 
@@ -176,20 +163,78 @@ jsonLd.push(itemListJson);
                         </p>
                     )
                 }
-                <div id="trigger"></div>
             </section>
+            <section>
+                <AdPlaceholder
+                    calledFrom="storyList"
+                    slot="2578599202"
+                    layout="display"
+                    format="auto"
+                    display="block"
+                    textAlign="center"
+                    height={200}
+                    width="100%"
+                />
+            </section>
+            <nav class="pagination">
+                {
+                    currentPage > 1 && (
+                        <a
+                            href={`/${langPrefix}stories?page=${currentPage - 1}`}
+                            rel="prev"
+                            class="pagination-btn"
+                        >
+                            ← {lang === "ar" ? "السابق" : "Previous"}
+                        </a>
+                    )
+                }
+
+                <span class="page-number">
+                    {
+                        lang === "ar"
+                            ? `صفحة ${currentPage}`
+                            : `Page ${currentPage}`
+                    }
+                </span>
+
+                {
+                    storyList.length === limit && (
+                        <a
+                            href={`/${langPrefix}stories?page=${currentPage + 1}`}
+                            rel="next"
+                            class="pagination-btn"
+                        >
+                            {lang === "ar" ? "التالي" : "Next"} →
+                        </a>
+                    )
+                }
+            </nav>
         </section>
 
         <style>
-            /* =========================
-   INFINITE SCROLL TRIGGER
-========================== */
-            #trigger {
-                width: 100%;
-                height: 1px;
-                grid-column: 1 / -1;
-                visibility: hidden;
+            /* ================================
+       Pagination
+    ================================ */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 1.5rem;
+                margin: 3rem 0;
             }
+
+            .pagination-btn {
+                padding: 0.6rem 1.4rem;
+                border-radius: 9999px;
+                text-decoration: none;
+                font-weight: 600;
+                border: 1px solid;
+            }
+
+            .page-number {
+                font-weight: 700;
+            }
+
             .section-title {
                 font-size: 1.5rem;
                 font-weight: 600;
@@ -302,67 +347,3 @@ jsonLd.push(itemListJson);
         </style>
     </main>
 </Layout>
-<template id="article-card-template">
-    <article class="article-card">
-        <a class="card-link">
-            <div class="card-image">
-                 <img src="" alt="" loading="lazy" width="400" height="225" />
-            </div>
-            <div class="card-content">
-                <p class="section-title"></p>
-            </div>
-        </a>
-    </article>
-</template>
-<script define:vars={{ lang, langPrefix }}>
-    if (typeof window !== "undefined") {
-        let page = 1;
-        let loading = false;
-
-        const grid = document.querySelector(".articles-grid");
-        const trigger = document.getElementById("trigger");
-        const template = document.getElementById("article-card-template");
-
-        // Safety check
-        if (!grid || !trigger || !template) {
-            console.error("Required elements missing");
-            return;
-        }
-
-        const observer = new IntersectionObserver(async ([entry]) => {
-            if (!entry.isIntersecting || loading) return;
-            loading = true;
-
-            const res = await fetch(`/api/storyapi?lang=${lang}&page=${page}`);
-            const contentList = await res.json();
-
-            if (!contentList.length) {
-                ("No more articles.");
-                return;
-            }
-
-            contentList.forEach((item) => {
-                const clone = template.content.cloneNode(true);
-
-                const link = clone.querySelector(".card-link");
-                const img = clone.querySelector("img");
-                 const title = clone.querySelector(".section-title");
-
-                link.href = `/${langPrefix}stories/${item.slug}`;
-                img.src = item.landScapeBanner;
-                img.alt = item.imageAlt || item.title;
-                if (title) {
-                    title.textContent = item.title;
-                }
-                grid.insertBefore(clone, trigger);
-                // grid.appendChild(clone);
-                // grid.appendChild(trigger);
-            });
-
-            page += 1;
-            loading = false;
-        });
-
-        observer.observe(trigger);
-    }
-</script>

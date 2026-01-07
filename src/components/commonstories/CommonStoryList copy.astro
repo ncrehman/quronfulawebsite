@@ -15,29 +15,27 @@ import { getAppConfig } from "@lib/AppConfig";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import type { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
+import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
 import { Image } from "astro:assets";
-import AdPlaceholder from "@components/AdPlaceholder.astro";
 // const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
-const pageParam = Astro.url.searchParams.get("page");
-const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-const limit = 10;
-const offset = (currentPage - 1) * limit;
-const webStoryCache: Map<string, QuizStoryResponse[]> = new Map();
+let offset = 0;
+// Fetch homepage data or articles specific to home page
 
-async function getQuizStories(
+const webStoryCache: Map<string, WebStoryResponse[]> = new Map();
+
+async function getStories(
     lang: string,
     catslug: string,
     subCatSlug: string,
-): Promise<QuizStoryResponse[] | null> {
-    const cacheKey = `${lang}_${"quizstories"}`;
+): Promise<WebStoryResponse[] | null> {
+    const cacheKey = `${lang}_${"stories"}`;
     if (webStoryCache.has(cacheKey)) return webStoryCache.get(cacheKey)!;
 
     const request = new RequestModel();
     request.lang = lang;
-   request.limit = limit;
-    request.offset = offset;
+    request.limit = 18;
+    request.offset = 0;
     if (catslug) {
         request.slug = await checkForDecode(catslug);
     }
@@ -47,7 +45,7 @@ async function getQuizStories(
     try {
         const response: ApiResponse = await apiCalls(
             request,
-            EndPointPaths.getquizbycategoryslug,
+            EndPointPaths.getstoriesbycategoryslug,
         );
 
         if (response.status !== 0) return null;
@@ -59,42 +57,35 @@ async function getQuizStories(
         ); // ✅ cache the result
         return resp.statusCode === 0 ? resp.respList : null;
     } catch (error) {
-        console.error("Error fetching quizlist:", error);
+        console.error("Error fetching storieslist:", error);
         return null;
     }
 }
 
-const quizList: Array<QuizStoryResponse> = await getQuizStories(
-    lang,
-    null,
-    null,
-);
+const storyList: Array<WebStoryResponse> = await getStories(lang, null, null);
 
 const langPrefix = getLangPrefix(lang);
 const apiServer = getAppConfig();
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl =
-    currentPage === 1
-        ? `${baseUrl}quiz`
-        : `${baseUrl}quiz?page=${currentPage}`;
+const canonicalUrl = baseUrl + "stories";
 const siteName = metaConfig.siteName[lang];
-const title = "Quronfula Quiz Collection";
+const title = "Quronfula Stories Collection";
 const description =
-    "Test your knowledge and explore fun, engaging quizes across topics including lifestyle, creativity, and more. Challenge yourself and discover new insights";
+    "Explore fun, engaging stories across various topics including culture, lifestyle, creativity, and more. Challenge yourself and discover new insights!";
 const jsonLd = [];
 
 const itemListJson = generateItemList({
     name: title,
     description: description,
-    baseUrl: canonicalUrl,
-    listUrl: canonicalUrl,
-    items: quizList.map((a) => ({
+    baseUrl: baseUrl + "stories/",
+    listUrl: baseUrl + "stories/",
+    items: storyList.map((a) => ({
         title: a.title,
         slug: a.slug,
         image: a.landScapeBanner,
         authorName: a.author_name,
         authorSlug: a.author_slug,
-        type: "Quiz",
+        type: "WebStory",
     })),
     creatorName: siteName,
     creatorUrl: apiServer.websiteUrl,
@@ -106,8 +97,8 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
         url: baseUrl,
     },
     {
-        name: lang === "ar" ? "لغز" : "quiz",
-        url: baseUrl + "quiz/",
+        name: lang === "ar" ? "قصة الويب" : "Web Story",
+        url: baseUrl + "stories/",
     },
 ]);
 
@@ -118,40 +109,57 @@ jsonLd.push(itemListJson);
 <SEO
     title={title}
     description={description}
-    image={baseUrl + "quizog.webp"}
+    image={baseUrl + "storiesog.webp"}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
     noindex={false}
-    type={"CollectionPage"}
+    type={"WebSite"}
     jsonLd={jsonLd}
 />
 <Layout>
     <main>
+        <template id="article-card-template">
+            <article class="article-card">
+                <a href="" class="card-link">
+                    <div class="card-image">
+                        <img
+                            src=""
+                            alt=""
+                            loading="lazy"
+                            width="400"
+                            height="225"
+                        />
+                    </div>
+                    <div class="card-content">
+                        <p class="section-title"></p>
+                    </div>
+                </a>
+            </article>
+        </template>
+
         <section>
-            <h1>{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}</h1>
+            <h1>{lang === "ar" ? "أحدث القصص" : "Latest Stories"}</h1>
 
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
                 {
-                    quizList?.length ? (
-                        quizList.map((item) => (
+                    storyList?.length ? (
+                        storyList.map((item) => (
                             <article class="article-card">
                                 <a
-                                    href={`/${langPrefix}quiz/${item.slug}`}
+                                    href={`/${langPrefix}stories/${item.slug}`}
                                     class="card-link"
                                 >
                                     <div class="card-image">
                                         <Image
                                             src={item.landScapeBanner}
                                             alt={item.imageAlt || item.title}
-                                            width={400}
-                                            height={225}
                                             loading="lazy"
-                                            class="w-full h-full object-cover"
+                                            width="400"
+                                            height="225"
                                         />
                                     </div>
-
                                     <div class="card-content">
                                         <p class="section-title">
                                             {item.title}
@@ -163,81 +171,24 @@ jsonLd.push(itemListJson);
                     ) : (
                         <p class="no-articles">
                             {lang === "ar"
-                                ? "لا يوجد اختبار متاح."
-                                : "No quiz available."}
+                                ? "لا توجد قصص متاحة."
+                                : "No stories available."}
                         </p>
                     )
                 }
+                <div id="trigger"></div>
             </section>
-            <section>
-                <AdPlaceholder
-                    calledFrom="QuizList"
-                    slot="2578599202"
-                    layout="display"
-                    format="auto"
-                    display="block"
-                    textAlign="center"
-                    height={200}
-                    width="100%"
-                />
-            </section>
-            <nav class="pagination">
-                {
-                    currentPage > 1 && (
-                        <a
-                            href={`/${langPrefix}quiz?page=${currentPage - 1}`}
-                            rel="prev"
-                            class="pagination-btn"
-                        >
-                            ← {lang === "ar" ? "السابق" : "Previous"}
-                        </a>
-                    )
-                }
-
-                <span class="page-number">
-                    {
-                        lang === "ar"
-                            ? `صفحة ${currentPage}`
-                            : `Page ${currentPage}`
-                    }
-                </span>
-
-                {
-                    quizList.length === limit && (
-                        <a
-                            href={`/${langPrefix}quiz?page=${currentPage + 1}`}
-                            rel="next"
-                            class="pagination-btn"
-                        >
-                            {lang === "ar" ? "التالي" : "Next"} →
-                        </a>
-                    )
-                }
-            </nav>
         </section>
 
         <style>
-           /* ================================
-       Pagination
-    ================================ */
-            .pagination {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 1.5rem;
-                margin: 3rem 0;
-            }
-
-            .pagination-btn {
-                padding: 0.6rem 1.4rem;
-                border-radius: 9999px;
-                text-decoration: none;
-                font-weight: 600;
-                border: 1px solid;
-            }
-
-            .page-number {
-                font-weight: 700;
+            /* =========================
+   INFINITE SCROLL TRIGGER
+========================== */
+            #trigger {
+                width: 100%;
+                height: 1px;
+                grid-column: 1 / -1;
+                visibility: hidden;
             }
             .section-title {
                 font-size: 1.5rem;
@@ -351,3 +302,67 @@ jsonLd.push(itemListJson);
         </style>
     </main>
 </Layout>
+<template id="article-card-template">
+    <article class="article-card">
+        <a class="card-link">
+            <div class="card-image">
+                 <img src="" alt="" loading="lazy" width="400" height="225" />
+            </div>
+            <div class="card-content">
+                <p class="section-title"></p>
+            </div>
+        </a>
+    </article>
+</template>
+<script define:vars={{ lang, langPrefix }}>
+    if (typeof window !== "undefined") {
+        let page = 1;
+        let loading = false;
+
+        const grid = document.querySelector(".articles-grid");
+        const trigger = document.getElementById("trigger");
+        const template = document.getElementById("article-card-template");
+
+        // Safety check
+        if (!grid || !trigger || !template) {
+            console.error("Required elements missing");
+            return;
+        }
+
+        const observer = new IntersectionObserver(async ([entry]) => {
+            if (!entry.isIntersecting || loading) return;
+            loading = true;
+
+            const res = await fetch(`/api/storyapi?lang=${lang}&page=${page}`);
+            const contentList = await res.json();
+
+            if (!contentList.length) {
+                ("No more articles.");
+                return;
+            }
+
+            contentList.forEach((item) => {
+                const clone = template.content.cloneNode(true);
+
+                const link = clone.querySelector(".card-link");
+                const img = clone.querySelector("img");
+                 const title = clone.querySelector(".section-title");
+
+                link.href = `/${langPrefix}stories/${item.slug}`;
+                img.src = item.landScapeBanner;
+                img.alt = item.imageAlt || item.title;
+                if (title) {
+                    title.textContent = item.title;
+                }
+                grid.insertBefore(clone, trigger);
+                // grid.appendChild(clone);
+                // grid.appendChild(trigger);
+            });
+
+            page += 1;
+            loading = false;
+        });
+
+        observer.observe(trigger);
+    }
+</script>
