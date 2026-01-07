@@ -30,8 +30,7 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
   const website = apiServer.websiteUrl.replace(/\/$/, "");
   const alternatesLanguages = {
     ar: `${website}/stories/${story.slug}`,
-    en: `${website}/en/stories/${story.slug}`,
-    "x-default": `${website}/stories/${story.slug}`,
+    en: `${website}/en/stories/${story.slug}`
   };
   const hreflangLinks = Object.entries(alternatesLanguages)
     .map(

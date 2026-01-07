@@ -66,26 +66,24 @@ export async function GET({ url }) {
     { path: "fact-checking-policy", changefreq: "daily", priority: "0.9" },
     { path: "author/anjar-ahsan", changefreq: "weekly", priority: "0.6" },
   ];
+const staticPagesXml = STATIC_PAGES.flatMap(page =>
+  LANGUAGES.map(l => {
+    const loc = buildUrl(l, page.path);
 
-  const staticPagesXml = STATIC_PAGES.flatMap(page =>
-    LANGUAGES.map(l => {
-      const loc = buildUrl(l, page.path);
+    const hreflangs = LANGUAGES.map(
+      x => `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(x, page.path)}" />`
+    ).join("\n");
 
-      const hreflangs = LANGUAGES.map(
-        x => `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(x, page.path)}" />`
-      ).join("\n");
-
-      return `
+    return `
   <url>
     <loc>${loc}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
 ${hreflangs}
-    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl(DEFAULT_LANG, page.path)}" />
   </url>`;
-    })
-  ).join("");
+  })
+).join("");
 
   /* ---------------------------------
      DYNAMIC MULTI-LANGUAGE CONTENT
