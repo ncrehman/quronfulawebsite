@@ -12,6 +12,9 @@ export class EndPointPaths {
   public static getrelatedarticles = 'getrelatedarticles';
   public static getquotesbyslug = 'getquotesbyslug';
 
+
+  public static getpolicies = 'getpolicies';
+
   //home
   public static getlatestarticle = 'getlatestarticle';
   public static getstoriesbycategoryslug = 'getstoriesbycategoryslug';

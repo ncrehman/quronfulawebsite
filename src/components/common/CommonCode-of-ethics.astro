@@ -3,7 +3,16 @@ import { metaConfig } from "@components/metaConfig";
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
-import { buildLangUrl, generateBreadcrumb } from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { CodeOfEthicsResponse } from "@lib/pojo/responsemodel/CodeOfEthicsResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import {
+    apiCalls,
+    buildLangUrl,
+    generateBreadcrumb,
+} from "@lib/postmethodService";
 
 interface Props {
     lang: string;
@@ -11,12 +20,44 @@ interface Props {
 const apiServer = await getAppConfig();
 
 const { lang = apiServer.defaultLanguage } = Astro.props;
-const isDefaultLang = lang === apiServer.defaultLanguage;
 
+const dataCache: Map<string, CodeOfEthicsResponse> = new Map();
+
+async function getData(language: string): Promise<CodeOfEthicsResponse | null> {
+    const cacheKey = `${language}_code-of-ethics`;
+    if (dataCache.has(cacheKey)) {
+        return dataCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "CodeOfEthics";
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getpolicies,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const data: CodeOfEthicsResponse = response.respObject;
+        if (data) {
+            dataCache.set(cacheKey, data);
+        }
+        return data;
+    } else {
+        return null;
+    }
+}
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "code-of-ethics";
 
 const siteName = metaConfig.siteName[lang];
+
+const dataObj: CodeOfEthicsResponse = await getData(lang);
+
+if (!dataObj) {
+    return new Response("Page data not available", { status: 404 });
+}
+
 const jsonLd = [];
 
 const breadCrumb = generateBreadcrumb("Code of Ethics Page Breadcrumbs", [
@@ -25,26 +66,16 @@ const breadCrumb = generateBreadcrumb("Code of Ethics Page Breadcrumbs", [
         url: baseUrl,
     },
     {
-        name: lang === "en" ? "Code of Ethics" : "مدونة السلوك المهني",
+        name: dataObj.metaTitle,
         url: canonicalUrl,
     },
 ]);
 
-const title =
-    lang === "en"
-        ? "Code of Ethics - Quronfula"
-        : "مدونة السلوك المهني - قرنفلة";
-const description =
-    lang === "en"
-        ? "Quronfula’s Code of Ethics outlines the ethical principles guiding our editorial work, integrity, accuracy, independence, respect for cultural diversity."
-        : "توضح مدونة السلوك المهني في موقع قرنفلة المبادئ الأخلاقية التي تحكم العمل التحريري، بما في ذلك النزاهة، الدقة، الاستقلالية، واحترام التنوع الثقافي.";
-const ogBanner = apiServer.websiteUrl + "codeofethicsog.webp";
-
 const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: title,
-    description: description,
+    name: dataObj.metaTitle,
+    description: dataObj.metaDescription,
     url: canonicalUrl,
     inLanguage: lang,
     about: "Code of Ethics",
@@ -65,9 +96,9 @@ jsonLd.push(breadCrumb);
 ---
 
 <SEO
-    title={title}
-    description={description}
-    image={ogBanner}
+    title={dataObj.metaTitle}
+    description={dataObj.metaDescription}
+    image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
@@ -79,149 +110,12 @@ jsonLd.push(breadCrumb);
 <Layout>
     <section
         class="legal-page container mx-auto px-4 py-12"
-        lang={lang}
-        dir={lang === "ar" ? "rtl" : "ltr"}
     >
-        {
-            lang === "en" ? (
-                <>
-                    <h1 class="text-4xl font-bold mb-8 text-center">
-                        Code of Ethics
-                    </h1>
-
-                    <p class="mb-6">
-                        <strong>Quronfula.com</strong> is committed to upholding
-                        high ethical standards in the creation and publication
-                        of content. This Code of Ethics defines the principles
-                        that guide our editorial and media practices.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Integrity and Independence
-                    </h2>
-                    <p class="mb-6">
-                        We operate with full editorial independence and are not
-                        influenced by advertisers, sponsors, or external
-                        interests. Editorial content is clearly separated from
-                        promotional material.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Accuracy and Credibility
-                    </h2>
-                    <p class="mb-6">
-                        We strive to publish accurate and reliable information
-                        based on credible sources. Any identified errors are
-                        addressed in accordance with our Correction Policy.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Fairness and Balance
-                    </h2>
-                    <p class="mb-6">
-                        We aim to present topics fairly and objectively,
-                        respecting diverse viewpoints and avoiding misleading or
-                        biased representations.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Respect for Cultures and Values
-                    </h2>
-                    <p class="mb-6">
-                        Quronfula approaches cultural, religious, and social
-                        topics with respect and sensitivity, avoiding
-                        discriminatory or offensive content.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Intellectual Property
-                    </h2>
-                    <p class="mb-6">
-                        We respect intellectual property rights and do not
-                        tolerate plagiarism. Sources are properly credited where
-                        applicable.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        Accountability and Transparency
-                    </h2>
-                    <p class="mb-6">
-                        We take responsibility for our content and maintain
-                        transparency in our editorial decisions and corrections.
-                    </p>
-
-                    <p class="mt-8 text-sm text-gray-600">
-                        Last updated: December 23, 2025
-                    </p>
-                </>
-            ) : (
-                <>
-                    <h1 class="text-4xl font-bold mb-8 text-center">
-                        مدونة السلوك المهني
-                    </h1>
-
-                    <p class="mb-6">
-                        تلتزم منصة <strong>Quronfula.com</strong> بأعلى المعايير
-                        الأخلاقية في إعداد ونشر المحتوى. تحدد هذه المدونة
-                        المبادئ والقيم التي توجه العمل التحريري والإعلامي في
-                        الموقع.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        النزاهة والاستقلالية
-                    </h2>
-                    <p class="mb-6">
-                        نعمل باستقلالية تامة في إعداد المحتوى، دون تأثير من
-                        المعلنين أو الجهات الخارجية أو المصالح التجارية. يتم
-                        الفصل بوضوح بين المحتوى التحريري وأي محتوى ترويجي.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        الدقة والمصداقية
-                    </h2>
-                    <p class="mb-6">
-                        نلتزم بتقديم معلومات دقيقة وموثوقة قدر الإمكان، مع
-                        الاعتماد على مصادر معروفة واحترام سياق المعلومات. في حال
-                        وقوع أخطاء، يتم التعامل معها وفق سياسة التصحيح المعتمدة.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">الحياد والإنصاف</h2>
-                    <p class="mb-6">
-                        نسعى إلى عرض الموضوعات بعدالة وتوازن، مع احترام تعدد
-                        الآراء ووجهات النظر، وتجنب التحيز أو التضليل.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        احترام الثقافات والقيم
-                    </h2>
-                    <p class="mb-6">
-                        يتعامل موقع قرنفلة مع القضايا الثقافية والدينية
-                        والاجتماعية بحساسية واحترام، مع تجنب أي محتوى مسيء أو
-                        تمييزي.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        حقوق الملكية الفكرية
-                    </h2>
-                    <p class="mb-6">
-                        نحترم حقوق الملكية الفكرية، ولا نقبل بالنسخ أو الاقتباس
-                        غير المشروع. يتم الإشارة إلى المصادر عند الاقتباس وفق
-                        الأصول المهنية.
-                    </p>
-
-                    <h2 class="text-2xl font-semibold mb-4">
-                        المساءلة والشفافية
-                    </h2>
-                    <p class="mb-6">
-                        نتحمل مسؤولية المحتوى المنشور ونسعى إلى الشفافية في
-                        التوضيح والتصحيح والتواصل مع الجمهور.
-                    </p>
-
-                    <p class="mt-8 text-sm text-gray-600">
-                        آخر تحديث: 23 ديسمبر 2025
-                    </p>
-                </>
-            )
-        }
+        <main class="container max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8 text-center">
+                {dataObj?.metaTitle}
+            </h1>
+            <div set:html={dataObj?.description} />
+        </main>
     </section>
 </Layout>

@@ -3,45 +3,83 @@ import { metaConfig } from "@components/metaConfig";
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
-import { generateBreadcrumb, buildLangUrl } from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { AboutUsResponse } from "@lib/pojo/responsemodel/AboutUsResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import {
+    apiCalls,
+    buildLangUrl,
+    generateBreadcrumb,
+} from "@lib/postmethodService";
 
 interface Props {
     lang: string;
 }
 const apiServer = await getAppConfig();
+
 const { lang = apiServer.defaultLanguage } = Astro.props;
 
+const dataCache: Map<string, AboutUsResponse> = new Map();
+
+async function getData(language: string): Promise<AboutUsResponse | null> {
+    const cacheKey = `${language}_aboutus`;
+    if (dataCache.has(cacheKey)) {
+        return dataCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "AboutUs";
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getpolicies,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const data: AboutUsResponse = response.respObject;
+        if (data) {
+            dataCache.set(cacheKey, data);
+        }
+        console.log('')
+        return data;
+    } else {
+        return null;
+    }
+}
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "about";
 
 const siteName = metaConfig.siteName[lang];
+
+const dataObj: AboutUsResponse = await getData(lang);
+
+if (!dataObj) {
+    return new Response("Page data not available", { status: 404 });
+}
+
 const jsonLd = [];
+
 const breadCrumb = generateBreadcrumb("About Page Breadcrumbs", [
     {
         name: siteName,
         url: baseUrl,
     },
     {
-        name: lang === "en" ? "About Us" : "من نحن",
+        name: dataObj.metaTitle,
         url: canonicalUrl,
     },
 ]);
 
-const title = lang === "en" ? "About Us - Quronfula" : "من نحن - قرنفلة";
-
-const description =
-    lang === "en"
-        ? "Learn about Quronfula: A content platform offering daily articles, lifestyle insights, beauty, health, culture, trending news, quizes, and AMP web stories"
-        : "تعرف على قرنفلة: منصة محتوى تقدّم مقالات وقصص وموضوعات يومية في أسلوب الحياة، الصحة، الجمال، الثقافة، الأخبار الخفيفة، الاختبارات، وقصص الويب.";
-const ogBanner = apiServer.websiteUrl + "aboutog.webp";
-
-const aboutJsonLd = {
+const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: title,
-    description: description,
+    name: dataObj.metaTitle,
+    description: dataObj.metaDescription,
     url: canonicalUrl,
     inLanguage: lang,
+    about: "About",
     publisher: {
         "@type": "Organization",
         name: siteName,
@@ -54,151 +92,31 @@ const aboutJsonLd = {
     },
 };
 
-jsonLd.push(aboutJsonLd);
+jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
 ---
 
 <SEO
-    title={title}
-    description={description}
-    image={ogBanner}
+    title={dataObj.metaTitle}
+    description={dataObj.metaDescription}
+    image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
     noindex={false}
-    type={"about"}
+    type={"website"}
     jsonLd={jsonLd}
 />
 
 <Layout>
-    {
-        lang === "en" ? (
-            <main
-                class="container"
-                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
-            >
-                <h1>About Us - Quronfula</h1>
-
-                <p>
-                    <strong>Quronfula</strong> is a modern digital content
-                    platform created to deliver meaningful and engaging
-                    information for general audiences. We focus on a wide range
-                    of topics such as lifestyle, beauty, health, culture,
-                    travel, self-improvement, trending topics, quizes, daily
-                    insights, and AMP web stories.
-                </p>
-
-                <h2>Our Mission</h2>
-                <p>
-                    Our mission is to provide well-researched, easy-to-read, and
-                    value-driven content that informs, inspires, and entertains
-                    people in their everyday lives.
-                </p>
-
-                <h2>What We Publish</h2>
-                <ul>
-                    <li>Daily lifestyle articles</li>
-                    <li>Health and wellness guides</li>
-                    <li>Beauty and fashion tips</li>
-                    <li>Food & recipe posts</li>
-                    <li>Travel and culture stories</li>
-                    <li>Trending news and information</li>
-                    <li>Quiz challenges and fun tests</li>
-                    <li>AMP web stories for fast mobile browsing</li>
-                </ul>
-
-                <h2>Our Vision</h2>
-                <p>
-                    To become a trusted content destination for readers seeking
-                    updated, helpful, and enjoyable information across multiple
-                    categories and languages.
-                </p>
-
-                <h2>Why Quronfula?</h2>
-                <p>
-                    We focus on simplicity, accuracy, and creativity. Every
-                    piece of content is prepared with care to ensure a smooth
-                    reading experience whether you're browsing on mobile or
-                    desktop.
-                </p>
-
-                <h2>Contact Us</h2>
-                <p>For inquiries, suggestions, or collaboration:</p>
-
-                <ul>
-                    <li>
-                        <a href="mailto:contact@quronfula.com">
-                            contact@quronfula.com
-                        </a>
-                    </li>
-                    <li>
-                        <a href="mailto:info@quronfula.com">
-                            info@quronfula.com
-                        </a>
-                    </li>
-                </ul>
-            </main>
-        ) : (
-            <main
-                class="container"
-                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
-                dir="rtl"
-            >
-                <h1>من نحن - قرنفلة</h1>
-
-                <p>
-                    <strong>قرنفلة</strong> هي منصة محتوى حديثة تهدف إلى تقديم
-                    معلومات مفيدة وممتعة للجمهور العام. نهتم بنشر محتوى متنوع
-                    يشمل أسلوب الحياة، الجمال، الصحة، الثقافة، السفر، تطوير
-                    الذات، الأخبار الخفيفة، الاختبارات، وقصص الويب (AMP).
-                </p>
-
-                <h2>رسالتنا</h2>
-                <p>
-                    رسالتنا هي تقديم محتوى بسيط، موثوق، وسهل القراءة يُساعد
-                    القرّاء في حياتهم اليومية ويمنحهم المعرفة والإلهام.
-                </p>
-
-                <h2>المحتوى الذي نقدمه</h2>
-                <ul>
-                    <li>مقالات يومية في أسلوب الحياة</li>
-                    <li>دليل الصحة والعافية</li>
-                    <li>نصائح الجمال والموضة</li>
-                    <li>مقالات الطعام والوصفات</li>
-                    <li>قصص السفر والثقافة</li>
-                    <li>معلومات وأخبار رائجة</li>
-                    <li>اختبارات ترفيهية وتحديات</li>
-                    <li>قصص ويب AMP لتصفح سريع على الهاتف</li>
-                </ul>
-
-                <h2>رؤيتنا</h2>
-                <p>
-                    أن نكون وجهة موثوقة للقراء الباحثين عن محتوى مفيد وجذاب
-                    وحديث في مختلف المجالات.
-                </p>
-
-                <h2>لماذا قرنفلة؟</h2>
-                <p>
-                    نركز على البساطة والدقة والإبداع. كل مقال يتم إعداده بعناية
-                    ليمنحك تجربة قراءة سلسة ومريحة على أي جهاز.
-                </p>
-
-                <h2>تواصل معنا</h2>
-                <p>للاستفسارات أو الاقتراحات أو التعاون:</p>
-
-                <ul>
-                    <li>
-                        <a href="mailto:contact@quronfula.com">
-                            contact@quronfula.com
-                        </a>
-                    </li>
-                    <li>
-                        <a href="mailto:info@quronfula.com">
-                            info@quronfula.com
-                        </a>
-                    </li>
-                </ul>
-            </main>
-        )
-    }
+    <section
+        class="legal-page container mx-auto px-4 py-12"
+    >
+        <main class="container max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8 text-center">
+                {dataObj?.metaTitle}
+            </h1>
+            <div set:html={dataObj?.description} />
+        </main>
+    </section>
 </Layout>

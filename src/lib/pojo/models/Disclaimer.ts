@@ -1,5 +1,5 @@
 
-export class TermsAndCondition {
+export class Disclaimer {
     public id: string;
     public en_metaTitle: string;
     public secondary_metaTitle: string;

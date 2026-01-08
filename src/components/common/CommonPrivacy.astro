@@ -3,56 +3,83 @@ import { metaConfig } from "@components/metaConfig";
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
-import { getLangPrefix } from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { PrivacyPolicyResponse } from "@lib/pojo/responsemodel/PrivacyPolicyResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import {
-    generateBreadcrumb,
+    apiCalls,
     buildLangUrl,
+    generateBreadcrumb,
 } from "@lib/postmethodService";
 
 interface Props {
     lang: string;
 }
-
 const apiServer = await getAppConfig();
+
 const { lang = apiServer.defaultLanguage } = Astro.props;
 
+const dataCache: Map<string, PrivacyPolicyResponse> = new Map();
+
+async function getData(language: string): Promise<PrivacyPolicyResponse | null> {
+    const cacheKey = `${language}_PrivacyPolicy`;
+    if (dataCache.has(cacheKey)) {
+        return dataCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "PrivacyPolicy";
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getpolicies,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const data: PrivacyPolicyResponse = response.respObject;
+        if (data) {
+            dataCache.set(cacheKey, data);
+        }
+        console.log('')
+        return data;
+    } else {
+        return null;
+    }
+}
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "privacy-policy";
 
 const siteName = metaConfig.siteName[lang];
+
+const dataObj: PrivacyPolicyResponse = await getData(lang);
+
+if (!dataObj) {
+    return new Response("Page data not available", { status: 404 });
+}
+
 const jsonLd = [];
-const breadCrumb = generateBreadcrumb("Privacy policy Page Breadcrumbs", [
+
+const breadCrumb = generateBreadcrumb("Privacy Policy Page Breadcrumbs", [
     {
         name: siteName,
         url: baseUrl,
     },
     {
-        name: "Privacy Policy",
-        url: baseUrl + "privacy-policy/",
+        name: dataObj.metaTitle,
+        url: canonicalUrl,
     },
 ]);
-const title =
-    lang === "ar" ? "سياسة الخصوصية - قرنفلة" : "Privacy Policy - Quronfula";
 
-const description =
-    lang === "ar"
-        ? "تعرف على كيفية جمع واستخدام وحماية بياناتك على موقع قرنفلة. اقرأ سياسة الخصوصية للحصول على التفاصيل الكاملة."
-        : "Learn how Quronfula collects, uses, and protects your data. Read our Privacy Policy for full details.";
-
-const entity =
-    lang === "ar"
-        ? '"سياسة الخصوصية لموقع قرنفلة"'
-        : '"Privacy Policy for Quronfula"';
-
-const audience = lang === "ar" ? "المستخدمون العامون" : "General Users";
-const ogBanner = apiServer.websiteUrl + "privacyog.webp";
-const privacyjsonLd = {
+const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: title,
+    name: dataObj.metaTitle,
+    description: dataObj.metaDescription,
     url: canonicalUrl,
-    description: description,
     inLanguage: lang,
+    about: "Privacy Policy",
     publisher: {
         "@type": "Organization",
         name: siteName,
@@ -63,228 +90,33 @@ const privacyjsonLd = {
         },
         email: "contact@quronfula.com",
     },
-    mainEntity: {
-        "@type": "WebContent",
-        about: entity,
-        audience: {
-            "@type": "Audience",
-            audienceType: audience,
-        },
-    },
 };
 
-jsonLd.push(privacyjsonLd);
+jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
 ---
 
 <SEO
-    title={title}
-    description={description}
-    image={ogBanner}
+    title={dataObj.metaTitle}
+    description={dataObj.metaDescription}
+    image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
     noindex={false}
-    type={"privacy"}
+    type={"website"}
     jsonLd={jsonLd}
 />
+
 <Layout>
-    {
-        lang === "en" ? (
-            <main
-                class="container"
-                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
-            >
-                <h1>Privacy Policy - Quronfula</h1>
-                <p>
-                    <strong>Last Updated:</strong> January 2025
-                </p>
-
-                <p>
-                    Welcome to <strong>Quronfula</strong> (“we”, “our”, or
-                    “us”). We are committed to protecting your privacy and
-                    ensuring a safe browsing experience on{" "}
-                    <strong>quronfula.com</strong>.
-                </p>
-
-                <h2>1. Information We Collect</h2>
-
-                <h3>a. Information You Provide</h3>
-                <p>
-                    We may collect personal information when you contact us,
-                    subscribe to newsletters, or submit feedback. This may
-                    include your name, email address, and any message you send
-                    us.
-                </p>
-
-                <h3>b. Automatically Collected Information</h3>
-                <p>
-                    When you visit our website, we may automatically collect
-                    data such as IP address, browser type, device information,
-                    page interactions, and cookies.
-                </p>
-
-                <h2>2. How We Use Your Information</h2>
-                <p>
-                    We use collected data to improve website performance,
-                    analyze engagement, provide support, enhance security, and
-                    personalize content based on language preferences.
-                </p>
-                <p>
-                    We do <strong>not</strong> sell personal information.
-                </p>
-
-                <h2>3. Cookies & Tracking Technologies</h2>
-                <p>
-                    We may use cookies, local storage, analytics tools, and ad
-                    cookies (if enabled). You can disable cookies through your
-                    browser settings.
-                </p>
-
-                <h2>4. Third-Party Services</h2>
-                <p>
-                    We may use third-party tools for analytics, advertising,
-                    content delivery, and social embeds. These services follow
-                    their own privacy policies.
-                </p>
-
-                <h2>5. Children’s Privacy</h2>
-                <p>
-                    We do not knowingly collect information from children under
-                    13. If you believe a minor has submitted data, please
-                    contact us for removal.
-                </p>
-
-                <h2>6. Data Security</h2>
-                <p>
-                    We use secure hosting, HTTPS encryption, and regular
-                    monitoring to protect data, but no system is 100% secure.
-                </p>
-
-                <h2>7. Your Rights</h2>
-                <p>
-                    You may request deletion, correction, or clarification about
-                    how your data is used by contacting us.
-                </p>
-
-                <h2>8. Contact Us</h2>
-                <p>
-                    If you have questions about this Privacy Policy, contact us
-                    at:
-                </p>
-                <ul>
-                    <li>
-                        Email:{" "}
-                        <a href="mailto:contact@quronfula.com">
-                            contact@quronfula.com
-                        </a>
-                    </li>
-                    <li>
-                        Email:{" "}
-                        <a href="mailto:info@quronfula.com">
-                            info@quronfula.com
-                        </a>
-                    </li>
-                </ul>
-
-                <h2>9. Updates to This Policy</h2>
-                <p>
-                    We may update this Privacy Policy. Changes will be posted on
-                    this page with a new “Last Updated” date.
-                </p>
-            </main>
-        ) : (
-            <main
-                class="container"
-                style="max-width: 900px; margin: 0 auto; padding: 2rem;"
-                dir="rtl"
-            >
-                <h1>سياسة الخصوصية - قرنفلة</h1>
-                <p>
-                    <strong>آخر تحديث:</strong> يناير 2025
-                </p>
-
-                <p>
-                    مرحبًا بك في <strong>قرنفلة</strong>. نحن ملتزمون بحماية
-                    خصوصيتك وضمان تجربة آمنة عند استخدامك لموقع{" "}
-                    <strong>quronfula.com</strong>.
-                </p>
-
-                <h2>1. المعلومات التي نقوم بجمعها</h2>
-
-                <h3>أ. المعلومات التي تقدمها لنا</h3>
-                <p>
-                    قد نقوم بجمع معلومات شخصية عندما تتواصل معنا أو تقدم ملاحظات
-                    أو تشترك في خدماتنا. قد يشمل ذلك اسمك وبريدك الإلكتروني
-                    ورسالتك.
-                </p>
-
-                <h3>ب. المعلومات التي يتم جمعها تلقائيًا</h3>
-                <p>
-                    نقوم بجمع معلومات مثل عنوان IP ونوع الجهاز والمتصفح وتفاعلك
-                    مع الصفحات وملفات تعريف الارتباط.
-                </p>
-
-                <h2>2. كيفية استخدام المعلومات</h2>
-                <p>
-                    نستخدم البيانات لتحسين أداء الموقع، تحليل التفاعل، تقديم
-                    الدعم، حماية الموقع، وتخصيص المحتوى حسب اللغة.
-                </p>
-                <p>نحن لا نبيع بياناتك الشخصية.</p>
-
-                <h2>3. ملفات تعريف الارتباط</h2>
-                <p>
-                    قد نستخدم ملفات تعريف الارتباط، التخزين المحلي، أدوات
-                    التحليل، وملفات الارتباط الخاصة بالإعلانات.
-                </p>
-
-                <h2>4. خدمات الأطراف الثالثة</h2>
-                <p>
-                    قد يستخدم الموقع خدمات خارجية للتحليلات والإعلانات وعرض
-                    المحتوى. هذه الخدمات لديها سياسات خصوصية خاصة بها.
-                </p>
-
-                <h2>5. خصوصية الأطفال</h2>
-                <p>
-                    لا نقوم بجمع بيانات من الأطفال دون 13 عامًا عن قصد. إذا تم
-                    ذلك، يُرجى التواصل معنا لحذفها.
-                </p>
-
-                <h2>6. أمن البيانات</h2>
-                <p>
-                    نستخدم استضافة آمنة وتشفير HTTPS، ولكن لا يمكن ضمان حماية
-                    كاملة بنسبة 100%.
-                </p>
-
-                <h2>7. حقوقك</h2>
-                <p>
-                    يمكنك طلب حذف بياناتك أو تعديلها أو الاستفسار عن كيفية
-                    استخدامها.
-                </p>
-
-                <h2>8. التواصل معنا</h2>
-                <p>لأي استفسار بخصوص سياسة الخصوصية، تواصل معنا:</p>
-                <ul>
-                    <li>
-                        البريد الإلكتروني:{" "}
-                        <a href="mailto:contact@quronfula.com">
-                            contact@quronfula.com
-                        </a>
-                    </li>
-                    <li>
-                        البريد الإلكتروني:{" "}
-                        <a href="mailto:info@quronfula.com">
-                            info@quronfula.com
-                        </a>
-                    </li>
-                </ul>
-
-                <h2>9. تحديثات السياسة</h2>
-                <p>
-                    قد نقوم بتحديث سياسة الخصوصية بين فترة وأخرى، وسيتم تحديث
-                    تاريخ “آخر تحديث”.
-                </p>
-            </main>
-        )
-    }
+    <section
+        class="legal-page container mx-auto px-4 py-12"
+    >
+        <main class="container max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8 text-center">
+                {dataObj?.metaTitle}
+            </h1>
+            <div set:html={dataObj?.description} />
+        </main>
+    </section>
 </Layout>

@@ -3,20 +3,62 @@ import { metaConfig } from "@components/metaConfig";
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
-import { buildLangUrl, generateBreadcrumb } from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { DisclaimerResponse } from "@lib/pojo/responsemodel/DisclaimerResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import {
+    apiCalls,
+    buildLangUrl,
+    generateBreadcrumb,
+} from "@lib/postmethodService";
 
 interface Props {
     lang: string;
 }
-
 const apiServer = await getAppConfig();
-const { lang = apiServer.defaultLanguage } = Astro.props;
-const isArabic = lang === "ar";
 
+const { lang = apiServer.defaultLanguage } = Astro.props;
+
+const dataCache: Map<string, DisclaimerResponse> = new Map();
+
+async function getData(language: string): Promise<DisclaimerResponse | null> {
+    const cacheKey = `${language}_Disclaimer`;
+    if (dataCache.has(cacheKey)) {
+        return dataCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "Disclaimer";
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getpolicies,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const data: DisclaimerResponse = response.respObject;
+        if (data) {
+            dataCache.set(cacheKey, data);
+        }
+        console.log('')
+        return data;
+    } else {
+        return null;
+    }
+}
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "disclaimer";
 
 const siteName = metaConfig.siteName[lang];
+
+const dataObj: DisclaimerResponse = await getData(lang);
+
+if (!dataObj) {
+    return new Response("Page data not available", { status: 404 });
+}
+
 const jsonLd = [];
 
 const breadCrumb = generateBreadcrumb("Disclaimer Page Breadcrumbs", [
@@ -25,26 +67,16 @@ const breadCrumb = generateBreadcrumb("Disclaimer Page Breadcrumbs", [
         url: baseUrl,
     },
     {
-        name: isArabic ? "إخلاء المسؤولية" : "Disclaimer",
+        name: dataObj.metaTitle,
         url: canonicalUrl,
     },
 ]);
 
-const title = isArabic
-    ? "إخلاء المسؤولية - قرنفلة"
-    : "Disclaimer - Quronfula";
-
-const description = isArabic
-    ? "توضح صفحة إخلاء المسؤولية في موقع قرنفلة حدود المسؤولية القانونية، وطبيعة المحتوى التوعوي، وعدم تقديم استشارات متخصصة، وشروط استخدام المعلومات والروابط. ما"
-    : "The Disclaimer page of Quronfula outlines legal liability limitations, the educational, awareness nature of the content, no professional advice provided";
-
-const ogBanner = apiServer.websiteUrl + "disclaimerog.webp";
-
 const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: title,
-    description: description,
+    name: dataObj.metaTitle,
+    description: dataObj.metaDescription,
     url: canonicalUrl,
     inLanguage: lang,
     about: "Disclaimer",
@@ -63,10 +95,11 @@ const pageJsonLd = {
 jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
 ---
+
 <SEO
-    title={title}
-    description={description}
-    image={ogBanner}
+    title={dataObj.metaTitle}
+    description={dataObj.metaDescription}
+    image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
@@ -78,113 +111,12 @@ jsonLd.push(breadCrumb);
 <Layout>
     <section
         class="legal-page container mx-auto px-4 py-12"
-        lang={isArabic ? "ar" : "en"}
-        dir={isArabic ? "rtl" : "ltr"}
     >
-        {isArabic ? (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">إخلاء المسؤولية</h1>
-
-                <p class="mb-6">
-                    يُقدم المحتوى على موقع <strong>Quronfula.com</strong> بحسن نية ولأغراض إعلامية وتعليمية وثقافية عامة فقط. نبذل جهودًا معقولة لضمان دقة المعلومات وحداثتها، لكننا لا نقدم أي ضمانات صريحة أو ضمنية بشأن الاكتمال أو الدقة أو الموثوقية أو الملاءمة لأي غرض محدد.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">عدم تقديم استشارات متخصصة</h2>
-                <p class="mb-6">
-                    المحتوى المنشور على الموقع لا يُقصد به أن يكون بديلاً عن استشارة متخصصة مهنية، سواء كانت دينية أو قانونية أو طبية أو مالية أو نفسية. يجب عليك دائمًا استشارة متخصص مؤهل في المجال المعني قبل اتخاذ أي قرار بناءً على المعلومات المقدمة هنا. استخدامك للمعلومات يكون على مسؤوليتك الشخصية الكاملة.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">الطبيعة التعليمية والثقافية للمحتوى</h2>
-                <p class="mb-6">
-                    يهدف موقع قرنفلة إلى تقديم محتوى تعليمي وثقافي وتوعوي لتعزيز الفهم والمعرفة. قد يحتوي على آراء أو تفسيرات مستندة إلى مصادر تاريخية أو ثقافية أو دينية متنوعة، وهذه الآراء تعبر عن وجهات نظر المؤلفين أو المصادر المشار إليها، ولا تعكس بالضرورة موقف الموقع الرسمي.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">الآراء المعبر عنها</h2>
-                <p class="mb-6">
-                    الآراء والتفسيرات الواردة في المقالات أو التعليقات هي آراء المؤلفين أو المساهمين فقط، ولا تمثل بالضرورة آراء إدارة موقع قرنفلة أو القائمين عليه.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">الروابط الخارجية</h2>
-                <p class="mb-6">
-                    قد يحتوي الموقع على روابط لمواقع خارجية لا نتحكم فيها. لا نتحمل أي مسؤولية عن محتوى هذه المواقع أو سياساتها أو ممارساتها أو دقة معلوماتها. تضمين أي رابط لا يعني توصية أو تبنيًا للمحتوى.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">حدود المسؤولية</h2>
-                <p class="mb-6">
-                    لا يتحمل موقع قرنفلة أو القائمون عليه أو المساهمون أي مسؤولية عن أي أضرار مباشرة أو غير مباشرة أو عرضية أو تبعية ناتجة عن استخدام الموقع أو الاعتماد على محتواه، بما في ذلك على سبيل المثال لا الحصر فقدان البيانات أو الأرباح أو الإصابات الشخصية.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">حقوق الملكية الفكرية</h2>
-                <p class="mb-6">
-                    جميع المحتويات على الموقع محمية بحقوق الطبع والنشر. يُسمح باستخدامها لأغراض شخصية غير تجارية فقط، مع الإشارة إلى المصدر. أي استخدام آخر يتطلب إذنًا كتابيًا مسبقًا.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">الموافقة على الشروط</h2>
-                <p class="mb-6">
-                    باستخدامك لهذا الموقع، فإنك تقر بقراءتك وفهمك وموافقتك على بنود إخلاء المسؤولية هذا.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">التعديلات</h2>
-                <p class="mb-6">
-                    نحتفظ بالحق في تعديل أو تحديث هذه الصفحة في أي وقت دون إشعار مسبق. يُنصح بمراجعتها دوريًا.
-                </p>
-
-                <p class="mt-8 text-sm text-gray-600">
-                    آخر تحديث: 23 ديسمبر 2025
-                </p>
-            </>
-        ) : (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">Disclaimer</h1>
-
-                <p class="mb-6">
-                    The content provided on <strong>Quronfula.com</strong> is offered in good faith for general informational, educational, and cultural purposes only. We make reasonable efforts to ensure the accuracy and timeliness of the information, but we provide no express or implied warranties regarding its completeness, accuracy, reliability, or suitability for any specific purpose.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">No Professional Advice</h2>
-                <p class="mb-6">
-                    The content on this website is not intended to substitute for professional advice, whether religious, legal, medical, financial, or psychological. You should always consult a qualified professional in the relevant field before making any decisions based on the information provided here. Any reliance on the information is at your own risk.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Educational and Cultural Nature of Content</h2>
-                <p class="mb-6">
-                    Quronfula aims to provide educational, cultural, and awareness content to promote understanding and knowledge. It may include opinions or interpretations based on diverse historical, cultural, or religious sources. These views reflect the perspectives of the authors or referenced sources and do not necessarily represent the official position of the site.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Views Expressed</h2>
-                <p class="mb-6">
-                    The opinions and interpretations in articles or comments are those of the authors or contributors only and do not necessarily reflect the views of Quronfula management or operators.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">External Links</h2>
-                <p class="mb-6">
-                    The site may contain links to external websites over which we have no control. We assume no responsibility for the content, policies, practices, or accuracy of information on those sites. Inclusion of any link does not imply endorsement or approval of the content.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Limitation of Liability</h2>
-                <p class="mb-6">
-                    Quronfula, its operators, or contributors shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use of the site or reliance on its content, including but not limited to loss of data, profits, or personal injury.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Intellectual Property Rights</h2>
-                <p class="mb-6">
-                    All content on the site is protected by copyright. Personal, non-commercial use is permitted with attribution to the source. Any other use requires prior written permission.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Consent to Terms</h2>
-                <p class="mb-6">
-                    By using this website, you acknowledge that you have read, understood, and agree to this disclaimer.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">Updates</h2>
-                <p class="mb-6">
-                    We reserve the right to modify or update this page at any time without prior notice. Periodic review is recommended.
-                </p>
-
-                <p class="mt-8 text-sm text-gray-600">
-                    Last updated: December 23, 2025
-                </p>
-            </>
-        )}
+        <main class="container max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8 text-center">
+                {dataObj?.metaTitle}
+            </h1>
+            <div set:html={dataObj?.description} />
+        </main>
     </section>
 </Layout>

@@ -3,51 +3,83 @@ import { metaConfig } from "@components/metaConfig";
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
-import { buildLangUrl, generateBreadcrumb } from "@lib/postmethodService";
+import { EndPointPaths } from "@lib/EndPointPaths";
+import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
+import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
+import type { FactCheckingResponse } from "@lib/pojo/responsemodel/FactCheckingResponse";
+import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
+import {
+    apiCalls,
+    buildLangUrl,
+    generateBreadcrumb,
+} from "@lib/postmethodService";
 
 interface Props {
     lang: string;
 }
-
-const { lang } = Astro.props;
-const isArabic = lang === "ar";
-
-const baseUrl = await buildLangUrl(lang);
 const apiServer = await getAppConfig();
+
+const { lang = apiServer.defaultLanguage } = Astro.props;
+
+const dataCache: Map<string, FactCheckingResponse> = new Map();
+
+async function getData(language: string): Promise<FactCheckingResponse | null> {
+    const cacheKey = `${language}_FactChecking`;
+    if (dataCache.has(cacheKey)) {
+        return dataCache.get(cacheKey)!;
+    }
+    const request = new RequestModel();
+    request.lang = lang;
+    request.extraVariable = "FactChecking";
+    const responseResult: ApiResponse = await apiCalls(
+        request,
+        EndPointPaths.getpolicies,
+    );
+    if (responseResult.status !== 0) return null;
+    const response: ResponseModel = responseResult.data;
+    if (response.statusCode === 0) {
+        const data: FactCheckingResponse = response.respObject;
+        if (data) {
+            dataCache.set(cacheKey, data);
+        }
+        console.log('')
+        return data;
+    } else {
+        return null;
+    }
+}
+const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl + "fact-checking-policy";
 
 const siteName = metaConfig.siteName[lang];
+
+const dataObj: FactCheckingResponse = await getData(lang);
+
+if (!dataObj) {
+    return new Response("Page data not available", { status: 404 });
+}
+
 const jsonLd = [];
 
-const breadCrumb = generateBreadcrumb("Fact Checking Policy Page Breadcrumbs", [
+const breadCrumb = generateBreadcrumb("FactChecking Page Breadcrumbs", [
     {
         name: siteName,
         url: baseUrl,
     },
     {
-        name: isArabic ? "سياسة التحقق من المعلومات" : "Fact-Checking Policy",
+        name: dataObj.metaTitle,
         url: canonicalUrl,
     },
 ]);
 
-const title = isArabic
-    ? "سياسة التحقق من المعلومات - قرنفلة"
-    : "Fact-Checking Policy - Quronfula";
-
-const description = isArabic
-    ? "توضح سياسة التحقق من المعلومات في موقع قرنفلة المنهجية المتبعة لضمان دقة المحتوى، ومصادر المعلومات، وآلية مراجعة وتحديث البيانات."
-    : "Quronfula’s Fact-Checking Policy explains the methodology used to verify content accuracy, sources of information, and the review and update process.";
-
-const ogBanner = apiServer.websiteUrl + "factcheckingpolicyog.webp";
-
 const pageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: title,
-    description: description,
+    name: dataObj.metaTitle,
+    description: dataObj.metaDescription,
     url: canonicalUrl,
     inLanguage: lang,
-    about: "Fact-Checking Policy",
+    about: "FactChecking",
     publisher: {
         "@type": "Organization",
         name: siteName,
@@ -63,10 +95,11 @@ const pageJsonLd = {
 jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
 ---
+
 <SEO
-    title={title}
-    description={description}
-    image={ogBanner}
+    title={dataObj.metaTitle}
+    description={dataObj.metaDescription}
+    image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
     canonical={canonicalUrl}
@@ -78,124 +111,12 @@ jsonLd.push(breadCrumb);
 <Layout>
     <section
         class="legal-page container mx-auto px-4 py-12"
-        lang={isArabic ? "ar" : "en"}
-        dir={isArabic ? "rtl" : "ltr"}
     >
-        {isArabic ? (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">
-                    سياسة التحقق من المعلومات
-                </h1>
-
-                <p class="mb-6">
-                    يلتزم موقع <strong>Quronfula.com</strong> بتقديم محتوى دقيق
-                    وموثوق يستند إلى مصادر معتبرة. تهدف هذه السياسة إلى توضيح
-                    المنهجية التي نتبعها للتحقق من صحة المعلومات قبل وبعد
-                    النشر.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">منهجية التحقق</h2>
-                <p class="mb-6">
-                    يتم التحقق من المعلومات من خلال مراجعة المصادر الأصلية
-                    كلما أمكن، ومقارنة البيانات عبر أكثر من مصدر موثوق لضمان
-                    الدقة والسياق الصحيح.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">مصادر المعلومات</h2>
-                <p class="mb-6">
-                    نعتمد على مصادر موثوقة مثل الدراسات الأكاديمية، التقارير
-                    الرسمية، الكتب المرجعية، المؤسسات الإعلامية المعروفة،
-                    والخبراء المتخصصين عند الاقتضاء.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">المراجعة التحريرية</h2>
-                <p class="mb-6">
-                    يخضع المحتوى لمراجعة تحريرية قبل النشر للتحقق من الدقة
-                    اللغوية والمعلوماتية. كما تتم مراجعة المقالات دوريًا
-                    للتأكد من استمرار صحة المعلومات.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">تحديث وتصحيح المعلومات</h2>
-                <p class="mb-6">
-                    عند اكتشاف معلومات غير دقيقة أو عند توفر بيانات أحدث،
-                    يتم تحديث المحتوى أو تصحيحه وفقًا لسياسة التصحيح المعتمدة
-                    في الموقع.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">دور القراء</h2>
-                <p class="mb-6">
-                    نرحب بملاحظات القراء حول أي معلومات قد تكون غير دقيقة.
-                    يمكن التواصل معنا عبر القنوات المتاحة لمراجعة المحتوى
-                    واتخاذ الإجراء المناسب.
-                </p>
-
-                <p class="mt-8 text-sm text-gray-600">
-                    آخر تحديث: 23 ديسمبر 2025
-                </p>
-            </>
-        ) : (
-            <>
-                <h1 class="text-4xl font-bold mb-8 text-center">
-                    Fact-Checking Policy
-                </h1>
-
-                <p class="mb-6">
-                    <strong>Quronfula.com</strong> is committed to publishing
-                    accurate and reliable information based on credible
-                    sources. This policy outlines our approach to verifying
-                    facts before and after publication.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">
-                    Verification Methodology
-                </h2>
-                <p class="mb-6">
-                    Facts are verified by consulting original sources whenever
-                    possible and cross-checking information across multiple
-                    reputable references to ensure accuracy and proper context.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">
-                    Sources of Information
-                </h2>
-                <p class="mb-6">
-                    We rely on trusted sources such as academic research,
-                    official reports, reference books, reputable media
-                    organizations, and subject-matter experts when appropriate.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">
-                    Editorial Review
-                </h2>
-                <p class="mb-6">
-                    Content undergoes editorial review prior to publication to
-                    assess factual accuracy and clarity. Articles are also
-                    reviewed periodically to ensure continued relevance and
-                    correctness.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">
-                    Updates and Corrections
-                </h2>
-                <p class="mb-6">
-                    When inaccuracies are identified or new information
-                    becomes available, content is updated or corrected in
-                    accordance with our Correction Policy.
-                </p>
-
-                <h2 class="text-2xl font-semibold mb-4">
-                    Reader Participation
-                </h2>
-                <p class="mb-6">
-                    We encourage readers to report potential inaccuracies.
-                    Feedback helps us maintain high standards of accuracy and
-                    trust.
-                </p>
-
-                <p class="mt-8 text-sm text-gray-600">
-                    Last updated: December 23, 2025
-                </p>
-            </>
-        )}
+        <main class="container max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold mb-8 text-center">
+                {dataObj?.metaTitle}
+            </h1>
+            <div set:html={dataObj?.description} />
+        </main>
     </section>
 </Layout>
