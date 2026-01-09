@@ -260,10 +260,10 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     datePublished: new Date(quiz.publishDate).toISOString(),
     dateModified: new Date(quiz.publishDate).toISOString(),
     siteName,
-    jsonLd: JSON.stringify(storyJsonLd),
-    orgJsonLd: JSON.stringify(orgJsonLd),
-    breadcrumbJson: JSON.stringify(breadCrumb),
-    itemJsonLd: JSON.stringify(itemListJson),
+    jsonLd: storyJsonLd ? JSON.stringify(storyJsonLd) : null,
+    orgJsonLd: orgJsonLd ? JSON.stringify(orgJsonLd) : null,
+    breadcrumbJson: breadCrumb ? JSON.stringify(breadCrumb) : null,
+    itemJsonLd: itemListJson ? JSON.stringify(itemListJson) : null,
     relatedStoriesHtml: quiz.relatedStories?.slice(0, 5).map(rel => `
       <a class="related-story-block" href="${baseUrl + "quiz/" + rel.slug}">
         <amp-img width="138" height="184" layout="responsive" class="img-fill" src="${rel.bannerImage}" alt="${rel.title}"></amp-img>
