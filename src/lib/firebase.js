@@ -2,17 +2,19 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-
 const firebaseConfig = {
-    apiKey: "AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc",
-    authDomain: "storycircuit-29da8.firebaseapp.com",
-    projectId: "storycircuit-29da8",
-    storageBucket: "storycircuit-29da8.firebasestorage.app",
-    messagingSenderId: "356670003718",
-    appId: "1:356670003718:web:16e3938a55af3c029ec187",
-    measurementId: "G-69RM05BC6P"
+    apiKey: "AIzaSyDeyTR590acMsMkAli1_AJewTNoF4bLbDU",
+    authDomain: "quronfula-682e8.firebaseapp.com",
+    projectId: "quronfula-682e8",
+    storageBucket: "quronfula-682e8.firebasestorage.app",
+    messagingSenderId: "255841573292",
+    appId: "1:255841573292:web:701e78c7d18db3330ac209",
+    measurementId: "G-BMV5BJMHZB"
 };
+
 const app = initializeApp(firebaseConfig);
 
-export const messaging = getMessaging(app);
+// Only initialize messaging in browser
+export const messaging = typeof window !== "undefined" ? getMessaging(app) : null;
+
 export { getToken, onMessage };

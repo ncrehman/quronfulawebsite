@@ -42,7 +42,6 @@ async function getData(language: string): Promise<DisclaimerResponse | null> {
         if (data) {
             dataCache.set(cacheKey, data);
         }
-        console.log('')
         return data;
     } else {
         return null;

@@ -7,8 +7,7 @@
     import { getToken, messaging } from "@lib/firebase";
     import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
     import { apiCalls } from "@lib/postmethodService";
-
-    async function checkSubscription(token:string) {
+    async function checkSubscription(token: string) {
         const today = new Date().toISOString().split("T")[0];
         const lastSubscribedDate = localStorage.getItem("fcmSubscribedDate");
         const cachedToken = localStorage.getItem("quronfulafcmToken");
@@ -21,29 +20,45 @@
     }
 
     async function requestPermission() {
-        // Prevent duplicate trigger
-        if (localStorage.getItem("fcmDenied") === "true") return;
-
-        const permission = await Notification.requestPermission();
-
-        if (permission !== "granted") {
-            localStorage.setItem("fcmDenied", "true");
+        const status = Notification.permission;
+        // Already granted
+        if (status === "granted") {
+            await proceedWithFCM();
             return;
         }
 
-        // Register SW
+        // Permanently denied → cannot auto ask again
+        if (status === "denied") {
+            showEnableNotificationUI(); // your custom UI
+            return;
+        }
+
+        // status === "default"
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+            return;
+        }
+
+        await proceedWithFCM();
+    }
+    function showEnableNotificationUI() {
+        alert(
+            "Notifications are disabled. Please enable them from browser settings.",
+        );
+    }
+    async function proceedWithFCM() {
         const registration = await navigator.serviceWorker.register(
             "/firebase-messaging-sw.js",
         );
 
         const token = await getToken(messaging, {
             vapidKey:
-                "BE12IbD3qfK2oBGmfkltFm0NYdoT6Uq5Tib7x4tF48JpDoOwFZyCPk2j_lFU5ikCjLHX1k8bGXmiwcw-FvGpRvk",
+                "BEHGkD-yqE9UDk7IY6PkekjW59wgp8hX9vAJ4_unSjklg3vQGz33PGAvTrAV92TzXmkmCI6UMMsMT1PEGPmZL7c",
             serviceWorkerRegistration: registration,
         });
 
         if (!token) return;
-
         checkSubscription(token);
     }
 
@@ -52,7 +67,9 @@
 
     // Instead, run permission only once per browser
     window.addEventListener("DOMContentLoaded", () => {
-        if (!localStorage.getItem("fcmSetupDone")) {
+        const needPermission = localStorage.getItem("fcmSetupDone");
+
+        if (needPermission !== "true") {
             // Ask permission only first visit
             requestPermission();
             localStorage.setItem("fcmSetupDone", "true");
@@ -70,7 +87,6 @@
                 request,
                 EndPointPaths.subscribetotopic,
             );
-
             if (response.status === 0) {
                 const res = response.data;
                 if (res.statusCode === 0) {

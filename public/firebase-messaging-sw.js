@@ -1,24 +1,25 @@
-importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js");
+// public/firebase-messaging-sw.js
+importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js");
 
-const firebaseConfig = {
-    apiKey: 'AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc',
-    authDomain: 'storycircuit-29da8.firebaseapp.com',
-    projectId: 'storycircuit-29da8',
-    storageBucket: 'storycircuit-29da8.firebasestorage.app',
-    messagingSenderId: '356670003718',
-    appId: '1:356670003718:web:391b53017231c3e69ec187',
-};
-
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp({
+    apiKey: "AIzaSyDeyTR590acMsMkAli1_AJewTNoF4bLbDU",
+  authDomain: "quronfula-682e8.firebaseapp.com",
+  projectId: "quronfula-682e8",
+  storageBucket: "quronfula-682e8.firebasestorage.app",
+  messagingSenderId: "255841573292",
+  appId: "1:255841573292:web:701e78c7d18db3330ac209"
+});
 
 const messaging = firebase.messaging();
+
+// Optional: customize notification display when app is in foreground/background
 
 messaging.onBackgroundMessage((payload) => {
     // console.log('[SW] Received background message: ', payload);
 
     // Prefer data payload if notification is missing
-    const title = payload.notification?.title || payload.data.title || "Story Circuit";
+    const title = payload.notification?.title || payload.data.title || "Quronfula";
     const body = payload.notification?.body || payload.data.body || "New notification";
     const icon = payload.data.icon || "/icons/android-icon-192x192.png";
     const clickUrl = payload.data.url || "/";
@@ -59,37 +60,3 @@ messaging.onBackgroundMessage((payload) => {
 
     self.registration.showNotification(title, notificationOptions);
 });
-
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    const url = event.notification.data?.url || '/';
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-            for (let client of windowClients) {
-                if (client.url === url && 'focus' in client) return client.focus();
-            }
-            if (clients.openWindow) return clients.openWindow(url);
-        })
-    );
-});
-
-// importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js");
-// importScripts("https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js");
-
-// firebase.initializeApp({
-//     apiKey: "AIzaSyDGvazXIsRsVYNKoYD58IHeAO6nfqJvzZc",
-//     authDomain: "storycircuit-29da8.firebaseapp.com",
-//     projectId: "storycircuit-29da8",
-//     storageBucket: "storycircuit-29da8.firebasestorage.app",
-//     messagingSenderId: "356670003718",
-//     appId: "1:356670003718:web:16e3938a55af3c029ec187",
-// });
-
-// const messaging = firebase.messaging();
-
-// messaging.onBackgroundMessage((payload) => {
-//     self.registration.showNotification(payload.notification.title, {
-//         body: payload.notification.body,
-//         icon: "/icons/android-icon-72x72.png.png",
-//     });
-// });

@@ -76,11 +76,11 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     };
 
     // Logging
-    if (apiServer.isConsole) {
+    // if (apiServer.isConsole) {
       printConsole(`URL: ${uri}`);
       printConsole(`Input: ${url} -> ${JSON.stringify(reqObj)}`);
       printConsole(`Response: ${url} -> ${JSON.stringify(resultResponse)}`);
-    }
+    // }
 
     return resultResponse;
 
