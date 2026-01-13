@@ -1,11 +1,13 @@
 ---
 import LanguageSwitcher from "@components/LanguageSwitcher.astro";
+import { getAppConfig } from "@lib/AppConfig";
 import { Image } from "astro:assets";
 
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const apiServer=await getAppConfig();
+const lang = currentPath.startsWith("/"+apiServer.secondaryLanguage) ? apiServer.secondaryLanguage : apiServer.defaultLanguage;
 const isArabic = lang === "ar";
-
+console.log('lamg: '+lang)
 const navItems = [
   { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
   { labelAr: "مقالات", labelEn: "Articles", href: "/article" },

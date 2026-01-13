@@ -17,7 +17,6 @@ import { getLangPrefix } from "@lib/postmethodService";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import { Image } from "astro:assets";
 
-// const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
 
 // Fetch homepage data or articles specific to home page
@@ -53,7 +52,7 @@ async function getCategory(lang: string): Promise<CatResponse[] | null> {
 
 const categories: Array<CatResponse> = await getCategory(lang);
 
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl = baseUrl+'category';

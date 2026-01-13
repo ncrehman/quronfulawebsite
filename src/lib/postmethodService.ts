@@ -22,18 +22,20 @@ export async function removeDuplicate(list: Array<any>, key: string) {
   });
 }
 
-export function getLangPrefix(language?: string): string {
-  return (!language || language === 'ar') ? '' : `${language}/`;
+export async function getLangPrefix(language?: string) {
+  let apiServer = await getAppConfig();
+  return (!language || language === apiServer.defaultLanguage) ? '' : `${language}/`;
 }
 export async function buildLangUrl(lang: string) {
-  let appConfig = await getAppConfig();
-  const langPrefix = lang && lang !== 'ar' ? `${lang}/` : '';
-  return `${appConfig.websiteUrl}${langPrefix}`;
+  let apiServer = await getAppConfig();
+  const langPrefix = lang && lang !== apiServer.defaultLanguage ? `${lang}/` : '';
+  return `${apiServer.websiteUrl}${langPrefix}`;
 }
-export function checkSupportedLang(lang: string) {
-  return supportedLangs.includes(lang ?? '')
+export async function checkSupportedLang(lang: string) {
+  let apiServer = await getAppConfig();
+  return apiServer.supportedLang.includes(lang ?? '')
     ? lang!
-    : 'ar';
+    : apiServer.defaultLanguage;
 }
 
 export async function checkForDecode(slug: string) {
@@ -54,7 +56,7 @@ export async function checkForDecode(slug: string) {
 export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
   // Ensure AppConfig is loaded
 
-  let apiServer  =await getAppConfig();
+  let apiServer = await getAppConfig();
   const uri = apiServer.webServicesUrl + url;
   const options: AxiosRequestConfig = {
     headers: {
@@ -196,10 +198,10 @@ export function generateFAQJsonLd(faqs: Array<FaqSchema>) {
     }))
   };
 }
-const supportedLangs = ["en", "ar"];
-export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
+export async function getLocalizedAmpUrl(ampUrl: string, lang: string) {
   // If amp is disabled or lang is English, return the original
-  if (!ampUrl || lang === "ar") return ampUrl;
+  let apiServer = await getAppConfig();
+  if (!ampUrl || lang === apiServer.defaultLanguage) return ampUrl;
 
   try {
     const url = new URL(ampUrl);
@@ -209,7 +211,7 @@ export function getLocalizedAmpUrl(ampUrl: string, lang: string) {
 
 
     // If first segment is already lang, remove it
-    if (supportedLangs.includes(parts[0])) {
+    if (apiServer.supportedLang.includes(parts[0])) {
       parts.shift();
     }
 

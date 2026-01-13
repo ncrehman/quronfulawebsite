@@ -16,7 +16,7 @@ interface Props {
 }
 
 const { articles = [], lang = "ar" } = Astro.props;
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 // Extract first 3 articles safely
 const main: ArticleResponse | undefined = articles[0];
 const side1: ArticleResponse | undefined = articles[1];

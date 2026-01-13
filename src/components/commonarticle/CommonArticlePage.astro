@@ -97,7 +97,7 @@ async function fetchRelatedData(
   return null;
 }
 
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 const baseUrl = await buildLangUrl(lang);
 
 const decodedSlug = await checkForDecode(slug);

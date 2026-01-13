@@ -19,9 +19,9 @@ export interface WebStoryAmpRendererProps {
 
 export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRendererProps) {
   const apiServer = await getAppConfig();
-  lang = lang ? lang : 'ar';
+  lang = lang ? lang : apiServer.defaultLanguage;
   const baseUrl =
-    lang && lang !== "ar"
+    lang && lang !== apiServer.defaultLanguage
       ? `${apiServer.websiteUrl}${lang}/`
       : apiServer.websiteUrl;
 

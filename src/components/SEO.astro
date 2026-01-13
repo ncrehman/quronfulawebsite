@@ -1,4 +1,5 @@
 ---
+import { getAppConfig } from "@lib/AppConfig";
 import { buildLangUrl, ensureTrailingSlash } from "@lib/postmethodService";
 export interface Props {
   title: string;
@@ -23,6 +24,7 @@ export interface Props {
   readingTime?: any;
 }
 const p = Astro.props;
+let apiServer= await getAppConfig();
 const alternateAr = p.url.replace("/en/", "/");
 const pathname = new URL(p.url).pathname.replace(/\/$/, "");
 const alternateEn =

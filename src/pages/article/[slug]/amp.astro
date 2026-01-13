@@ -42,8 +42,8 @@ async function getArticle(lang: string, articleSlug: string): Promise<FeedConten
 }
 
 // Astro server endpoint logic
-const appConfig = await getAppConfig();
-const lang = 'ar';
+const apiServer = await getAppConfig();
+const lang = apiServer.defaultLanguage;
 
 const { slug } = Astro.params;
 

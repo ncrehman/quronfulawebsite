@@ -13,7 +13,7 @@ interface Props {
 
 const apiServer = await getAppConfig();
 const { lang = apiServer.defaultLanguage } = Astro.props;
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 
 const categoryCache = new Map<string, Array<CatResponse>>();
 async function getCategory(lang: string) {

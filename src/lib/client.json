@@ -14,6 +14,7 @@
     "timeZone": "UTC+06:00",
     "defaultLanguage": "ar",
     "secondaryLanguage": "en",
+    "secFieldLang": "ar",
     "supportedLang": [
         "ar",
         "en"

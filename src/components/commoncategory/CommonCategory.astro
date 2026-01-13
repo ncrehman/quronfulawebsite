@@ -28,8 +28,6 @@ interface Props {
     lang: string;
 }
 const { catslug = "", lang = "ar" } = Astro.props;
-// const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
-// Fetch homepage data or articles specific to home page
 
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -96,7 +94,7 @@ async function getSubCategories(
     }
     return [];
 }
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];

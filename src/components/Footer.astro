@@ -6,37 +6,39 @@ import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { apiCalls } from "@lib/postmethodService";
+import { getAppConfig } from "@lib/AppConfig";
 const { lang } = Astro.props;
-const isArabic = lang === "ar";
+const apiServer = await getAppConfig();
+const isSecLangField = lang === apiServer.secFieldLang;
 
 // ---------------- Translations ----------------
 const t = {
-    footerDesc: isArabic
+    footerDesc: isSecLangField
         ? "مقالات موثوقة تغطي الاقتصاد، الهجرة، الصحة، الجمال، ونمط الحياة."
         : "Trusted articles covering economy, migration, health, beauty, and lifestyle.",
-    quickLinks: isArabic ? "روابط سريعة" : "Quick Links",
-    home: isArabic ? "الرئيسية" : "Home",
-    category: isArabic ? "التصنيفات" : "Category",
-    article: isArabic ? "المقالات" : "Articles",
-    quotes: isArabic ? "اقتباسات" : "Quotes",
-    webstories: isArabic ? "قصص الويب" : "Web Stories",
-    quizChallenge: isArabic ? "اختبارات" : "Quiz",
-    tools: isArabic ? "الأدوات" : "Tools",
-    books: isArabic ? "الكتب" : "Books",
-    about: isArabic ? "من نحن" : "About",
-    contact: isArabic ? "اتصل بنا" : "Contact",
-    privacyPolicy: isArabic ? "سياسة الخصوصية" : "Privacy Policy",
-    termsConditions: isArabic ? "الشروط والأحكام" : "Terms & Conditions",
-    explore: isArabic ? "اكتشف الأقسام" : "Explore Categories",
-    tags: isArabic ? "المواضيع" : "Topics",
-    followUs: isArabic ? "تابعنا" : "Follow Us",
-    siteName: isArabic ? "قرنفلة" : "Quronfula",
-    rights: isArabic ? "جميع الحقوق محفوظة" : "All Rights Reserved",
-    disclaimer: isArabic ? "إخلاء المسؤولية" : "Disclaimer",
-    correctionPolicy: isArabic ? "سياسة التصحيح" : "Correction Policy",
-    codeEthics: isArabic ? "مدونة السلوك المهني" : "Code of Ethics",
-    policies: isArabic ? "السياسات" : "Policies",
-    factchecking: isArabic
+    quickLinks: isSecLangField ? "روابط سريعة" : "Quick Links",
+    home: isSecLangField ? "الرئيسية" : "Home",
+    category: isSecLangField ? "التصنيفات" : "Category",
+    article: isSecLangField ? "المقالات" : "Articles",
+    quotes: isSecLangField ? "اقتباسات" : "Quotes",
+    webstories: isSecLangField ? "قصص الويب" : "Web Stories",
+    quizChallenge: isSecLangField ? "اختبارات" : "Quiz",
+    tools: isSecLangField ? "الأدوات" : "Tools",
+    books: isSecLangField ? "الكتب" : "Books",
+    about: isSecLangField ? "من نحن" : "About",
+    contact: isSecLangField ? "اتصل بنا" : "Contact",
+    privacyPolicy: isSecLangField ? "سياسة الخصوصية" : "Privacy Policy",
+    termsConditions: isSecLangField ? "الشروط والأحكام" : "Terms & Conditions",
+    explore: isSecLangField ? "اكتشف الأقسام" : "Explore Categories",
+    tags: isSecLangField ? "المواضيع" : "Topics",
+    followUs: isSecLangField ? "تابعنا" : "Follow Us",
+    siteName: isSecLangField ? "قرنفلة" : "Quronfula",
+    rights: isSecLangField ? "جميع الحقوق محفوظة" : "All Rights Reserved",
+    disclaimer: isSecLangField ? "إخلاء المسؤولية" : "Disclaimer",
+    correctionPolicy: isSecLangField ? "سياسة التصحيح" : "Correction Policy",
+    codeEthics: isSecLangField ? "مدونة السلوك المهني" : "Code of Ethics",
+    policies: isSecLangField ? "السياسات" : "Policies",
+    factchecking: isSecLangField
         ? "سياسة التحقق من المعلومات"
         : "Fact-Checking Policy",
 };
@@ -47,12 +49,12 @@ const t = {
         <!-- Logo Section -->
         <div
             class="footer-section logo-sec"
-            style={isArabic ? "text-align:right" : ""}
+           
         >
             <a
-                href={lang === "ar" ? "/" : `/${lang}`}
+                href={lang === apiServer.defaultLanguage ? "/" : `/${lang}`}
                 class="logo"
-                aria-label={lang === "ar"
+                aria-label={lang === apiServer.secFieldLang
                     ? "العودة إلى الصفحة الرئيسية"
                     : "Quronfula home"}
             >
@@ -70,7 +72,7 @@ const t = {
     "
                 >
                     {
-                        lang === "ar"
+                        lang === apiServer.secFieldLang
                             ? "العودة إلى الصفحة الرئيسية"
                             : "Quronfula Home"
                     }
@@ -90,59 +92,59 @@ const t = {
         </div>
 
         <!-- Quick Links -->
-        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+        <div class="footer-section" >
             <h4>{t.quickLinks}</h4>
             <ul>
-                <li><a href={lang === "ar" ? "/" : `/${lang}`}>{t.home}</a></li>
+                <li><a href={lang === apiServer.defaultLanguage ? "/" : `/${lang}`}>{t.home}</a></li>
                 <li>
-                    <a href={lang === "ar" ? "/category" : `/${lang}/category`}
+                    <a href={lang === apiServer.defaultLanguage ? "/category" : `/${lang}/category`}
                         >{t.category}</a
                     >
                 </li>
                 <li>
-                    <a href={lang === "ar" ? "/article" : `/${lang}/article`}
+                    <a href={lang === apiServer.defaultLanguage ? "/article" : `/${lang}/article`}
                         >{t.article}</a
                     >
                 </li>
 
                 <li>
-                    <a href={lang === "ar" ? "/stories" : `/${lang}/stories`}
+                    <a href={lang === apiServer.defaultLanguage ? "/stories" : `/${lang}/stories`}
                         >{t.webstories}</a
                     >
                 </li>
                 <li>
-                    <a href={lang === "ar" ? "/quiz" : `/${lang}/quiz`}
+                    <a href={lang === apiServer.defaultLanguage ? "/quiz" : `/${lang}/quiz`}
                         >{t.quizChallenge}</a
                     >
                 </li>
 
                 <li>
-                    <a href={lang === "ar" ? "/about" : `/${lang}/about`}
+                    <a href={lang === apiServer.defaultLanguage ? "/about" : `/${lang}/about`}
                         >{t.about}</a
                     >
                 </li>
                 <li>
-                    <a href={lang === "ar" ? "/contact" : `/${lang}/contact`}
+                    <a href={lang === apiServer.defaultLanguage ? "/contact" : `/${lang}/contact`}
                         >{t.contact}</a
                     >
                 </li>
                 
             </ul>
         </div>
-        <div class="footer-section" style={isArabic ? "text-align:right" : ""}>
+        <div class="footer-section" >
             <h4>{t.policies}</h4>
             <ul>
                 
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/privacy-policy"
                             : `/${lang}/privacy-policy`}>{t.privacyPolicy}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/terms-and-conditions"
                             : `/${lang}/terms-and-conditions`}
                         >{t.termsConditions}</a
@@ -150,14 +152,14 @@ const t = {
                 </li>
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/disclaimer"
                             : `/${lang}/disclaimer`}>{t.disclaimer}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/correction-policy"
                             : `/${lang}/correction-policy`}
                         >{t.correctionPolicy}</a
@@ -165,14 +167,14 @@ const t = {
                 </li>
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/code-of-ethics"
                             : `/${lang}/code-of-ethics`}>{t.codeEthics}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === "ar"
+                        href={lang === apiServer.defaultLanguage
                             ? "/fact-checking-policy"
                             : `/${lang}/fact-checking-policy`}
                         >{t.factchecking}</a

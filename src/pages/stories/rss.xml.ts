@@ -1,9 +1,10 @@
 import { RssFeedRender } from "@components/common/RssFeedRender";
+import { getAppConfig } from "@lib/AppConfig";
 
 // ✅ MUST be named export called GET
 export async function GET() {
-
-  return RssFeedRender('ar', 'stories',20);
+const apiServer = await getAppConfig();
+  return RssFeedRender(apiServer.defaultLanguage, 'stories',20);
 
 }
 

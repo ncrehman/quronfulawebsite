@@ -8,7 +8,7 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, checkSupportedLang, cleanHtmlString, generateFAQJsonLd, getLangPrefix } from "@lib/postmethodService";
+import { apiCalls, buildLangUrl, checkSupportedLang, cleanHtmlString, generateFAQJsonLd, getLangPrefix, insertAdsBetweenBlocks, splitHtmlIntoBlocks } from "@lib/postmethodService";
 import { getAppConfig } from "@lib/AppConfig";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
@@ -45,12 +45,9 @@ export interface ArticleAmpRendererProps {
 export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRendererProps) {
   const relatedArticle: Array<ArticleResponse> = await fetchRelatedData(lang, article.id);
   const apiServer = await getAppConfig();
-  lang = checkSupportedLang(lang);
-  const baseUrl =
-    lang === 'ar'
-      ? apiServer.websiteUrl
-      : `${apiServer.websiteUrl}${lang}/`;
-  const langPrefix = getLangPrefix(lang);
+  lang = await checkSupportedLang(lang);
+  const baseUrl = await buildLangUrl(lang);
+  const langPrefix = await getLangPrefix(lang);
   const cleanHtml = cleanHtmlString(article.description);
   let metaObj: MetaObject = generateSeo(article.title,
     cleanHtml)
@@ -145,6 +142,48 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   keywords.push(article.cat_name);
   keywords.push(article.sub_catTitle);
 
+  const cleanedHtml = cleanHtmlString(article.description);
+  const blocks = splitHtmlIntoBlocks(cleanedHtml);
+  const blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
+
+
+
+  function renderAmpBlocks(blocksWithAds: any[]): string {
+    let html = '';
+
+    for (const block of blocksWithAds) {
+      if (block.type === 'content') {
+        html += `
+        <div class="content-block">
+          ${block.html}
+        </div>
+      `;
+      }
+
+      if (block.type === 'ad') {
+        html += renderAmpAd(block.slot);
+      }
+    }
+
+    return html;
+  }
+  function renderAmpAd(slot: string): string {
+    return `
+    <div class="amp-ad-wrapper">
+      <amp-ad
+        width="100vw"
+        height="320"
+        type="adsense"
+        data-ad-client="ca-pub-4100521225351324"
+        data-ad-slot="${slot}"
+        data-auto-format="rspv"
+        data-full-width>
+        <div overflow></div>
+      </amp-ad>
+    </div>
+  `;
+  }
+  const ampContentHtml = renderAmpBlocks(blocksWithAds);
 
   const templatePath = path.join(
     process.cwd(),
@@ -161,7 +200,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     metaDescription: metaObj.metaDesc,
     canonicalUrl,
     ampUrl,
-    contentHtml: article.description, // already sanitized HTML
+    contentHtml: ampContentHtml, // already sanitized HTML
     featuredImage: article.landScapeBanner,
     relatedArticles: relatedArticle,
     jsonLd: JSON.stringify(jsonLd),

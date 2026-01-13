@@ -12,6 +12,8 @@ export class AppConfigModel {
     public website: string = '';
     public isConsole: boolean = false;
     public defaultLanguage: string = '';
+    public secFieldLang: string = '';
+    public supportedLang: Array<string>;
     public secondaryLanguage: string = '';
     public multipleLanguage: boolean = false;
     public currency: string = '';

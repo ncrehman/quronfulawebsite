@@ -70,7 +70,7 @@ async function getArticleList(
     return [];
 }
 
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];

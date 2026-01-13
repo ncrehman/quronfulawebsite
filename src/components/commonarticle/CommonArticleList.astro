@@ -17,7 +17,6 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
-// const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
 const { lang } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -48,7 +47,7 @@ async function getArticle(
 
 const articles: Array<ArticleResponse> = await getArticle(lang, offset);
 
-const langPrefix = getLangPrefix(lang);
+const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl =
