@@ -1,23 +1,27 @@
 User-agent: *
-Allow: /
 
-# Allow all normal content
-Allow: /articles/
-Allow: /category/
-Allow: /tags/
-Allow: /stories/
-Allow: /quizs/
-Allow: /author/
+# Block private areas only
+Disallow: /admin/
+Disallow: /backend-panel/
 
-# Block only junk/technical folders (these should never be indexed)
-Disallow: /search
-Disallow: /admin
-Disallow: /backend-panel
+# Block junk / technical folders
+Disallow: /search/
 Disallow: /cgi-bin/
 Disallow: /wp-*
-Disallow: /*?*                 # optional: blocks URLs with ? parameters (if you don't use them)
 Disallow: /*.php$
 
-# Sitemap (very important – helps Google find all your articles fast)
+# Explicitly allow public content sections (Discover-safe)
+Allow: /stories/
+Allow: /en/stories/
+Allow: /article/
+Allow: /en/article/
+Allow: /category/
+Allow: /en/category/
+Allow: /author/
+Allow: /en/author/
+Allow: /quiz/
+Allow: /en/quiz/
+
+# Sitemaps
 Sitemap: https://www.quronfula.com/sitemap.xml
 Sitemap: https://www.quronfula.com/news-sitemap.xml
