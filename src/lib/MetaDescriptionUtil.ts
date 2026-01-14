@@ -42,7 +42,7 @@ export function removeIntroPrefix(text: string): string {
  */
 export function trimToWordBoundary(
     text: string,
-    limit = 155
+    limit:number
 ): string {
     if (text.length <= limit) return text
 
