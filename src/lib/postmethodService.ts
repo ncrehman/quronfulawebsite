@@ -286,7 +286,8 @@ export function cleanHtmlString(input: string): string {
     .replace(/ﺃ/g, 'أ')
     .replace(/ﺇ/g, 'إ')
     .replace(/ﺁ/g, 'آ')
-    .replace(/(.)\1{2,}/g, '$1$1')
+    // .replace(/(?!https?:\/\/)(?!www\.)(.)\1{2,}/g, '$1$1')
+    // .replace(/(.)\1{2,}/g, '$1$1')
     .replace(/(\S)\s+(\S)/g, '$1 $2')
 
     // === Normalize images ===
