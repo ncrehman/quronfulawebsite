@@ -58,15 +58,17 @@ export function trimToWordBoundary(
 export function generateSeo(
     title: string,
     htmlDescription: string,
-    limit = 155
+    limit = 155,
+    titleLimit = 60
 ): MetaObject {
     const text = stripHtml(htmlDescription)
     const cleaned = removeIntroPrefix(text)
     cleaned.replace(/&nbsp;/gi, ' ')
     cleaned.replace(/&#160;/g, ' ')
     const metaDescription = trimToWordBoundary(cleaned, limit)
+    const metaTitle = trimToWordBoundary(title, titleLimit)
     const meta: MetaObject = new MetaObject();
-    meta.title = title;
+    meta.title = metaTitle;
     meta.metaDesc = metaDescription;
     return meta;
 }
