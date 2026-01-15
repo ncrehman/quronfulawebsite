@@ -4,28 +4,22 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { SiteMapData } from "@lib/pojo/responsemodel/SiteMapData";
 import { apiCalls } from "@lib/postmethodService";
 
-export async function GET({ url }) {
+export async function GET() {
   /* ---------------------------------
      CONFIG
   ---------------------------------- */
-  const website = "https://www.quronfula.com/";
-  const baseDomain = website.replace(/\/$/, ""); // remove trailing slash
-
-  const LANGUAGES = ["en", "ar"] as const;
   const DEFAULT_LANG = "ar";
-
-  const lang = url.searchParams.get("lang") || DEFAULT_LANG;
   const NEWS_WINDOW_HOURS = 48;
-  const now = new Date(); // ✅ Date object
+  const now = new Date();
   const cutoffTime = new Date(
     now.getTime() - NEWS_WINDOW_HOURS * 60 * 60 * 1000
   );
 
   /* ---------------------------------
-     FETCH DYNAMIC SITEMAP DATA
+     FETCH NEWS DATA (DEFAULT LANGUAGE ONLY)
   ---------------------------------- */
   const request = new RequestModel();
-  request.lang = lang;
+  request.lang = DEFAULT_LANG;
 
   const resp: ApiResponse = await apiCalls(
     request,
@@ -34,8 +28,6 @@ export async function GET({ url }) {
 
   const items: SiteMapData[] = resp?.data?.respList || [];
 
-
-
   /* ---------------------------------
      FILTER: LAST 48 HOURS ONLY
   ---------------------------------- */
@@ -43,81 +35,46 @@ export async function GET({ url }) {
     item => new Date(item.lastModified) >= cutoffTime
   );
 
-  /* ✅ RETURN 204 IF NO NEWS */
-  if (recentItems.length === 0) {
-    return new Response(null, {
-      status: 204,
-    });
-  }
   /* ---------------------------------
-     BUILD NEWS URLS
+     BUILD NEWS URLS (Default CANONICAL ONLY)
   ---------------------------------- */
-  const newsUrlsXml = recentItems
-    .flatMap(item =>
-      item.hrefLangs
-        .filter(h => h.lang !== "x-default")
-        .map(h => {
-          const loc = h.url.replace(/\/$/, "");
-          const publicationDate = new Date(
-            item.lastModified
-          ).toISOString();
+  const newsUrlsXml = recentItems.map(item => {
+    const loc = item.url
+      ? item.url.replace(/\/$/, "")
+      : item.url.replace(/\/$/, "");
 
-          /* 🖼 IMAGE PRIORITY */
-          const images = [
-            item.landScapeBanner,
-            item.squareBanner,
-            item.bannerImage,
-          ]
-            .filter(Boolean)
-            .filter((v, i, a) => a.indexOf(v) === i);
+    const publicationDate = new Date(item.lastModified).toISOString();
 
-          const imageXml = images
-            .map(
-              img => `
-    <image:image>
-      <image:loc>${img}</image:loc>
-    </image:image>`
-            )
-            .join("");
-
-          return `
+    return `
   <url>
     <loc>${loc}</loc>
-
     <news:news>
       <news:publication>
         <news:name>QuronFula</news:name>
-        <news:language>${h.lang}</news:language>
+        <news:language>ar</news:language>
       </news:publication>
-
       <news:publication_date>${publicationDate}</news:publication_date>
-      <news:title><![CDATA[${h.title || ""}]]></news:title>
+      <news:title><![CDATA[${item.title || ""}]]></news:title>
     </news:news>
-
-${imageXml}
   </url>`;
-        })
-    )
-    .join("");
+  }).join("");
 
   /* ---------------------------------
-     FINAL XML
+     FINAL XML (ALWAYS RETURN VALID XML)
   ---------------------------------- */
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 ${newsUrlsXml}
-
 </urlset>`;
 
   return new Response(xml, {
+    status: 200,
     headers: {
       "Content-Type": "application/xml; charset=UTF-8",
       "X-Robots-Tag": "index, follow",
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
+      "Cache-Control": "public, max-age=60",
     },
   });
 }
