@@ -16,15 +16,9 @@ import { checkForDecode } from "@lib/postmethodService";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryResponse";
-import { loadContent } from "@lib/contentLoader";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { Image } from "astro:assets";
 
-interface Params {
-    lang: string;
-    catslug: string;
-    subcatslug: string;
-}
 const { slug = "", catslug = "", lang = "ar" } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -77,17 +71,9 @@ const siteName = metaConfig.siteName[lang];
 const jsonLd = [];
 const decodedCatslug = await checkForDecode(catslug);
 const decodedSubCatSlug = await checkForDecode(slug);
-
-let subCategoryObj: SubCategoryResponse = await loadContent(
-    "subcategory",
-    decodedSubCatSlug,
-    lang,
-);
+let subCategoryObj = await getSubCategory(lang, decodedSubCatSlug);
 if (!subCategoryObj) {
-    subCategoryObj = await getSubCategory(lang, decodedSubCatSlug);
-    if (!subCategoryObj) {
-        return new Response("sub category not found", { status: 404 });
-    }
+    subCategoryObj = null;
 }
 const [articles] = await Promise.all([
     getArticleList(lang, decodedSubCatSlug, limit, offset),
@@ -180,6 +166,9 @@ if (articles) {
                     </p>
                 </div>
                 <div class="category-wave"></div>
+            </section>
+            <section>
+                <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
             </section>
             <section>
                 {

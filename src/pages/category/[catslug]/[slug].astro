@@ -3,8 +3,8 @@ import CommonSubCategory from "@components/commoncategory/CommonSubCategory.astr
 
 // Props passed from getStaticPaths/getStaticProps
 const currentPath = Astro.url.pathname;
-const { catslug } = Astro.params;
+const { catslug,slug } = Astro.params;
 const lang = currentPath.startsWith("/en") ? "en" : "ar";
 ---
 
-<CommonSubCategory {catslug} {lang} />
+<CommonSubCategory {slug} {catslug} {lang} />
