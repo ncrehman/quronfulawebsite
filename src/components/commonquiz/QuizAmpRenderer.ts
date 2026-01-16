@@ -49,13 +49,6 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     inLanguage: lang,
     image: `${apiServer.websiteUrl}ogicon.webp`,
     logo: { "@type": "ImageObject", url: `${apiServer.websiteUrl}footerlogo.webp` },
-    sameAs: [
-      "https://www.facebook.com/storycircuit",
-      "https://x.com/thestorycircuit",
-      "https://in.pinterest.com/ncrehman/",
-      "https://benable.com/ncrehman",
-      "https://substack.com/@ncrehman"
-    ],
     publisher: {
       "@type": "Organization",
       name: siteName,
