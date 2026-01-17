@@ -53,7 +53,8 @@ async function getCategory(
         );
         if (response.status !== 0) return null;
         const resp: ResponseModel = response.data;
-        return resp.statusCode === 0 ? resp.respObject : null;
+        // return resp.statusCode === 0 ? resp.respObject : null;
+        return  null;
     } catch (error) {
         console.error("Error fetching category:", error);
         return null;
@@ -102,29 +103,25 @@ const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];
-let categoryObj: CategoryResponse = await loadContent(
-    "category",
-    catslug,
-    lang,
-);
-if (!categoryObj) {
-    categoryObj = await getCategory(lang, catslug);
+let categoryObj: CategoryResponse = await getCategory(lang, catslug);
     if (!categoryObj) {
-        return new Response("Category not found", { status: 404 });
+        categoryObj = null;
     }
-}
-const subCatList: Array<SubCategoryResponse> = await getSubCategories(
+let canonicalUrl: string = null;
+let articles: Array<ArticleResponse>;
+    let metaObj: MetaObject;
+    let subCatList: Array<SubCategoryResponse>;
+if (!!categoryObj) {
+    subCatList = await getSubCategories(
     lang,
     catslug,
 );
-const articles: Array<ArticleResponse> = await getArticleList(
+articles= await getArticleList(
     lang,
     catslug,
     limit,
     offset,
 );
-let canonicalUrl: string = null;
-if (!!categoryObj) {
     canonicalUrl =
         currentPage === 1
             ? `${baseUrl}category/${categoryObj.slug}`
@@ -182,7 +179,6 @@ if (subCatList) {
         creatorUrl: apiServer.websiteUrl,
     });
     jsonLd.push(itemListJson);
-}
 const isPageOne = currentPage === 1;
 
 const pageLabel =
@@ -201,18 +197,20 @@ const description = isPageOne
 const ua = Astro.request.headers.get("user-agent");
 const device = detectDevice(ua);
 const language: any = lang;
-let metaObj: MetaObject = generateSeo(
+metaObj= generateSeo(
     title,
     description,
     language,
     device,
 );
+}
+
 ---
 {
     categoryObj && (
         <SEO
-             title={metaObj.title}
-    description={metaObj.metaDesc}
+             title={metaObj?.title}
+    description={metaObj?.metaDesc}
             image={categoryObj.bannerImage}
             url={canonicalUrl}
             lang={lang}
@@ -224,7 +222,9 @@ let metaObj: MetaObject = generateSeo(
     )
 }
 <Layout>
-    <main>
+    {
+    categoryObj? (
+           <main>
         <!-- HERO BANNER -->
         <section class="category-hero">
             <div
@@ -538,4 +538,55 @@ let metaObj: MetaObject = generateSeo(
             text-align: right;
         }
     </style>
+    ):(
+        <div class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+
+  <!-- Floating background dots -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    {[...Array(12)].map((_, i) => (
+      <div
+        class="absolute w-2 h-2 rounded-full bg-white/80 dark:bg-white/40 animate-[float_15s_linear_infinite]"
+        style={`
+          left: ${Math.random() * 100}%;
+          top: -20px;
+          animation-delay: ${i * 1.5}s;
+        `}
+      />
+    ))}
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-lg text-center px-6">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+      {lang === "en"
+        ? "Category Not Found"
+        : "القسم غير موجود"}
+    </h1>
+
+    <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+      {lang === "en"
+        ? "Sorry, the category you’re looking for doesn’t exist or may have been removed."
+        : "عذراً، القسم الذي تبحث عنه غير موجود أو ربما تم حذفه."}
+    </p>
+
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition"
+    >
+      {lang === "en" ? "Back to Main Page" : "العودة إلى الصفحة الرئيسية"}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+      </svg>
+    </a>
+  </div>
+</div>
+    )
+}
+ 
 </Layout>
