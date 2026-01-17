@@ -2,13 +2,15 @@
 import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { EndPointPaths } from "@lib/EndPointPaths";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 import type { SocialLinks } from "@lib/pojo/models/SocialLinks";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { AuthorResponse } from "@lib/pojo/responsemodel/AuthorResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, buildLangUrl, checkForDecode } from "@lib/postmethodService";
+import { apiCalls, buildLangUrl, checkForDecode, detectDevice } from "@lib/postmethodService";
 import { Image } from "astro:assets";
 
 interface Props {
@@ -89,27 +91,36 @@ const canonicalUrl = baseUrl + "author/" + author.slug;
 const authorJson = {
   "@context": "https://schema.org",
   "@type": "Person",
-  "@id": canonicalUrl+"#person",
+  "@id": canonicalUrl + "#person",
   name: author.fullName,
   url: canonicalUrl,
   image: author.profileImage,
-  description:author.bio,
-  jobTitle: author?.jobTitle||"Quronfula",
+  description: author.bio,
+  jobTitle: author?.jobTitle || "Quronfula",
   affiliation: {
     "@type": "Organization",
-    name: author?.affiliation ||"Quronfula",
+    name: author?.affiliation || "Quronfula",
   },
   worksFor: {
     "@type": "Organization",
     "@id": "https://www.quronfula.com/#organization",
   },
 };
-const jsonLd=[authorJson];
+const jsonLd = [authorJson];
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+  author.fullName + "- author",
+  author.bio,
+  language,
+  device,
+);
 ---
 
 <SEO
-  title={author.fullName + "- author"}
-  description={author.bio}
+  title={metaObj.title}
+  description={metaObj.metaDesc}
   image={author.profileImage}
   url={canonicalUrl}
   lang={lang}

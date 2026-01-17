@@ -2,6 +2,7 @@
 import {
     apiCalls,
     buildLangUrl,
+    detectDevice,
     generateBreadcrumb,
     generateItemList,
 } from "@lib/postmethodService";
@@ -17,6 +18,8 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 const { lang } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -55,10 +58,30 @@ const canonicalUrl =
         ? `${baseUrl}article`
         : `${baseUrl}article?page=${currentPage}`;
 const siteName = metaConfig.siteName[lang];
-const title = "Quronfula Article Collection";
-const description =
-    "Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights";
-const jsonLd = [];
+const isPageOne = currentPage === 1;
+
+const pageLabel =
+  lang === "ar"
+    ? `الصفحة ${currentPage}`
+    : `Page ${currentPage}`;
+
+const title = isPageOne
+  ? lang === "ar"
+      ? "مقالات حديثة عن الثقافة والرياضة والأخبار | Quronfula"
+      : "Latest Articles on Culture, Sports & News | Quronfula"
+  : lang === "ar"
+      ? `مقالات حديثة عن الثقافة والرياضة والأخبار – ${pageLabel} | Quronfula`
+      : `Latest Articles on Culture, Sports & News – ${pageLabel} | Quronfula`;
+
+const description = isPageOne
+  ? lang === "ar"
+      ? "تصفح أحدث المقالات عن الثقافة والرياضة والأخبار في كورونفولا. مجموعة مختارة من القصص المتعمقة والرؤى الحديثة يتم تحديثها باستمرار."
+      : "Explore the latest articles on culture, sports, and news at Quronfula. A curated collection of in-depth stories and fresh insights, updated regularly."
+  : lang === "ar"
+      ? `اكتشف المزيد من المقالات عن الثقافة والرياضة والأخبار في كورونفولا. تابع التصفح في ${pageLabel}.`
+      : `Discover more articles on culture, sports, and news at Quronfula. Continue browsing ${pageLabel}.`;
+
+    const jsonLd = [];
 
 const itemListJson = generateItemList({
     name: title,
@@ -90,11 +113,22 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 
 jsonLd.push(breadCrumb);
 jsonLd.push(itemListJson);
+
+
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    title,
+    description,
+    language,
+    device,
+);
 ---
 
 <SEO
-    title={title}
-    description={description}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={baseUrl + "articleog.webp"}
     url={canonicalUrl}
     lang={lang}

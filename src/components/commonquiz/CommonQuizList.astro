@@ -3,6 +3,7 @@ import {
     apiCalls,
     buildLangUrl,
     checkForDecode,
+    detectDevice,
     generateBreadcrumb,
     generateItemList,
 } from "@lib/postmethodService";
@@ -18,6 +19,8 @@ import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import type { QuizStoryResponse } from "@lib/pojo/responsemodel/QuizStoryResponse";
 import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 const { lang } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -77,10 +80,28 @@ const canonicalUrl =
         ? `${baseUrl}quiz`
         : `${baseUrl}quiz?page=${currentPage}`;
 const siteName = metaConfig.siteName[lang];
-const title = "Quronfula Quiz Collection";
-const description =
-    "Test your knowledge and explore fun, engaging quizes across topics including lifestyle, creativity, and more. Challenge yourself and discover new insights";
-const jsonLd = [];
+const quizBaseHeading =
+    lang === "ar"
+        ? "أحدث مجموعة اختبارات – اختبارات ممتعة لتعزيز المعرفة"
+        : "Latest Quiz Collection – Fun & Knowledge-Boosting Quizzes";
+
+const isPageOne = currentPage === 1;
+
+const title = isPageOne
+    ? quizBaseHeading
+    : lang === "ar"
+        ? `${quizBaseHeading} – الصفحة ${currentPage}`
+        : `${quizBaseHeading} – Page ${currentPage}`;
+
+const description = isPageOne
+    ? lang === "ar"
+        ? "اختبر معلوماتك مع أحدث الاختبارات على كورونفولا. استكشف اختبارات ممتعة وتفاعلية في مجالات أسلوب الحياة والإبداع وغيرها."
+        : "Play the latest quizzes on Quronfula and test your knowledge. Explore fun, engaging quizzes across lifestyle, creativity, and more."
+    : lang === "ar"
+        ? `اكتشف المزيد من الاختبارات الممتعة على كورونفولا. تصفح الصفحة ${currentPage} من مجموعة الاختبارات وتحدى نفسك بأسئلة جديدة.`
+        : `Explore more fun and engaging quizzes on Quronfula. Browse page ${currentPage} of our quiz collection and challenge yourself.`;
+
+    const jsonLd = [];
 
 const itemListJson = generateItemList({
     name: title,
@@ -112,11 +133,15 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 
 jsonLd.push(breadCrumb);
 jsonLd.push(itemListJson);
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(title, description, language, device);
 ---
 
 <SEO
-    title={title}
-    description={description}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={baseUrl + "quizog.webp"}
     url={canonicalUrl}
     lang={lang}

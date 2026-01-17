@@ -4,6 +4,7 @@ import { ApiResponse } from './pojo/responsemodel/ApiResponse';
 import { getAppConfig } from './AppConfig';
 import { FaqSchema } from './pojo/responsemodel/FaqSchema';
 import he from 'he';
+import type { FeedContentResponse } from './pojo/responsemodel/FeedContentResponse';
 
 // import { unescape } from 'he';  // Assuming you already import he for the final decode
 
@@ -66,7 +67,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
       "Content-Language": reqObj.lang ? reqObj.lang : "en",
     },
   };
-
+ reqObj.tenant=apiServer.tenant;
   try {
     const response = await axios.post(uri, reqObj, options);
     const resultResponse: ApiResponse = {
@@ -225,6 +226,16 @@ export async function getLocalizedAmpUrl(ampUrl: string, lang: string) {
   }
 }
 
+
+export type DeviceType = "mobile" | "desktop";
+
+export function detectDevice(userAgent: string | null): DeviceType {
+  if (!userAgent) return "desktop";
+
+  return /mobile|android|iphone|ipad|ipod/i.test(userAgent)
+    ? "mobile"
+    : "desktop";
+}
 
 export function cleanHtmlString(input: string): string {
   if (!input) return '';
@@ -440,6 +451,58 @@ export function splitHtmlIntoBlocks(htmlString, numberOfBlocks = 5) {
 
   return blocks;
 }
+
+export async function normalizeArticle(article: FeedContentResponse,siteName:string) {
+  let apiServer = await getAppConfig();
+  return {
+    id: article.id ?? "",
+    title: article.title ?? "",
+    subTitle: article.subTitle ?? "",
+    description: article.description ?? "",
+    lang: article.lang ?? apiServer.defaultLanguage,
+
+    // Images
+    landScapeBanner: article.landScapeBanner || null,
+    bannerImage: article.bannerImage || null,
+    squareBanner: article.squareBanner || null,
+    imageAlt: article.imageAlt || article.title || siteName,
+
+    // Author
+    author_name: article.author_name || siteName,
+    author_slug: article.author_slug || "editorial-team",
+    author_profile:
+      article.author_profile && article.author_profile.startsWith("http")
+        ? article.author_profile
+        : `${apiServer.websiteUrl}logo.webp`,
+
+    // Meta
+    caption: article.caption || null,
+    keywords: article.keywords || "",
+    cat_name: article.cat_name || "",
+    cat_slug: article.cat_slug || "",
+    sub_catTitle: article.sub_catTitle || "",
+    sub_catslug: article.sub_catslug || "",
+
+    // Dates
+    publishDate: article.publishDate
+      ? new Date(article.publishDate)
+      : new Date(),
+    updatedAt: article.updatedAt
+      ? new Date(article.updatedAt)
+      : null,
+
+    // Numbers
+    wordCount: Number(article.wordCount) || 1200,
+    readingTime:
+      Number(article.readingTime) ||
+      Math.ceil((Number(article.wordCount) || 1200) / 200),
+
+    // Schemas
+    faqSchema: article.faqSchema ?? null,
+    howToSchema: article.howToSchema ?? null,
+  };
+}
+
 
 
 

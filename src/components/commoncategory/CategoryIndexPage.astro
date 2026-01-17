@@ -2,6 +2,7 @@
 import {
     apiCalls,
     buildLangUrl,
+    detectDevice,
     generateBreadcrumb,
     generateItemList,
 } from "@lib/postmethodService";
@@ -16,6 +17,8 @@ import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { getLangPrefix } from "@lib/postmethodService";
 import type { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import { Image } from "astro:assets";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 
 const { lang } = Astro.props;
 
@@ -100,11 +103,20 @@ if (categories) {
     });
     jsonLd.push(itemListJson);
 }
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    title,
+    description,
+    language,
+    device,
+);
 ---
 
 <SEO
-    title={title}
-    description={description}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={baseUrl + "categoryog.webp"}
     url={canonicalUrl}
     lang={lang}

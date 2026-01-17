@@ -4,6 +4,8 @@ import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
 import { EndPointPaths } from "@lib/EndPointPaths";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { CodeOfEthicsResponse } from "@lib/pojo/responsemodel/CodeOfEthicsResponse";
@@ -11,6 +13,7 @@ import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import {
     apiCalls,
     buildLangUrl,
+    detectDevice,
     generateBreadcrumb,
 } from "@lib/postmethodService";
 
@@ -93,11 +96,20 @@ const pageJsonLd = {
 
 jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    dataObj.metaTitle,
+    dataObj.metaDescription,
+    language,
+    device,
+);
 ---
 
 <SEO
-    title={dataObj.metaTitle}
-    description={dataObj.metaDescription}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}

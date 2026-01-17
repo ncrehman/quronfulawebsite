@@ -5,6 +5,7 @@ export class RequestModel {
     public mobileNumber: string;
     public lang: string;
     public slug: string;
+    public tenant: string;
     public searchKey: string;
     public limit: number = 0;
     public offset: number = 0;

@@ -4,6 +4,8 @@ import SEO from "@components/SEO.astro";
 import Layout from "@layouts/Layout.astro";
 import { getAppConfig } from "@lib/AppConfig";
 import { EndPointPaths } from "@lib/EndPointPaths";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 import { ContactMessage } from "@lib/pojo/models/ContactMessage";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
@@ -12,6 +14,7 @@ import {
     generateBreadcrumb,
     buildLangUrl,
     apiCalls,
+    detectDevice,
 } from "@lib/postmethodService";
 
 interface Props {
@@ -125,11 +128,19 @@ if (Astro.request.method === "POST") {
             lang === "en" ? "⚠ Something went wrong." : "⚠ حدث خطأ غير متوقع";
     }
 }
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    title,
+    description,
+    language,
+    device,
+);
 ---
-
 <SEO
-    title={title}
-    description={description}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={ogBanner}
     url={canonicalUrl}
     lang={lang}

@@ -2,6 +2,7 @@
 import {
 	apiCalls,
 	buildLangUrl,
+	detectDevice,
 	generateBreadcrumb,
 	generateItemList,
 } from "@lib/postmethodService";
@@ -30,6 +31,8 @@ import AdPlaceholder from "@components/AdPlaceholder.astro";
 import type { HomeDataResponse } from "@lib/pojo/responsemodel/HomeDataResponse";
 import { loadContent } from "@lib/contentLoader";
 import { Image } from "astro:assets";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 const keyData = keywordsData as KeywordsData;
 const { lang } = Astro.props;
 
@@ -238,11 +241,14 @@ const content = {
 };
 
 const data = content[lang];
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+let metaObj: MetaObject = generateSeo(title, description, lang, device);
 ---
 
 <SEO
-	title={title}
-	description={description}
+	title={metaObj.title}
+	description={metaObj.metaDesc}
 	image={baseUrl + "ogimage.webp"}
 	url={canonicalUrl}
 	lang={lang}

@@ -2,6 +2,7 @@
 import {
     apiCalls,
     buildLangUrl,
+    detectDevice,
     generateBreadcrumb,
     generateItemList,
 } from "@lib/postmethodService";
@@ -22,6 +23,8 @@ import type { SubCategoryResponse } from "@lib/pojo/responsemodel/SubCategoryRes
 import { loadContent } from "@lib/contentLoader";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { Image } from "astro:assets";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 
 interface Props {
     catslug: string;
@@ -180,13 +183,36 @@ if (subCatList) {
     });
     jsonLd.push(itemListJson);
 }
----
+const isPageOne = currentPage === 1;
 
+const pageLabel =
+  lang === "ar" ? `الصفحة ${currentPage}` : `Page ${currentPage}`;
+
+const title = isPageOne
+  ? categoryObj.metaTitle
+  : `${categoryObj.metaTitle} – ${pageLabel}`;
+
+const description = isPageOne
+  ? categoryObj.metaDescription
+  : lang === "ar"
+      ? `${categoryObj.metaDescription} تصفح ${pageLabel}.`
+      : `${categoryObj.metaDescription} Browse ${pageLabel}.`;
+
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    title,
+    description,
+    language,
+    device,
+);
+---
 {
     categoryObj && (
         <SEO
-            title={categoryObj.metaTitle}
-            description={categoryObj.metaDescription}
+             title={metaObj.title}
+    description={metaObj.metaDesc}
             image={categoryObj.bannerImage}
             url={canonicalUrl}
             lang={lang}

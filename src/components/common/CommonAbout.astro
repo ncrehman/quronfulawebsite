@@ -11,8 +11,11 @@ import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import {
     apiCalls,
     buildLangUrl,
+    detectDevice,
     generateBreadcrumb,
 } from "@lib/postmethodService";
+import { generateSeo } from "@lib/MetaDescriptionUtil";
+import type { MetaObject } from "@lib/MetaObject";
 
 interface Props {
     lang: string;
@@ -93,11 +96,20 @@ const pageJsonLd = {
 
 jsonLd.push(pageJsonLd);
 jsonLd.push(breadCrumb);
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
+const language: any = lang;
+let metaObj: MetaObject = generateSeo(
+    dataObj.metaTitle,
+    dataObj.metaDescription,
+    language,
+    device,
+);
 ---
 
 <SEO
-    title={dataObj.metaTitle}
-    description={dataObj.metaDescription}
+    title={metaObj.title}
+    description={metaObj.metaDesc}
     image={dataObj.bannerImage}
     url={canonicalUrl}
     lang={lang}
