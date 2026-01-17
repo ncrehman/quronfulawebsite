@@ -107,11 +107,15 @@ const apiServer = await getAppConfig();
 const siteName = metaConfig.siteName[lang];
 // let article: FeedContentResponse = await loadContent("article", slug, lang);
 // if (!article) {
+let article;
   let articleObj = await getArticles(lang, slug);
   if (!articleObj) {
-    return new Response("Article not found", { status: 404 });
+     Astro.response.status = 404;
+    // return new Response("Article not found", { status: 404 });
+  }else{
+  article = await normalizeArticle(articleObj,siteName);
+
   }
-  const article = await normalizeArticle(articleObj,siteName);
 // }
 
 const canonicalUrl = baseUrl + "article/" + decodedSlug;

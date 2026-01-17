@@ -10,7 +10,12 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { AuthorResponse } from "@lib/pojo/responsemodel/AuthorResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, buildLangUrl, checkForDecode, detectDevice } from "@lib/postmethodService";
+import {
+  apiCalls,
+  buildLangUrl,
+  checkForDecode,
+  detectDevice,
+} from "@lib/postmethodService";
 import { Image } from "astro:assets";
 
 interface Props {
@@ -81,46 +86,56 @@ async function getAuthorBySlug(
   return null;
 }
 const author = await getAuthorBySlug(lang, slug);
-let articles: Array<ArticleResponse> = [];
-if (author) {
-  articles = await getAuthorArticles(lang, author.slug);
+let metaObj: MetaObject;
+let jsonLd;
+let canonicalUrl;
+  let articles: Array<ArticleResponse> = [];
+if (!author) {
+  // Proper 404 – Astro will render the 404 page
+  // return Astro.redirect("/404", 404);
+  Astro.response.status = 404;
+} else {
+  if (author) {
+    articles = await getAuthorArticles(lang, author.slug);
+  }
+  const baseUrl = await buildLangUrl(lang);
+  canonicalUrl = baseUrl + "author/" + author.slug;
+
+  const authorJson = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": canonicalUrl + "#person",
+    name: author.fullName,
+    url: canonicalUrl,
+    image: author.profileImage,
+    description: author.bio,
+    jobTitle: author?.jobTitle || "Quronfula",
+    affiliation: {
+      "@type": "Organization",
+      name: author?.affiliation || "Quronfula",
+    },
+    worksFor: {
+      "@type": "Organization",
+      "@id": "https://www.quronfula.com/#organization",
+    },
+  };
+  jsonLd = [authorJson];
+  const ua = Astro.request.headers.get("user-agent");
+  const device = detectDevice(ua);
+  const language: any = lang;
+  metaObj = generateSeo(
+    author.fullName + "- author",
+    author.bio,
+    language,
+    device,
+  );
 }
-const baseUrl = await buildLangUrl(lang);
-const canonicalUrl = baseUrl + "author/" + author.slug;
-
-const authorJson = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "@id": canonicalUrl + "#person",
-  name: author.fullName,
-  url: canonicalUrl,
-  image: author.profileImage,
-  description: author.bio,
-  jobTitle: author?.jobTitle || "Quronfula",
-  affiliation: {
-    "@type": "Organization",
-    name: author?.affiliation || "Quronfula",
-  },
-  worksFor: {
-    "@type": "Organization",
-    "@id": "https://www.quronfula.com/#organization",
-  },
-};
-const jsonLd = [authorJson];
-const ua = Astro.request.headers.get("user-agent");
-const device = detectDevice(ua);
-const language: any = lang;
-let metaObj: MetaObject = generateSeo(
-  author.fullName + "- author",
-  author.bio,
-  language,
-  device,
-);
 ---
-
+{
+    author && (
 <SEO
-  title={metaObj.title}
-  description={metaObj.metaDesc}
+  title={metaObj?.title}
+  description={metaObj?.metaDesc}
   image={author.profileImage}
   url={canonicalUrl}
   lang={lang}
@@ -129,8 +144,11 @@ let metaObj: MetaObject = generateSeo(
   type={"WebSite"}
   jsonLd={jsonLd}
 />
+    )
+}
 <Layout>
-  <div class="max-w-5xl mx-auto px-4 py-16 md:py-5">
+   {author ? (
+     <div class="max-w-5xl mx-auto px-4 py-16 md:py-5">
     <main class="min-h-screen bg-white dark:bg-gray-900 flex justify-center">
       <div class="max-w-3xl w-full px-6 py-16 text-center">
         <!-- Profile Image -->
@@ -370,6 +388,54 @@ let metaObj: MetaObject = generateSeo(
       animation-delay: 0.6s;
     }
   </style>
+   ) :(
+      <div class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-900">
+
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    {[...Array(12)].map((_, i) => (
+      <div
+        class="absolute w-2 h-2 rounded-full bg-white/80 dark:bg-white/40 animate-[float_15s_linear_infinite]"
+        style={` 
+          left: ${Math.random() * 100}%;
+          top: -20px;
+          animation-delay: ${i * 1.5}s;
+        `}
+      />
+    ))}
+  </div>
+
+  <div class="relative z-10 max-w-lg text-center px-6">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+      {lang === "en" ? "Author Not Found" : "لم يتم العثور على المؤلف"}
+    </h1>
+
+    <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+      {lang === "en"
+        ? "Sorry, the author you're looking for doesn't exist or has been removed."
+        : "عذراً، المؤلف الذي تبحث عنه غير موجود أو تم حذفه."}
+    </p>
+
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition"
+    >
+      {lang === "en" ? "Back to Main Page" : "العودة إلى الصفحة الرئيسية"}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+    )
+  }
+ 
 </Layout>
 <script is:inline>
   // Optional: Simple scroll-triggered refinement (no extra deps)
