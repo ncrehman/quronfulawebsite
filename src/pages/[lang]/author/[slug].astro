@@ -1,10 +1,11 @@
 ---
 import CommonAuthor from "@components/commonauthor/CommonAuthor.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
 // Props passed from getStaticPaths/getStaticProps
 const currentPath = Astro.url.pathname;
 const { catslug, slug } = Astro.params;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 ---
 
 <CommonAuthor {slug} {lang} />

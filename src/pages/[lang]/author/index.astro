@@ -1,9 +1,10 @@
 ---
 import AuthorIndexPage from "@components/commonauthor/AuthorIndexPage.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
 
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 ---
 
 <AuthorIndexPage {lang}/>

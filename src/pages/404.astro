@@ -1,7 +1,8 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 const title =
     lang === "en"
         ? "Page not found | Quronfula"

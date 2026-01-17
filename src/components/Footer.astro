@@ -5,7 +5,7 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import { CatResponse } from "@lib/pojo/responsemodel/CatResponse";
 import { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls } from "@lib/postmethodService";
+import { apiCalls, buildLangPath } from "@lib/postmethodService";
 import { getAppConfig } from "@lib/AppConfig";
 const { lang } = Astro.props;
 const apiServer = await getAppConfig();
@@ -47,12 +47,9 @@ const t = {
 <footer class="footer">
     <div class="footer-container">
         <!-- Logo Section -->
-        <div
-            class="footer-section logo-sec"
-           
-        >
+        <div class="footer-section logo-sec">
             <a
-                href={lang === apiServer.defaultLanguage ? "/" : `/${lang}`}
+             href={`${buildLangPath(lang, "")}`}
                 class="logo"
                 aria-label={lang === apiServer.secFieldLang
                     ? "العودة إلى الصفحة الرئيسية"
@@ -92,92 +89,75 @@ const t = {
         </div>
 
         <!-- Quick Links -->
-        <div class="footer-section" >
+        <div class="footer-section">
             <h4>{t.quickLinks}</h4>
             <ul>
-                <li><a href={lang === apiServer.defaultLanguage ? "/" : `/${lang}`}>{t.home}</a></li>
+                <li><a href={`${buildLangPath(lang, "")}`}>{t.home}</a></li>
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/category" : `/${lang}/category`}
+                    <a href={`${buildLangPath(lang, "category")}`}
                         >{t.category}</a
                     >
                 </li>
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/article" : `/${lang}/article`}
-                        >{t.article}</a
+                    <a href={`${buildLangPath(lang, "article")}`}>{t.article}</a
                     >
                 </li>
 
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/stories" : `/${lang}/stories`}
+                    <a href={`${buildLangPath(lang, "stories")}`}
                         >{t.webstories}</a
                     >
                 </li>
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/quiz" : `/${lang}/quiz`}
+                    <a href={`${buildLangPath(lang, "quiz")}`}
                         >{t.quizChallenge}</a
                     >
                 </li>
 
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/about" : `/${lang}/about`}
-                        >{t.about}</a
-                    >
+                    <a href={`${buildLangPath(lang, "about")}`}>{t.about}</a>
                 </li>
                 <li>
-                    <a href={lang === apiServer.defaultLanguage ? "/contact" : `/${lang}/contact`}
-                        >{t.contact}</a
+                    <a href={`${buildLangPath(lang, "contact")}`}>{t.contact}</a
                     >
                 </li>
-                
             </ul>
         </div>
-        <div class="footer-section" >
+        <div class="footer-section">
             <h4>{t.policies}</h4>
             <ul>
-                
                 <li>
-                    <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/privacy-policy"
-                            : `/${lang}/privacy-policy`}>{t.privacyPolicy}</a
+                    <a href={`${buildLangPath(lang, "privacy-policy")}`}
+                        >{t.privacyPolicy}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/terms-and-conditions"
-                            : `/${lang}/terms-and-conditions`}
-                        >{t.termsConditions}</a
+                    href={`${buildLangPath(lang, "terms-and-conditions")}`}
+                       >{t.termsConditions}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/disclaimer"
-                            : `/${lang}/disclaimer`}>{t.disclaimer}</a
+                    href={`${buildLangPath(lang, "disclaimer")}`}
+                        >{t.disclaimer}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/correction-policy"
-                            : `/${lang}/correction-policy`}
-                        >{t.correctionPolicy}</a
+                     href={`${buildLangPath(lang, "correction-policy")}`}>{t.correctionPolicy}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/code-of-ethics"
-                            : `/${lang}/code-of-ethics`}>{t.codeEthics}</a
+                    href={`${buildLangPath(lang, "code-of-ethics")}`}
+                       >{t.codeEthics}</a
                     >
                 </li>
                 <li>
                     <a
-                        href={lang === apiServer.defaultLanguage
-                            ? "/fact-checking-policy"
-                            : `/${lang}/fact-checking-policy`}
-                        >{t.factchecking}</a
+                    href={`${buildLangPath(lang, "fact-checking-policy")}`}
+                       >{t.factchecking}</a
                     >
                 </li>
             </ul>

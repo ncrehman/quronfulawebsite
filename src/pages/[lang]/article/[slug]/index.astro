@@ -1,10 +1,11 @@
 ---
 import CommonArticlePage from "@components/commonarticle/CommonArticlePage.astro";
 
-// Props passed from getStaticPaths/getStaticProps
+import { getLangFromPath } from "@lib/postmethodService";
+
 const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 
 
 ---

@@ -2,18 +2,18 @@
 import LanguageSwitcher from "@components/LanguageSwitcher.astro";
 import { getAppConfig } from "@lib/AppConfig";
 import { Image } from "astro:assets";
-
+import { getLangFromPath, buildLangPath } from "@lib/postmethodService";
 const currentPath = Astro.url.pathname;
 const apiServer=await getAppConfig();
-const lang = currentPath.startsWith("/"+apiServer.secondaryLanguage) ? apiServer.secondaryLanguage : apiServer.defaultLanguage;
+const lang = getLangFromPath(currentPath);
 const isArabic = lang === "ar";
 const navItems = [
-  { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
-  { labelAr: "مقالات", labelEn: "Articles", href: "/article" },
-  { labelAr: "مسابقة معرفية", labelEn: "Quiz", href: "/quiz" },
-  { labelAr: "قصص الويب", labelEn: "Web Stories", href: "/stories" },
-  { labelAr: "اتصل بنا", labelEn: "Contact", href: "/contact" },
-  { labelAr: "من نحن", labelEn: "About", href: "/about" },
+  { labelAr: "الرئيسية", labelEn: "Home", href: "" },
+  { labelAr: "مقالات", labelEn: "Articles", href: "article" },
+  { labelAr: "مسابقة معرفية", labelEn: "Quiz", href: "quiz" },
+  { labelAr: "قصص الويب", labelEn: "Web Stories", href: "stories" },
+  { labelAr: "اتصل بنا", labelEn: "Contact", href: "contact" },
+  { labelAr: "من نحن", labelEn: "About", href: "about" },
 ];
 ---
 
@@ -177,7 +177,7 @@ const navItems = [
 <header dir={isArabic ? "rtl" : "ltr"}>
   <!-- LOGO -->
   <div class="logo">
-    <a href={isArabic ? "/" : "/en"}>
+    <a href={buildLangPath(lang, '')}>
       <Image
         src="/headerlogo.webp"
         alt="Quronfula Logo"
@@ -194,7 +194,7 @@ const navItems = [
   <nav class="desktop">
     {
       navItems.map((item) => (
-        <a href={isArabic ? item.href : `/en${item.href}`}>
+        <a href={buildLangPath(lang, item.href)}>
           {isArabic ? item.labelAr : item.labelEn}
         </a>
       ))
@@ -212,7 +212,7 @@ const navItems = [
 
   {
     navItems.map((item) => (
-      <a href={isArabic ? item.href : `/en${item.href}`}>
+      <a href={buildLangPath(lang, item.href)}>
         {isArabic ? item.labelAr : item.labelEn}
       </a>
     ))

@@ -7,10 +7,11 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import { checkForDecode, apiCalls } from "@lib/postmethodService";
+import { getLangFromPath } from "@lib/postmethodService";
 
 const { slug } = Astro.params;
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 
 if (!slug) {
     return new Response("Not Found", { status: 404 });

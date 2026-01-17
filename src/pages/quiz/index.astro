@@ -1,11 +1,12 @@
 ---
 import CommonQuizList from "@components/commonquiz/CommonQuizList.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
 
 
 
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 ---
 
 <CommonQuizList {lang}/>

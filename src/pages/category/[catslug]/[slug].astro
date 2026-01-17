@@ -1,10 +1,10 @@
 ---
 import CommonSubCategory from "@components/commoncategory/CommonSubCategory.astro";
-
+import { getLangFromPath } from "@lib/postmethodService";
 // Props passed from getStaticPaths/getStaticProps
 const currentPath = Astro.url.pathname;
-const { catslug,slug } = Astro.params;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const { catslug, slug } = Astro.params;
+const lang = getLangFromPath(currentPath);
 ---
 
 <CommonSubCategory {slug} {catslug} {lang} />

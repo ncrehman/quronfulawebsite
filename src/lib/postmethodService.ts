@@ -67,7 +67,7 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
       "Content-Language": reqObj.lang ? reqObj.lang : "en",
     },
   };
- reqObj.tenant=apiServer.tenant;
+  reqObj.tenant = apiServer.tenant;
   try {
     const response = await axios.post(uri, reqObj, options);
     const resultResponse: ApiResponse = {
@@ -102,8 +102,19 @@ export async function apiCalls(reqObj: any, url: string): Promise<ApiResponse> {
     return resultResponse;
   }
 }
+export function buildLangPath(lang: string, href: string) {
+  const cleanHref = href.replace(/^\/+/, "");
 
+  if (lang === "en") {
+    return cleanHref ? `/en/${cleanHref}` : "/en";
+  }
 
+  return cleanHref ? `/${cleanHref}` : "/";
+}
+
+export function getLangFromPath(path: string): "ar" | "en" {
+  return path.startsWith("/en") ? "en" : "ar";
+}
 export interface BreadcrumbItem {
   name: string;
   url: string;
@@ -452,7 +463,7 @@ export function splitHtmlIntoBlocks(htmlString, numberOfBlocks = 5) {
   return blocks;
 }
 
-export async function normalizeArticle(article: FeedContentResponse,siteName:string) {
+export async function normalizeArticle(article: FeedContentResponse, siteName: string) {
   let apiServer = await getAppConfig();
   return {
     id: article.id ?? "",

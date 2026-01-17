@@ -1,9 +1,10 @@
 ---
 import CommonStoryList from "@components/commonstories/CommonStoryList.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
 
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 ---
 
 <CommonStoryList {lang}/>

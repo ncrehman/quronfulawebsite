@@ -22,7 +22,9 @@ import { Image } from "astro:assets";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
 
-const { slug = "", catslug = "", lang = "ar" } = Astro.props;
+const apiServer = await getAppConfig();
+
+const { slug = "", catslug = "", lang = apiServer.defaultLanguage } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
 
@@ -68,7 +70,6 @@ async function getArticleList(
 }
 
 const langPrefix = await getLangPrefix(lang);
-const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const siteName = metaConfig.siteName[lang];
 const jsonLd = [];

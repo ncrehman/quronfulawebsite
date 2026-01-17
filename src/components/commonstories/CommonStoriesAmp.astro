@@ -7,11 +7,11 @@ import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
 import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import type { WebStoryResponse } from "@lib/pojo/responsemodel/WebStoryResponse";
-import { getLangPrefix, buildLangUrl, apiCalls } from "@lib/postmethodService";
+import { getLangPrefix, buildLangUrl, apiCalls, getLangFromPath } from "@lib/postmethodService";
 
 const currentPath = Astro.url.pathname;
 const { slug } = Astro.params;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 
 const story: WebStoryResponse | null = await (async () => {
   try {

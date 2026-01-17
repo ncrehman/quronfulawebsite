@@ -1,7 +1,9 @@
 ---
 import CommonHome from "@components/commonHome/CommonHome.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
-const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ar";
+const currentPath = Astro.url.pathname;
+const lang = getLangFromPath(currentPath);
 
 
 ---

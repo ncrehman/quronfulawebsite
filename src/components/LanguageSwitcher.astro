@@ -1,4 +1,6 @@
 ---
+import { getLangFromPath } from "@lib/postmethodService";
+
 /**
  * FINAL MULTILINGUAL LANGUAGE SWITCHER FOR ASTRO
  * Auto-detects language from URL
@@ -8,8 +10,8 @@
 const currentPath = Astro.url.pathname;
 
 // Detect current language based on URL
-let currentLang = currentPath.startsWith("/en") ? "en" : "ar";
-const isArabic = currentLang === "ar";
+const currentLang = getLangFromPath(currentPath);
+const isArabic = currentLang;
 
 // Build SWITCH URL
 // AR → EN: /en + same path

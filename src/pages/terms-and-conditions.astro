@@ -1,8 +1,9 @@
 ---
 import CommonTerms from "@components/common/CommonTerms.astro";
+import { getLangFromPath } from "@lib/postmethodService";
 
 const currentPath = Astro.url.pathname;
-const lang = currentPath.startsWith("/en") ? "en" : "ar";
+const lang = getLangFromPath(currentPath);
 ---
 
 <CommonTerms {lang}/>
