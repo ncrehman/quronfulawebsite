@@ -132,17 +132,17 @@ async function getQuizStories(
 let articles: Array<ArticleResponse>;
 let featureList: Array<ArticleResponse>;
 let stories: Array<WebStoryResponse>;
-let quizzes: Array<QuizStoryResponse>;
+let quizes: Array<QuizStoryResponse>;
 let homeData: HomeDataResponse = await loadContent("home", "homepage", lang);
 if (homeData) {
 	articles = homeData.articleList ?? (await getArticle(lang));
 	stories = homeData.storyList ?? (await getStories(lang, null, null));
-	quizzes = homeData.quizList ?? (await getQuizStories(lang, null, null));
+	quizes = homeData.quizList ?? (await getQuizStories(lang, null, null));
 	featureList = homeData.featureList ?? null;
 } else {
 	articles = await getArticle(lang);
 	stories = await getStories(lang, null, null);
-	quizzes = await getQuizStories(lang, null, null);
+	quizes = await getQuizStories(lang, null, null);
 }
 
 if (!featureList) {
@@ -218,14 +218,14 @@ if (articles) {
 
 const content = {
 	en: {
-		title: "Quronfula – Articles, Web Stories, Quizzes & Daily Insights",
-		h1: "Latest Articles, Web Stories, Quizzes & Daily Insights from Quronfula",
+		title: "Quronfula – Articles, Web Stories, Quizes & Daily Insights",
+		h1: "Latest Articles, Web Stories, Quizes & Daily Insights from Quronfula",
 
-		p1: "Quronfula is your premier digital platform for the latest articles, web stories, quizzes, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
+		p1: "Quronfula is your premier digital platform for the latest articles, web stories, quizes, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
 
-		p2: "Through meticulously researched articles, interactive quizzes, and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
+		p2: "Through meticulously researched articles, interactive quizes, and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
 
-		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles, web stories, and quizzes. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
+		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles, web stories, and quizes. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
 	},
 
 	ar: {
@@ -390,14 +390,14 @@ let metaObj: MetaObject = generateSeo(title, description, lang, device);
 			/>
 		</section>
 		{
-			quizzes ? (
+			quizes ? (
 				<section>
 					<div style="font-weight:700;">
-						{lang === "ar" ? "أحدث المسابقات" : "Latest Quizzes"}
+						{lang === "ar" ? "أحدث المسابقات" : "Latest Quizes"}
 					</div>
 					<section class="articles-grid">
-						{quizzes?.length ? (
-							quizzes.map((item) => (
+						{quizes?.length ? (
+							quizes.map((item) => (
 								<quiz class="article-card">
 									<a
 										href={`/${langPrefix}quiz/${item.slug}`}
