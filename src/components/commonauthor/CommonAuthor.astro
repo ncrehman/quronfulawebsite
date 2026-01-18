@@ -90,13 +90,9 @@ let jsonLd;
 let canonicalUrl;
   let articles: Array<ArticleResponse> = [];
 if (!author) {
-  // Proper 404 – Astro will render the 404 page
-  // return Astro.redirect("/404", 404);
   Astro.response.status = 404;
 } else {
-  if (author) {
     articles = await getAuthorArticles(lang, author.slug);
-  }
   const baseUrl = await buildLangUrl(lang);
   canonicalUrl = baseUrl + "author/" + author.slug;
 
@@ -135,7 +131,7 @@ if (!author) {
 <SEO
   title={metaObj?.title}
   description={metaObj?.metaDesc}
-  image={author.profileImage}
+  image={author?.profileImage}
   url={canonicalUrl}
   lang={lang}
   canonical={canonicalUrl}
@@ -176,7 +172,7 @@ if (!author) {
         <!-- Social Links -->
         <div class="mt-6 flex justify-center gap-6">
           {
-            author.socialLinks.map((link) => (
+            author.socialLinks && author.socialLinks.map((link) => (
               <a
                 href={link.linkUrl}
                 target="_blank"

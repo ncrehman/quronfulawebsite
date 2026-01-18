@@ -79,16 +79,16 @@ const siteName = metaConfig.siteName[lang];
 const jsonLd = [];
 const decodedCatslug = await checkForDecode(catslug);
 const decodedSubCatSlug = await checkForDecode(slug);
+let articles: Array<ArticleResponse>;
+let metaObj: MetaObject;
+let canonicalUrl: string = "";
+
 let subCategoryObj = await getSubCategory(lang, decodedSubCatSlug);
 if (!subCategoryObj) {
-    subCategoryObj = null;
-}
-const [articles] = await Promise.all([
-    getArticleList(lang, decodedSubCatSlug, limit, offset),
-]);
-let canonicalUrl: string = "";
-if (!!subCategoryObj) {
-    canonicalUrl =
+     Astro.response.status = 404;
+}else{
+ articles = await getArticleList(lang, decodedSubCatSlug, limit, offset);
+ canonicalUrl =
         currentPage === 1
             ? `${baseUrl}category/${subCategoryObj.cat_slug}/${subCategoryObj.slug}`
             : `${baseUrl}category/${subCategoryObj.cat_slug}/${subCategoryObj.slug}?page=${currentPage}`;
@@ -118,7 +118,8 @@ if (!!subCategoryObj) {
     ]);
     jsonLd.push(breadCrumb);
 }
- let metaObj: MetaObject;
+
+
 if (subCategoryObj) {
     const itemListJson = generateItemList({
         name: subCategoryObj.title + " Article Collection",
