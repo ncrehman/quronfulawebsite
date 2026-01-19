@@ -47,13 +47,16 @@
     <meta name="twitter:creator" content="@thestorycircuit" /> -->
     <link rel="canonical" href="{{canonicalUrl}}">
 
+    <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+    <script async custom-element="amp-social-share"
+        src="https://cdn.ampproject.org/v0/amp-social-share-0.1.js"></script>
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-ad" src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"></script>
     <script async custom-element="amp-carousel" src="https://cdn.ampproject.org/v0/amp-carousel-0.2.js"></script>
     <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
     <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
     <script async custom-element="amp-youtube" src="https://cdn.ampproject.org/v0/amp-youtube-0.1.js"></script>
-   
+
     <style amp-boilerplate>
         body {
             -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
@@ -285,6 +288,52 @@
             opacity: 0.9;
         }
 
+        .related-card {
+            padding: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin: 0 12px;
+            overflow: hidden;
+        }
+
+        .related-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Wrapper for overlay positioning */
+        .related-image-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .related-image-wrapper amp-img {
+            border-radius: 12px;
+        }
+
+        /* 🔥 TITLE ON IMAGE */
+        .related-title-overlay {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            padding: 12px 14px;
+
+            background: linear-gradient(to top,
+                    rgba(0, 0, 0, 0.75),
+                    rgba(0, 0, 0, 0));
+
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+
+            box-sizing: border-box;
+        }
+
+
         @media (max-width: 600px) {
             .related-carousel {
                 height: 300px;
@@ -317,11 +366,18 @@
 
         <amp-img class="featured" src="{{featuredImage}}" width="1200" height="675" layout="responsive" alt="{{title}}">
         </amp-img>
-       
+
         <div class="content">
             {{{contentHtml}}}
         </div>
-
+        <p class="heading">
+            <amp-social-share type="twitter" width="45" height="33"></amp-social-share>
+            <amp-social-share type="facebook" width="45" height="33"
+                data-attribution="254325784911610"></amp-social-share>
+            <amp-social-share type="gplus" width="45" height="33"></amp-social-share>
+            <amp-social-share type="email" width="45" height="33"></amp-social-share>
+            <amp-social-share type="pinterest" width="45" height="33"></amp-social-share>
+        </p>
         <!-- Related Articles Carousel (Dynamic) -->
         {{#if relatedArticles.length}}
         <section class="related-section">
@@ -332,10 +388,15 @@
 
                 {{#each relatedArticles}}
                 <div class="related-card">
-                    <a href="/{{langPrefix}}article/{{slug}}/amp">
-                        <amp-img src="{{landScapeBanner}}" width="400" height="225" layout="responsive"
-                            alt="{{title}}"></amp-img>
-                        <div class="related-title">{{title}}</div>
+                    <a href="/{{langPrefix}}article/{{slug}}/amp" class="related-link">
+                        <div class="related-image-wrapper">
+                            <amp-img src="{{landScapeBanner}}" width="400" height="170" layout="responsive"
+                                alt="{{title}}">
+                            </amp-img>
+                            <div class="related-title-overlay">
+                                {{title}}
+                            </div>
+                        </div>
                     </a>
                 </div>
                 {{/each}}
@@ -343,7 +404,24 @@
             </amp-carousel>
         </section>
         {{/if}}
-
+        <amp-analytics type="gtag" data-credentials="include">
+            <script type="application/json">
+    {
+      "vars": {
+        "gtag_id": "G-W9X9YCWY13",
+        "config": {
+          "G-W9X9YCWY13": { "groups": "default" }
+        }
+      },
+      "triggers": {
+        "pageview": {
+          "on": "visible",
+          "request": "pageview"
+        }
+      }
+    }
+  </script>
+        </amp-analytics>
 
     </article>
 
