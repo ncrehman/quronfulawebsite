@@ -1,6 +1,4 @@
 ---
-import { getLangFromPath } from "@lib/postmethodService";
-
 /**
  * FINAL MULTILINGUAL LANGUAGE SWITCHER FOR ASTRO
  * Auto-detects language from URL
@@ -10,20 +8,20 @@ import { getLangFromPath } from "@lib/postmethodService";
 const currentPath = Astro.url.pathname;
 
 // Detect current language based on URL
-const currentLang = getLangFromPath(currentPath);
-const isArabic = currentLang;
+const isHindi = currentPath.startsWith("/en");
 
-// Build SWITCH URL
-// AR → EN: /en + same path
-// EN → AR: remove /en prefix
-const normalizePath = (path) =>
-  path !== "/" ? path.replace(/\/+$/, "") : "/";
+// Normalize path (remove /hi and trailing slash)
+const normalizePath = (path: string) => {
+  const cleaned = path.replace(/^\/en/, "").replace(/\/+$/, "");
+  return cleaned === "" ? "/" : cleaned;
+};
 
-const switchTo = normalizePath(
-  isArabic
-    ? `/en${currentPath}`
-    : currentPath.replace(/^\/en/, "") || "/"
-);
+// Build switch URL
+const switchTo = isHindi
+  ? normalizePath(currentPath)
+  : normalizePath(currentPath) === "/"
+      ? "/en"
+      : `/en${normalizePath(currentPath)}`;
 ---
 
 <style>
@@ -44,5 +42,6 @@ const switchTo = normalizePath(
 </style>
 
 <a href={switchTo} class="lang-switch">
-	{isArabic ? "English" : "العربية"}
+	{isHindi ? "English" : "العربية"}
 </a>
+
