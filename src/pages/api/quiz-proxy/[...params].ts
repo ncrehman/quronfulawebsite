@@ -52,7 +52,7 @@ export const GET: APIRoute = async ({ url, params, request }) => {
   });
 
   const data = await res.json();
-
+console.log('data:'+JSON.stringify(data))
   return new Response(JSON.stringify(data), {
     status: res.status,
     headers: ampHeaders(url, request),
@@ -89,6 +89,8 @@ console.log('enconded2: '+encodedId)
   });
 
   const data = await res.json();
+console.log('post data:'+JSON.stringify(data))
+
 console.log(
   'input ',
   JSON.stringify(data, null, 2)

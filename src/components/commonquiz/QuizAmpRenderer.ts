@@ -169,7 +169,6 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
       <h2 class="quiz-question">${slide.question}</h2>
       <amp-story-interactive-quiz
         id="${slide.id}-${id}"
-        endpoint="${backendEndpoint}"
         class="center"
         prompt-size="medium"
         chip-style="transparent"
