@@ -13,6 +13,16 @@ import { getAppConfig } from "@lib/AppConfig";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
 
+Handlebars.registerHelper("eq", function (a, b) {
+  return a === b;
+});
+
+Handlebars.registerHelper("neq", function (a, b) {
+  return a !== b;
+});
+Handlebars.registerHelper("and", function (a, b) {
+  return a !== b;
+});
 
 async function fetchRelatedData(lang: string, articleId: string): Promise<Array<ArticleResponse> | null> {
 
