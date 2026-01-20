@@ -21,6 +21,7 @@ import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
+import SocialShare from "@components/common/SocialShare.astro";
 const { lang } = Astro.props;
 // Fetch homepage data or articles specific to home page
 const pageParam = Astro.url.searchParams.get("page");
@@ -153,7 +154,54 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
             <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
         </section>
         <section>
-            <h1>{lang === "ar" ? "أحدث القصص" : "Latest Stories"}</h1>
+            <div
+                class="w-full bg-gradient-to-br from-orange-50 to-white rounded-2xl p-8 mb-10 text-center shadow-sm"
+            >
+                <h1
+                    class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4"
+                >
+                    {
+                        lang === "ar"
+                            ? "اكتشف أحدث قصص على الويب: قصص بصرية شائعة وتحديثات"
+                            : "Discover the Latest Web Stories: Trending Visual Stories & Updates"
+                    }
+                </h1>
+
+                <div class="w-20 h-1 bg-orange-500 mx-auto rounded-full mb-6">
+                </div>
+
+                {
+                    lang === "ar" ? (
+                        <p class="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
+                            استعرض مجموعتنا من{" "}
+                            <span class="text-orange-500 font-semibold">
+                                أحدث قصص على الويب
+                            </span>
+                            ، التي تتضمن صورًا جذابة وسردًا ممتعًا في مجالات
+                            الترفيه ونمط الحياة والمزيد. تابع{" "}
+                            <span class="text-orange-500 font-semibold">
+                                أكثر القصص رواجًا
+                            </span>{" "}
+                            وتمتع بمحتوى يثقف، ويلهم، ويسلّي في نفس الوقت.
+                        </p>
+                    ) : (
+                        <p class="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
+                            Explore our collection of{" "}
+                            <span class="text-orange-500 font-semibold">
+                                latest web stories
+                            </span>
+                            , featuring captivating visuals and engaging
+                            narratives across entertainment, lifestyle, and
+                            more. Stay updated with the{" "}
+                            <span class="text-orange-500 font-semibold">
+                                most trending stories
+                            </span>{" "}
+                            and enjoy content that informs, inspires, and
+                            entertains.
+                        </p>
+                    )
+                }
+            </div>
 
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
@@ -175,9 +223,9 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                                         />
                                     </div>
                                     <div class="card-content">
-                                        <p class="section-title">
+                                        <h2 class="section-title">
                                             {item.title}
-                                        </p>
+                                        </h2>
                                     </div>
                                 </a>
                             </article>
@@ -237,7 +285,7 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                 }
             </nav>
         </section>
-
+        <SocialShare title={title} url={canonicalUrl} lang={lang} />
         <style>
             /* ================================
        Pagination

@@ -21,6 +21,7 @@ import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
+import SocialShare from "@components/common/SocialShare.astro";
 const { lang } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -38,7 +39,7 @@ async function getQuizStories(
 
     const request = new RequestModel();
     request.lang = lang;
-   request.limit = limit;
+    request.limit = limit;
     request.offset = offset;
     if (catslug) {
         request.slug = await checkForDecode(catslug);
@@ -76,9 +77,7 @@ const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
 const canonicalUrl =
-    currentPage === 1
-        ? `${baseUrl}quiz`
-        : `${baseUrl}quiz?page=${currentPage}`;
+    currentPage === 1 ? `${baseUrl}quiz` : `${baseUrl}quiz?page=${currentPage}`;
 const siteName = metaConfig.siteName[lang];
 const quizBaseHeading =
     lang === "ar"
@@ -90,18 +89,18 @@ const isPageOne = currentPage === 1;
 const title = isPageOne
     ? quizBaseHeading
     : lang === "ar"
-        ? `${quizBaseHeading} – الصفحة ${currentPage}`
-        : `${quizBaseHeading} – Page ${currentPage}`;
+      ? `${quizBaseHeading} – الصفحة ${currentPage}`
+      : `${quizBaseHeading} – Page ${currentPage}`;
 
 const description = isPageOne
     ? lang === "ar"
         ? "اختبر معلوماتك مع أحدث الاختبارات على كورونفولا. استكشف اختبارات ممتعة وتفاعلية في مجالات أسلوب الحياة والإبداع وغيرها."
         : "Play the latest quizes on Quronfula and test your knowledge. Explore fun, engaging quizes across lifestyle, creativity, and more."
     : lang === "ar"
-        ? `اكتشف المزيد من الاختبارات الممتعة على كورونفولا. تصفح الصفحة ${currentPage} من مجموعة الاختبارات وتحدى نفسك بأسئلة جديدة.`
-        : `Explore more fun and engaging quizes on Quronfula. Browse page ${currentPage} of our quiz collection and challenge yourself.`;
+      ? `اكتشف المزيد من الاختبارات الممتعة على كورونفولا. تصفح الصفحة ${currentPage} من مجموعة الاختبارات وتحدى نفسك بأسئلة جديدة.`
+      : `Explore more fun and engaging quizes on Quronfula. Browse page ${currentPage} of our quiz collection and challenge yourself.`;
 
-    const jsonLd = [];
+const jsonLd = [];
 
 const itemListJson = generateItemList({
     name: title,
@@ -153,10 +152,84 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
 <Layout>
     <main>
         <section>
-			 <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
-		</section>
+            <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
+        </section>
         <section>
-            <h1>{lang === "ar" ? "أحدث مسابقة" : "Latest Quiz"}</h1>
+            <div
+                class="w-full bg-gradient-to-br from-emerald-50 via-white to-teal-50 rounded-2xl p-8 mb-10 text-center shadow-sm"
+            >
+                <h1
+                    class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4"
+                >
+                    {
+                        lang === "ar"
+                            ? "أحدث المسابقات التفاعلية لتنمية المعرفة واختبار الذكاء"
+                            : "Latest Interactive Quizzes to Boost Knowledge & Test Your Skills"
+                    }
+                </h1>
+
+                <div class="w-24 h-1 bg-emerald-500 mx-auto rounded-full mb-6">
+                </div>
+
+                {
+                    lang === "ar" ? (
+                        <>
+                            <p class="text-lg md:text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto mb-4 direction-rtl">
+                                مرحبًا بك في قسم{" "}
+                                <span class="text-emerald-600 font-semibold">
+                                    أحدث المسابقات
+                                </span>{" "}
+                                على Quronfula، حيث نجمع بين المتعة والمعرفة في
+                                تجربة تفاعلية فريدة. ستجد هنا مجموعة متنوعة من
+                                المسابقات المصممة لاختبار معلوماتك وتنمية
+                                مهاراتك في مجالات متعددة مثل الثقافة العامة،
+                                التاريخ، العلوم، الرياضة، والأحداث الجارية.
+                            </p>
+
+                            <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto direction-rtl">
+                                نحرص في Quronfula على تقديم مسابقات تعليمية
+                                ممتعة تساعدك على تطوير التفكير النقدي وزيادة
+                                مخزونك المعرفي بطريقة بسيطة ومسلية. سواء كنت
+                                تبحث عن تحدٍ سريع أو ترغب في قضاء وقت ممتع مع
+                                الأصدقاء، فإن{" "}
+                                <span class="text-emerald-600 font-semibold">
+                                    أحدث المسابقات
+                                </span>{" "}
+                                تمنحك الفرصة للتعلم، التفاعل، وتحقيق أفضل
+                                النتائج. شارك الآن واكتشف مدى قوة معرفتك.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p class="text-lg md:text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto mb-4">
+                                Welcome to the{" "}
+                                <span class="text-emerald-600 font-semibold">
+                                    latest quiz
+                                </span>{" "}
+                                section on Quronfula, where learning becomes
+                                interactive and exciting. Here you’ll find
+                                quizzes designed to test your knowledge,
+                                challenge your thinking, and make learning a fun
+                                experience across various topics.
+                            </p>
+
+                            <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto">
+                                Our{" "}
+                                <span class="text-emerald-600 font-semibold">
+                                    latest quiz
+                                </span>{" "}
+                                collection is perfect for students, quiz lovers,
+                                and curious minds who enjoy discovering new
+                                information. Each quiz helps improve memory,
+                                sharpen skills, and expand understanding in an
+                                engaging way. Take part regularly, track your
+                                progress, and turn every quiz into a rewarding
+                                learning journey.
+                            </p>
+                        </>
+                    )
+                }
+            </div>
 
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
@@ -180,9 +253,9 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                                     </div>
 
                                     <div class="card-content">
-                                        <p class="section-title">
+                                        <h2 class="section-title">
                                             {item.title}
-                                        </p>
+                                        </h2>
                                     </div>
                                 </a>
                             </article>
@@ -242,9 +315,9 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                 }
             </nav>
         </section>
-
+        <SocialShare title={title} url={canonicalUrl} lang={lang} />
         <style>
-           /* ================================
+            /* ================================
        Pagination
     ================================ */
             .pagination {

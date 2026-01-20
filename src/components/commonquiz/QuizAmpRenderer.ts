@@ -25,10 +25,15 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   const baseUrl = lang !== "ar" ? `${apiServer.websiteUrl}${lang}/` : apiServer.websiteUrl;
   const canonicalUrl = `${baseUrl}quiz/${quiz.slug}`.replace(/\/$/, "");
   const website = apiServer.websiteUrl.replace(/\/$/, "");
+  // const alternatesLanguages = {
+  //   ar: `${website}/quiz/${quiz.slug}`,
+  //   en: `${website}/en/quiz/${quiz.slug}`
+  // };
   const alternatesLanguages = {
-    ar: `${website}/quiz/${quiz.slug}`,
-    en: `${website}/en/quiz/${quiz.slug}`
-  };
+  "x-default": canonicalUrl,
+  ar: canonicalUrl,
+  en: `${website}/en/quiz/${quiz.slug}`,
+};
   const hreflangLinks = Object.entries(alternatesLanguages)
     .map(
       ([lang, url]) =>

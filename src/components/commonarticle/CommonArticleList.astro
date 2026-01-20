@@ -20,6 +20,7 @@ import { Image } from "astro:assets";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
+import SocialShare from "@components/common/SocialShare.astro";
 const { lang } = Astro.props;
 const pageParam = Astro.url.searchParams.get("page");
 const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
@@ -61,27 +62,25 @@ const siteName = metaConfig.siteName[lang];
 const isPageOne = currentPage === 1;
 
 const pageLabel =
-  lang === "ar"
-    ? `الصفحة ${currentPage}`
-    : `Page ${currentPage}`;
+    lang === "ar" ? `الصفحة ${currentPage}` : `Page ${currentPage}`;
 
 const title = isPageOne
-  ? lang === "ar"
-      ? "مقالات حديثة عن الثقافة والرياضة والأخبار | Quronfula"
-      : "Latest Articles on Culture, Sports & News | Quronfula"
-  : lang === "ar"
+    ? lang === "ar"
+        ? "مقالات حديثة عن الثقافة والرياضة والأخبار | Quronfula"
+        : "Latest Articles on Culture, Sports & News | Quronfula"
+    : lang === "ar"
       ? `مقالات حديثة عن الثقافة والرياضة والأخبار – ${pageLabel} | Quronfula`
       : `Latest Articles on Culture, Sports & News – ${pageLabel} | Quronfula`;
 
 const description = isPageOne
-  ? lang === "ar"
-      ? "تصفح أحدث المقالات عن الثقافة والرياضة والأخبار في كورونفولا. مجموعة مختارة من القصص المتعمقة والرؤى الحديثة يتم تحديثها باستمرار."
-      : "Explore the latest articles on culture, sports, and news at Quronfula. A curated collection of in-depth stories and fresh insights, updated regularly."
-  : lang === "ar"
+    ? lang === "ar"
+        ? "تصفح أحدث المقالات عن الثقافة والرياضة والأخبار في كورونفولا. مجموعة مختارة من القصص المتعمقة والرؤى الحديثة يتم تحديثها باستمرار."
+        : "Explore the latest articles on culture, sports, and news at Quronfula. A curated collection of in-depth stories and fresh insights, updated regularly."
+    : lang === "ar"
       ? `اكتشف المزيد من المقالات عن الثقافة والرياضة والأخبار في كورونفولا. تابع التصفح في ${pageLabel}.`
       : `Discover more articles on culture, sports, and news at Quronfula. Continue browsing ${pageLabel}.`;
 
-    const jsonLd = [];
+const jsonLd = [];
 
 const itemListJson = generateItemList({
     name: title,
@@ -114,16 +113,10 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 jsonLd.push(breadCrumb);
 jsonLd.push(itemListJson);
 
-
 const ua = Astro.request.headers.get("user-agent");
 const device = detectDevice(ua);
 const language: any = lang;
-let metaObj: MetaObject = generateSeo(
-    title,
-    description,
-    language,
-    device,
-);
+let metaObj: MetaObject = generateSeo(title, description, language, device);
 ---
 
 <SEO
@@ -140,16 +133,79 @@ let metaObj: MetaObject = generateSeo(
 <Layout>
     <main>
         <section>
-			 <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
-		</section>
+            <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
+        </section>
         <section>
-            <h1>
+            <div
+                class="w-full bg-gradient-to-br from-amber-50 via-white to-orange-50 rounded-2xl p-8 mb-10 text-center shadow-sm"
+            >
+                <h1
+                    class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4"
+                >
+                    {
+                        lang === "ar"
+                            ? "مقالات جديدة عن الثقافة والرياضة والأخبار"
+                            : "Latest Articles on Culture, Sports & News"
+                    }
+                </h1>
+
+                <div class="w-24 h-1 bg-amber-500 mx-auto rounded-full mb-6">
+                </div>
+
                 {
-                    lang === "ar"
-                        ? "مقالات جديدة عن الثقافة والرياضة والأخبار"
-                        : "Latest Articles on Culture, Sports & News"
+                    lang === "ar" ? (
+                        <>
+                            <p class="text-lg md:text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto mb-4 direction-rtl">
+                                استكشف مجموعتنا من{" "}
+                                <span class="text-amber-600 font-semibold">
+                                    أحدث المقالات عن الثقافة والرياضة والأخبار
+                                </span>
+                                ، حيث نغطي مواضيع متنوعة تهم القارئ العربي، من
+                                التحليل الثقافي العميق إلى أحدث أخبار الرياضة
+                                والتطورات الجارية في العالم. نحرص على تقديم
+                                محتوى موثوق، غني بالمعلومات، وسهل القراءة ليمنحك
+                                تجربة معرفية ممتعة ومفيدة.
+                            </p>
+
+                            <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto direction-rtl">
+                                في Quronfula، نؤمن بأن المعرفة حق للجميع، لذلك
+                                نقدم مقالات تجمع بين الدقة الصحفية والأسلوب
+                                السلس. سواء كنت تبحث عن فهم أعمق للثقافة، أو
+                                متابعة أحداث الرياضة، أو الاطلاع على آخر الأخبار
+                                المحلية والعالمية، ستجد هنا محتوى يساعدك على
+                                البقاء مطلعًا وواعيًا بما يحدث من حولك. تابع
+                                مقالاتنا بانتظام لتوسيع معرفتك واكتساب رؤى
+                                جديدة.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p class="text-lg md:text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto mb-4">
+                                Explore our collection of{" "}
+                                <span class="text-amber-600 font-semibold">
+                                    latest articles on culture, sports & news
+                                </span>
+                                , where we bring you thoughtful insights,
+                                reliable reporting, and engaging perspectives.
+                                Our goal is to cover topics that matter, from
+                                cultural trends and lifestyle discussions to
+                                sports highlights and current global events.
+                            </p>
+
+                            <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto">
+                                At Quronfula, we believe quality content
+                                empowers readers. That’s why our articles are
+                                carefully researched, easy to read, and designed
+                                to keep you informed and inspired. Whether you
+                                want to explore culture, follow sports, or stay
+                                updated with the latest news, this page is your
+                                gateway to meaningful and trustworthy content
+                                that adds value to your daily reading.
+                            </p>
+                        </>
+                    )
                 }
-            </h1>
+            </div>
 
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
@@ -171,9 +227,9 @@ let metaObj: MetaObject = generateSeo(
                                         />
                                     </div>
                                     <div class="card-content">
-                                        <p class="section-title">
+                                        <h2 class="section-title">
                                             {item.title}
-                                        </p>
+                                        </h2>
                                     </div>
                                 </a>
                             </article>
@@ -233,9 +289,9 @@ let metaObj: MetaObject = generateSeo(
                 }
             </nav>
         </section>
-
+        <SocialShare title={title} url={canonicalUrl} lang={lang} />
         <style>
-           /* ================================
+            /* ================================
        Pagination
     ================================ */
             .pagination {
