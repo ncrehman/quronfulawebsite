@@ -203,8 +203,8 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
     contentHtml: ampContentHtml, // already sanitized HTML
     featuredImage: article.landScapeBanner,
     relatedArticles: relatedArticle,
-    jsonLd: JSON.stringify(jsonLd),
-    faqJsonLD: JSON.stringify(faqSchema),
+    jsonLd: jsonLd ? JSON.stringify(jsonLd) : undefined,
+    faqJsonLD: faqSchema ? JSON.stringify(faqSchema) : undefined,
     langPrefix: langPrefix,
     // hrefData: alternatesLanguagesAMP,
     author: article.author_name,

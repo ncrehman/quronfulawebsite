@@ -349,14 +349,17 @@
         }
     </style>
 
-    <script type="application/ld+json">
-    {{{jsonLd}}}
-  </script>
-    {{#if faqJsonLD}}
-    <script type="application/ld+json">
-    {{{faqJsonLD}}}
-  </script>
+     {{#if (and jsonLd (neq jsonLd "null"))}}
+        <script type="application/ld+json">
+            {{{jsonLd}}}
+        </script>
     {{/if}}
+  {{#if (and faqJsonLD (neq faqJsonLD "null"))}}
+    <script type="application/ld+json">
+        {{{faqJsonLD}}}
+    </script>
+    {{/if}}
+
 </head>
 
 <body>
