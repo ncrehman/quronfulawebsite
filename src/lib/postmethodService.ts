@@ -249,20 +249,40 @@ export function detectDevice(userAgent: string | null): DeviceType {
 }
 
 export function convertIframeToAmpIframe(html: string): string {
-  return html.replace(
-    /<iframe([^>]*)src="([^"]+)"([^>]*)><\/iframe>/gi,
-    (match, before, src, after) => {
+  // YouTube → amp-youtube
+  // First convert YouTube iframes to amp-youtube
+  html = html.replace(
+    /<iframe[\s\S]*?src=["']https?:\/\/(www\.)?youtube\.com\/embed\/([^"'?]+)[^"']*["'][\s\S]*?<\/iframe>/gi,
+    (_match, _domain, videoId) => {
+      console.log('videoId: '+videoId)
+      console.log('_domain: '+_domain)
+      console.log('_match: '+_match)
       return `
-<amp-iframe 
+<amp-youtube
+  data-videoid="${videoId}"
+  layout="responsive"
+  width="16"
+  height="9">
+</amp-youtube>`;
+    }
+  );
+
+  // Then convert all remaining iframes to amp-iframe
+  html = html.replace(
+    /<iframe[\s\S]*?src=["']([^"']+)["'][\s\S]*?<\/iframe>/gi,
+    (_match, src) => {
+      return `
+<amp-iframe
   src="${src}"
   layout="responsive"
   width="16"
   height="9"
   sandbox="allow-scripts allow-same-origin allow-popups">
-</amp-iframe>
-`;
+</amp-iframe>`;
     }
   );
+
+  return html;
 }
 
 export function cleanHtmlString(input: string): string {

@@ -153,8 +153,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   keywords.push(article.cat_name);
   keywords.push(article.sub_catTitle);
 
-  const cleanedHtml = cleanHtmlString(article.description);
-  const blocks = splitHtmlIntoBlocks(cleanedHtml);
+  const blocks = splitHtmlIntoBlocks(cleanHtml);
   const blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
 
 
