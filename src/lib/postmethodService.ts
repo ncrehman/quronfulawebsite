@@ -248,17 +248,18 @@ export function detectDevice(userAgent: string | null): DeviceType {
     : "desktop";
 }
 
-export function convertIframeToAmp(html: string): string {
+export function convertIframeToAmpIframe(html: string): string {
   return html.replace(
-    /<iframe[^>]*src="https?:\/\/www\.youtube\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>/gi,
-    (match, videoId) => {
+    /<iframe([^>]*)src="([^"]+)"([^>]*)><\/iframe>/gi,
+    (match, before, src, after) => {
       return `
-<amp-youtube
-  data-videoid="${videoId}"
+<amp-iframe 
+  src="${src}"
   layout="responsive"
   width="16"
-  height="9">
-</amp-youtube>
+  height="9"
+  sandbox="allow-scripts allow-same-origin allow-popups">
+</amp-iframe>
 `;
     }
   );
