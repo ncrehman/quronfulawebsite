@@ -254,9 +254,6 @@ export function convertIframeToAmpIframe(html: string): string {
   html = html.replace(
     /<iframe[\s\S]*?src=["']https?:\/\/(www\.)?youtube\.com\/embed\/([^"'?]+)[^"']*["'][\s\S]*?<\/iframe>/gi,
     (_match, _domain, videoId) => {
-      console.log('videoId: '+videoId)
-      console.log('_domain: '+_domain)
-      console.log('_match: '+_match)
       return `
 <amp-youtube
   data-videoid="${videoId}"
