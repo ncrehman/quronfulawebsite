@@ -11,6 +11,7 @@ export class WebStoryResponse {
     public keywords: string;
     public likeCounts: number = 0;
     public viewCounts: number = 0;
+    public outBoundLink: string;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;

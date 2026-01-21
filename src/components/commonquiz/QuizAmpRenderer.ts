@@ -230,8 +230,40 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 `;
   }
 
+   function introPage(quiz: QuizStoryResponse) {
+    if (quiz.intro) {
+      const [c1, c2] = gradients[gradients.length - 1];
+      const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
+
+      const introBlocks = quiz.intro.map(block => `
+    <h2>${block.title}</h2>
+    <p>${block.text}</p>
+  `).join(`
+    <div class="divider"></div>
+  `);
+
+      return `
+<amp-story-page id="intro-page">
+  <amp-story-grid-layer template="fill">
+    <amp-img src="${bgImage}" layout="fill" object-fit="cover" alt="${quiz.title} intro"></amp-img>
+  </amp-story-grid-layer>
+
+  <amp-story-grid-layer template="fill" class="intro-center">
+    <div class="intro-card">
+      ${introBlocks}
+    </div>
+  </amp-story-grid-layer>
+</amp-story-page>
+`;
+    } else {
+      return '';
+    }
+
+  }
+
+
   const commonBg = `/api/gradient?c1=${encodeURIComponent('#FF7E5F')}&c2=${encodeURIComponent('#FEB47B')}`;
-  const allPages = firstPage + slideHtml + generateResultPage(commonBg, quiz.result);
+  const allPages = firstPage +introPage(quiz)+ slideHtml + generateResultPage(commonBg, quiz.result);
 
   const templatePath = path.join(process.cwd(), "src/components/commonquiz/quiz.html");
   const templateSource = fs.readFileSync(templatePath, "utf-8");

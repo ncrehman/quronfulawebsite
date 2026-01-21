@@ -1,8 +1,10 @@
 import { QuizSlide } from './QuizSlide';
+import { QuizIntro } from './QuizIntro';
 
 export class JsonDataQuizFile {
     public title: string;
     public slides: Array<QuizSlide>;
+    public intro: Array<QuizIntro>;
     public metaTitle: string;
     public cta: string;
     public metaDescription: string;

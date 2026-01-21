@@ -1,3 +1,4 @@
+import { QuizIntro } from './QuizIntro';
 import { QuizSlide } from './QuizSlide';
 import { QuizResultMeterResponse } from './QuizResultMeterResponse';
 import { RelatedQuizStoryResponse } from './RelatedQuizStoryResponse';
@@ -9,6 +10,7 @@ export class QuizStoryResponse {
     public metaDescription: string;
     public lang: string;
     public slug: string;
+    public intro: Array<QuizIntro>;
     public keywords: string;
     public likeCounts: number = 0;
     public viewCounts: number = 0;

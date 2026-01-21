@@ -1,3 +1,4 @@
+import { QuizIntro } from '../responsemodel/QuizIntro';
 import { QuizSlide } from '../responsemodel/QuizSlide';
 import { QuizResultMeter } from '../responsemodel/QuizResultMeter';
 import { SubCategory } from './SubCategory';
@@ -27,6 +28,8 @@ export class QuizStory {
     public image: string;
     public en_imageAlt: string;
     public secondary_imageAlt: string;
+    public en_intro: Array<QuizIntro>;
+    public secondary_intro: Array<QuizIntro>;
     public en_slides: Array<QuizSlide>;
     public secondary_slides: Array<QuizSlide>;
     public resultMeter: Array<QuizResultMeter>;
