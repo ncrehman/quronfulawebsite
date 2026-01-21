@@ -57,6 +57,7 @@
     <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
     <script async custom-element="amp-youtube" src="https://cdn.ampproject.org/v0/amp-youtube-0.1.js"></script>
 
+    <script async custom-element="amp-iframe" src="https://cdn.ampproject.org/v0/amp-iframe-0.1.js"></script>
     <style amp-boilerplate>
         body {
             -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
@@ -349,12 +350,12 @@
         }
     </style>
 
-     {{#if (and jsonLd (neq jsonLd "null"))}}
-        <script type="application/ld+json">
+    {{#if (and jsonLd (neq jsonLd "null"))}}
+    <script type="application/ld+json">
             {{{jsonLd}}}
         </script>
     {{/if}}
-  {{#if (and faqJsonLD (neq faqJsonLD "null"))}}
+    {{#if (and faqJsonLD (neq faqJsonLD "null"))}}
     <script type="application/ld+json">
         {{{faqJsonLD}}}
     </script>

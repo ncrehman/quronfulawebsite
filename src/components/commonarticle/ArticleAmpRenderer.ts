@@ -8,7 +8,7 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import type { FeedContentResponse } from "@lib/pojo/responsemodel/FeedContentResponse";
 import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
-import { apiCalls, buildLangUrl, checkSupportedLang, cleanHtmlString, generateFAQJsonLd, getLangPrefix, insertAdsBetweenBlocks, splitHtmlIntoBlocks } from "@lib/postmethodService";
+import { apiCalls, buildLangUrl, checkSupportedLang, cleanHtmlString, convertIframeToAmp, generateFAQJsonLd, getLangPrefix, insertAdsBetweenBlocks, splitHtmlIntoBlocks } from "@lib/postmethodService";
 import { getAppConfig } from "@lib/AppConfig";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
@@ -58,7 +58,8 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   lang = await checkSupportedLang(lang);
   const baseUrl = await buildLangUrl(lang);
   const langPrefix = await getLangPrefix(lang);
-  const cleanHtml = cleanHtmlString(article.description);
+  let cleanHtml = cleanHtmlString(article.description);
+  cleanHtml = convertIframeToAmp(cleanHtml);
   let metaObj: MetaObject = generateSeo(article.title,
     cleanHtml)
   const canonicalUrl = `${baseUrl}article/${article.slug}`.replace(/\/$/, "");

@@ -248,6 +248,22 @@ export function detectDevice(userAgent: string | null): DeviceType {
     : "desktop";
 }
 
+export function convertIframeToAmp(html: string): string {
+  return html.replace(
+    /<iframe[^>]*src="https?:\/\/www\.youtube\.com\/embed\/([^"?]+)[^"]*"[^>]*><\/iframe>/gi,
+    (match, videoId) => {
+      return `
+<amp-youtube
+  data-videoid="${videoId}"
+  layout="responsive"
+  width="16"
+  height="9">
+</amp-youtube>
+`;
+    }
+  );
+}
+
 export function cleanHtmlString(input: string): string {
   if (!input) return '';
 
