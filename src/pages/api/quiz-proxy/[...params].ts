@@ -52,7 +52,6 @@ export const GET: APIRoute = async ({ url, params, request }) => {
   });
 
   const data = await res.json();
-console.log('data:'+JSON.stringify(data))
   return new Response(JSON.stringify(data), {
     status: res.status,
     headers: ampHeaders(url, request),
@@ -65,7 +64,6 @@ console.log('data:'+JSON.stringify(data))
  */
 export const POST: APIRoute = async ({ url, params, request }) => {
   const [encodedId, vote] = params.params ?? [];
-console.log('enconded2: '+encodedId)
 
   if (!encodedId || !vote) {
     return new Response(
@@ -89,12 +87,7 @@ console.log('enconded2: '+encodedId)
   });
 
   const data = await res.json();
-console.log('post data:'+JSON.stringify(data))
 
-console.log(
-  'input ',
-  JSON.stringify(data, null, 2)
-);
   return new Response(JSON.stringify(data), {
     status: res.status,
     headers: ampHeaders(url,request),
