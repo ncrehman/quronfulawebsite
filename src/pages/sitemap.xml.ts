@@ -70,9 +70,9 @@ const staticPagesXml = STATIC_PAGES.flatMap(page =>
   LANGUAGES.map(l => {
     const loc = buildUrl(l, page.path);
 
-    const hreflangs = LANGUAGES.map(
-      x => `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(x, page.path)}" />`
-    ).join("\n");
+    // const hreflangs = LANGUAGES.map(
+    //   x => `    <xhtml:link rel="alternate" hreflang="${x}" href="${buildUrl(x, page.path)}" />`
+    // ).join("\n");
 
     return `
   <url>
@@ -80,7 +80,6 @@ const staticPagesXml = STATIC_PAGES.flatMap(page =>
     <lastmod>${now}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
-${hreflangs}
   </url>`;
   })
 ).join("");
@@ -88,30 +87,19 @@ ${hreflangs}
   /* ---------------------------------
      DYNAMIC MULTI-LANGUAGE CONTENT
   ---------------------------------- */
-  const dynamicUrlsXml = items
-    .flatMap(item =>
-      item.hrefLangs
-        .filter(h => h.lang !== "x-default")
-        .map(h => {
-          const lastmod = new Date(item.lastModified).toISOString();
+ const dynamicUrlsXml = items
+  .map(item => {
+    const lastmod = new Date(item.lastModified).toISOString();
 
-          const links = item.hrefLangs
-            .map(
-              x => `    <xhtml:link rel="alternate" hreflang="${x.lang}" href="${x.url.replace(/\/$/, "")}" />`
-            )
-            .join("\n");
-
-          return `
+    return `
   <url>
-    <loc>${h.url.replace(/\/$/, "")}</loc>
+    <loc>${item.url.replace(/\/$/, "")}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${item.changeFreq || "weekly"}</changefreq>
     <priority>${item.priority || "0.8"}</priority>
-${links}
   </url>`;
-        })
-    )
-    .join("");
+  })
+  .join("");
 
   /* ---------------------------------
      FINAL XML

@@ -29,6 +29,7 @@ async function loadAppConfig(): Promise<AppConfigModel> {
 
   if (cfg.runLocalService && isLocal) {
     cfg.webServicesUrl = cfg.localWebServicesUrl;
+    cfg.isConsole = true;
   } else {
     cfg.webServicesUrl = cfg.webServicesUrl;
     cfg.isConsole = false;

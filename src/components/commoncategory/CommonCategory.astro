@@ -53,8 +53,8 @@ async function getCategory(
         );
         if (response.status !== 0) return null;
         const resp: ResponseModel = response.data;
-        // return resp.statusCode === 0 ? resp.respObject : null;
-        return  null;
+        return resp.statusCode === 0 ? resp.respObject : null;
+        // return  null;
     } catch (error) {
         console.error("Error fetching category:", error);
         return null;

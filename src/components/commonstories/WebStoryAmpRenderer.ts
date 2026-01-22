@@ -32,17 +32,17 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
   //   ar: `${website}/stories/${story.slug}`,
   //   en: `${website}/en/stories/${story.slug}`
   // };
-  const alternatesLanguages = {
-  "x-default": canonicalUrl,
-  ar: canonicalUrl,
-  en: `${website}/en/stories/${story.slug}`,
-};
-  const hreflangLinks = Object.entries(alternatesLanguages)
-    .map(
-      ([lang, url]) =>
-        `<link rel="alternate" hreflang="${lang}" href="${url}" />`
-    )
-    .join("\n");
+//   const alternatesLanguages = {
+//   "x-default": `${website}/stories/${story.slug}`,
+//   ar: `${website}/stories/${story.slug}`,
+//   en: `${website}/en/stories/${story.slug}`,
+// };
+  // const hreflangLinks = Object.entries(alternatesLanguages)
+  //   .map(
+  //     ([lang, url]) =>
+  //       `<link rel="alternate" hreflang="${lang}" href="${url}" />`
+  //   )
+  //   .join("\n");
   // let ampRef = '';
   // if (story.referenceLink != null) {
   //   if (story.referenceLink.includes('/article/')) {
@@ -292,7 +292,7 @@ ${story.cta && story.cta.trim() !== "" ? `
     metaTitle: story.metaTitle || story.title,
     metaDescription: story.metaDescription,
     canonicalUrl,
-    hreflangLinks,
+    // hreflangLinks,
     ogUrl: canonicalUrl,
     rssUrl,
     storyTitle: story.title,

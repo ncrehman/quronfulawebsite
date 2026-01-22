@@ -1,7 +1,9 @@
 ---
 import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 import { Image } from "astro:assets";
-
+import {
+    detectDevice,
+} from "@lib/postmethodService";
 export interface Props {
     items: Array<ArticleResponse>;
         lang:string;
@@ -9,6 +11,9 @@ export interface Props {
 
 const { items = [] ,lang} = Astro.props;
 if (!items.length) return null;
+
+const ua = Astro.request.headers.get("user-agent");
+const device = detectDevice(ua);
 
 ---
 <section class="mt-10">
@@ -21,7 +26,7 @@ if (!items.length) return null;
   </h3>
 
   <!-- ================= MOBILE ONLY (FULL BLEED) ================= -->
-  <div class="block md:hidden">
+   {device==='mobile'?(  <div >
     <div class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
       <div class="relative overflow-x-hidden">
         <div
@@ -61,8 +66,8 @@ if (!items.length) return null;
     </div>
   </div>
 
-  <!-- ================= DESKTOP ONLY (CONSTRAINED) ================= -->
-  <div class="hidden md:block relative">
+):(
+   <div class="relative">
     <!-- arrows -->
     <button
       class="absolute left-0 top-1/2 -translate-y-1/2 z-10
@@ -120,6 +125,7 @@ if (!items.length) return null;
       ))}
     </div>
   </div>
+)}
 
   <!-- JS -->
   <script>

@@ -29,17 +29,17 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   //   ar: `${website}/quiz/${quiz.slug}`,
   //   en: `${website}/en/quiz/${quiz.slug}`
   // };
-  const alternatesLanguages = {
-  "x-default": canonicalUrl,
-  ar: canonicalUrl,
-  en: `${website}/en/quiz/${quiz.slug}`,
-};
-  const hreflangLinks = Object.entries(alternatesLanguages)
-    .map(
-      ([lang, url]) =>
-        `<link rel="alternate" hreflang="${lang}" href="${url}" />`
-    )
-    .join("\n");
+//   const alternatesLanguages = {
+//   "x-default": `${website}/quiz/${quiz.slug}`,
+//   ar: `${website}/quiz/${quiz.slug}`,
+//   en: `${website}/en/quiz/${quiz.slug}`,
+// };
+//   const hreflangLinks = Object.entries(alternatesLanguages)
+//     .map(
+//       ([lang, url]) =>
+//         `<link rel="alternate" hreflang="${lang}" href="${url}" />`
+//     )
+//     .join("\n");
   const rssUrl = `${baseUrl}quiz/rss.xml`;
   const siteName = metaConfig.siteName[lang];
   const description = metaConfig.description[lang];
@@ -277,7 +277,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     metaTitle: quiz.metaTitle || quiz.title,
     metaDescription: quiz.metaDescription,
     canonicalUrl,
-    hreflangLinks,
+    // hreflangLinks,
     rssUrl,
     storyTitle: quiz.title,
     posterImage: quiz.bannerImage,

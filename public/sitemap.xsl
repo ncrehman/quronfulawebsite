@@ -23,7 +23,7 @@
           <tr>
             <th>URL</th>
             <th>Last Modified</th>
-            <th>Hreflang</th>
+            <!-- <th>Hreflang</th> -->
           </tr>
 
           <xsl:for-each select="sitemap:urlset/sitemap:url">
@@ -36,14 +36,14 @@
                 <xsl:value-of select="sitemap:lastmod"/>
               </td>
 
-              <td>
+              <!-- <td>
                 <xsl:for-each select="xhtml:link">
                   <div>
                     <strong><xsl:value-of select="@hreflang"/></strong> :
                     <xsl:value-of select="@href"/>
                   </div>
                 </xsl:for-each>
-              </td>
+              </td> -->
             </tr>
           </xsl:for-each>
 
