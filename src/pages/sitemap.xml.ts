@@ -87,17 +87,25 @@ const staticPagesXml = STATIC_PAGES.flatMap(page =>
   /* ---------------------------------
      DYNAMIC MULTI-LANGUAGE CONTENT
   ---------------------------------- */
- const dynamicUrlsXml = items
-  .map(item => {
+   const dynamicUrlsXml = items.flatMap(item => {
     const lastmod = new Date(item.lastModified).toISOString();
+    const baseUrl = item.url.replace(/\/$/, "");
 
-    return `
+    const urls = [
+      baseUrl, // default (ar)
+      baseUrl.replace(
+        "https://www.quronfula.com/",
+        "https://www.quronfula.com/en/"
+      )
+    ];
+
+    return urls.map(url => `
   <url>
-    <loc>${item.url.replace(/\/$/, "")}</loc>
+    <loc>${url}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${item.changeFreq || "weekly"}</changefreq>
     <priority>${item.priority || "0.8"}</priority>
-  </url>`;
+  </url>`);
   })
   .join("");
 
