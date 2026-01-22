@@ -115,11 +115,18 @@ if (!author) {
     },
   };
   jsonLd = [authorJson];
+const safeName = author.fullName?.trim() || "";
+
+const authorTitle =
+  lang === "ar"
+    ? `${safeName} – كاتب وباحث في القضايا المعاصرة`
+    : `${safeName} – Writer & Social Researcher`;
+
   const ua = Astro.request.headers.get("user-agent");
   const device = detectDevice(ua);
   const language: any = lang;
   metaObj = generateSeo(
-    author.fullName + "- author",
+    authorTitle,
     author.bio,
     language,
     device,
