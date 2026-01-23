@@ -7,6 +7,7 @@ export class FeedContentResponse {
     public title: string;
     public subTitle: string;
     public description: string;
+    public htmlData: string;
     public metaTitle: string;
     public metaDescription: string;
     public lang: string;

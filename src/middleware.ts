@@ -1,17 +1,32 @@
 import { defineMiddleware } from "astro/middleware";
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const url = context.url;
-  const pathname = url.pathname;
+  const url = new URL(context.request.url);
+  let pathname = url.pathname;
 
-  // Ignore files like .css, .js, .png, .xml, etc.
+  // Ignore static assets (.css, .js, images, sitemap, etc.)
   if (pathname.includes(".")) {
     return next();
   }
-  // If missing trailing slash → internally rewrite
+
+  // 1️⃣ Normalize multiple slashes → single slash
+  pathname = pathname.replace(/\/{2,}/g, "/");
+
+  // 2️⃣ Ensure trailing slash (optional, but you already want this)
   if (!pathname.endsWith("/")) {
-    url.pathname = pathname + "/";
-    return next(url); // INTERNAL rewrite → 200 OK
+    pathname += "/";
+  }
+
+  // 3️⃣ If normalized path differs → redirect (SEO-safe)
+  if (pathname !== url.pathname) {
+    url.pathname = pathname;
+
+    return new Response(null, {
+      status: 301, // permanent redirect (GOOD for SEO)
+      headers: {
+        Location: url.toString(),
+      },
+    });
   }
 
   return next();

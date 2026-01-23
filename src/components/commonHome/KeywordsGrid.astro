@@ -18,7 +18,7 @@ const { items, lang } = Astro.props;
             <article class="keyword-card" style={`--delay: ${index * 0.1}s`}>
                 <div class="card-gradient"></div>
                 <div class="card-inner">
-                    <strong class="keyword-title">{item.title}</strong>
+                    <label class="keyword-title">{item.title}</label>
                     <p class="keyword-desc">{item.description}</p>
                     <div class="card-arrow">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

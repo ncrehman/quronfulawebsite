@@ -282,7 +282,208 @@ export function convertIframeToAmpIframe(html: string): string {
   return html;
 }
 
+
 export function cleanHtmlString(input: string): string {
+  if (!input) return '';
+
+  let cleanedHtml = input
+    // === Your Existing Rules (UNCHANGED) ===
+    .replace(/(?<!<br\/?>)\s*(?=<p>\s*<strong>(?:(?!<\/strong>.*<strong>).)*<\/strong>\s*<\/p>)/g, '<br/>')
+    .replace(/<p[^>]*>\s*<\/p>/g, '<br/>')
+    .replace(/(<br\s*\/?>\s*){2,}/g, '<br/>')
+    .replace(/<(?!iframe)(\w+)([^>]*) class="[^"]*"/gi, '<$1$2')
+    .replace(/<(?!iframe)(\w+)([^>]*) style="[^"]*"/gi, '<$1$2')
+    .replace(/width="\d+"/g, 'width="100%"')
+    .replace(/<span(?![^>]*font-weight)[^>]*>/g, '')
+    .replace(/<\/span>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/—/g, ' ')
+
+    // === Fix <a> tags (UNCHANGED) ===
+    .replace(/<strong>\s*<a([^>]+)>(.*?)<\/a>\s*<\/strong>/g, '<a$1 class="backlink underline"><strong>$2</strong></a>')
+    .replace(/<a\s+(?![^>]*style=)([^>]+)>/g, '<a class="backlink underline" $1>')
+    .replace(/<a\s+([^>]*?)style="[^"]*"(.*?)>/g, '<a class="backlink underline" $1$2>')
+
+    // === Heading Fix (UNCHANGED) ===
+    .replace(/<h1[^>]*>/g, '<h2>')
+    .replace(/<\/h1>/g, '</h2>')
+    .replace(/<h2[^>]*>/g, '<h3>')
+    .replace(/<\/h2>/g, '</h3>')
+    .replace(/<h3[^>]*>/g, '<h4>')
+    .replace(/<\/h3>/g, '</h4>')
+    .replace(/<h4[^>]*>/g, '<h5>')
+    .replace(/<\/h4>/g, '</h5>')
+    .replace(/<h5[^>]*>/g, '<p class="font-bold text-lg">')
+    .replace(/<\/h5>/g, '</p>')
+    .replace(/<h6[^>]*>/g, '<p class="font-semibold">')
+    .replace(/<\/h6>/g, '</p>')
+
+    // === Remove empty tags (UNCHANGED) ===
+    .replace(/<div[^>]*>\s*<\/div>/g, '')
+    .replace(/<strong>\s*<\/strong>/g, '')
+    .replace(/<em>\s*<\/em>/g, '')
+    .replace(/<b>\s*<\/b>/g, '')
+    .replace(/<i>\s*<\/i>/g, '')
+
+    // === Remove Word junk (UNCHANGED) ===
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<\?xml[^>]*>/g, '')
+    .replace(/<\/?o:[^>]*>/g, '')
+    .replace(/style="[^"]*(mso-|Calibri|Arial)[^"]*"/g, '')
+    .replace(/[\u00AD]/g, '')
+    .replace(/[\u200B\u200C\u200D\uFEFF]/g, '')
+    .replace(/\r?\n|\r/g, ' ')
+    .replace(/ +/g, ' ')
+    .replace(/[\u200E\u200F\u202A-\u202E]/g, '')
+    .replace(/ﻟ/g, 'ل')
+    .replace(/ﻻ/g, 'لا')
+    .replace(/ﺍ/g, 'ا')
+    .replace(/ﺃ/g, 'أ')
+    .replace(/ﺇ/g, 'إ')
+    .replace(/ﺁ/g, 'آ')
+
+    // === Normalize images (UNCHANGED) ===
+    .replace(/<img([^>]+)>/g, (match, attrs) => {
+      if (!/alt=/.test(attrs)) attrs += ' alt=""';
+      if (!/loading=/.test(attrs)) attrs += ' loading="lazy"';
+      return `<img ${attrs} style="max-width:100%;height:auto;" />`;
+    });
+
+  // =========================================================
+  // ✅ ADDITION 1: Convert strong-only paragraphs (fake headings)
+  // =========================================================
+  cleanedHtml = cleanedHtml.replace(
+    /<p[^>]*>\s*<(strong|b)>([^<]{3,80})<\/\1>\s*<\/p>/gi,
+    '<p class="font-semibold text-lg">$2</p>'
+  );
+
+  // =========================================================
+  // ✅ ADDITION 2: Prevent duplicate headings (SEO-safe)
+  // =========================================================
+  const headingTextMap = new Map<string, number>();
+
+  cleanedHtml = cleanedHtml.replace(
+    /<(h2|h3|h4|h5)>([\s\S]*?)<\/\1>/gi,
+    (match, tag, inner) => {
+      const text = inner
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+
+      if (!text) return match;
+
+      const count = (headingTextMap.get(text) || 0) + 1;
+      headingTextMap.set(text, count);
+
+      if (count === 1) return match;
+
+      const cls =
+        tag === 'h2' || tag === 'h3'
+          ? 'font-semibold text-lg mt-4'
+          : 'font-medium text-base mt-3';
+
+      return `<p class="${cls}">${inner}</p>`;
+    }
+  );
+
+  // =========================================================
+// ✅ ADDITION 4: Ensure at least ONE <h2> exists (SEO-safe)
+// =========================================================
+
+// Check if there is any real <h2>
+const hasH2 = /<h2\b[^>]*>/i.test(cleanedHtml);
+
+if (!hasH2) {
+  // Try to promote the first strong heading-like paragraph
+  cleanedHtml = cleanedHtml.replace(
+    /<p([^>]*)class="([^"]*(font-semibold|font-bold)[^"]*)"[^>]*>([^<]{3,120})<\/p>/i,
+    '<h2>$4</h2>'
+  );
+}
+
+  // =========================================================
+  // === Style → Tailwind mapping (UNCHANGED)
+  // =========================================================
+  const styleToTailwindMap = [
+    { regex: /style="text-decoration:underline;"/g, replacement: 'class="underline"' },
+    { regex: /style="font-weight:bold;"/g, replacement: 'class="font-bold"' },
+    { regex: /style="text-align:justify;"/g, replacement: 'class="text-justify"' },
+  ];
+  styleToTailwindMap.forEach(({ regex, replacement }) => {
+    cleanedHtml = cleanedHtml.replace(regex, replacement);
+  });
+
+  // =========================================================
+  // ✅ ADDITION 3: Strong tag limiter (SEO-safe 12)
+  // =========================================================
+  const MAX_TAGS = 12;
+  const MAX_STRONG_CHARS = 70;
+  let strongCount = 0;
+
+  cleanedHtml = cleanedHtml.replace(
+    /<strong\b[^>]*>([\s\S]*?)<\/strong>/gi,
+    (match, innerContent) => {
+      let plainText = innerContent.replace(/<[^>]*>/g, '').trim();
+      plainText = he.decode(plainText).replace(/\s+/g, ' ');
+
+      strongCount++;
+
+      if (strongCount > MAX_TAGS || plainText.length > MAX_STRONG_CHARS) {
+        return `<span style="font-weight:700;">${innerContent}</span>`;
+      }
+
+      return match;
+    }
+  );
+
+  // =========================================================
+  // === Anchor text variation logic (UNCHANGED)
+  // =========================================================
+  const anchorMap = new Map<string, number>();
+
+  cleanedHtml = cleanedHtml.replace(/<a([^>]*)>(.*?)<\/a>/gi, (match, attrs, text) => {
+    const cleanText = text.trim();
+    if (!cleanText) return match;
+
+    const key = cleanText.toLowerCase();
+    const count = (anchorMap.get(key) || 0) + 1;
+    anchorMap.set(key, count);
+
+    let finalText = cleanText;
+    if (count > 1) {
+      const variants = [
+        `${cleanText} (${count - 1})`,
+        `${cleanText} again`,
+        `more on ${cleanText.toLowerCase()}`,
+        `${cleanText} →`,
+      ];
+      finalText = variants[(count - 2) % variants.length];
+    }
+
+    if (!/class=/.test(attrs)) {
+      attrs += ' class="backlink underline"';
+    }
+
+    return `<a${attrs}>${finalText}</a>`;
+  });
+
+  // =========================================================
+  // === Final safety: empty anchors (UNCHANGED)
+  // =========================================================
+  cleanedHtml = cleanedHtml.replace(
+    /<a([^>]*)>(\s|&nbsp;|<br\/?>|<img[^>]*alt=""[^>]*>)*<\/a>/gi,
+    (match, attrs) => {
+      const aria = attrs.match(/aria-label="([^"]+)"/i);
+      if (aria) return `<a${attrs}>${aria[1]}</a>`;
+      return `<a${attrs}>Read more</a>`;
+    }
+  );
+
+  return he.decode(cleanedHtml);
+}
+
+export function cleanHtmlStringOld(input: string): string {
   if (!input) return '';
 
   let cleanedHtml = input
@@ -371,7 +572,7 @@ export function cleanHtmlString(input: string): string {
 
   // === COMBINED: Limit <strong> count AND convert long content to inline bold ===
   // === COMBINED: Limit <strong> count AND convert long content to inline bold ===
-  const MAX_TAGS = 16;          // Max tags allowed for SEO
+  const MAX_TAGS = 12;          // Max tags allowed for SEO
   const MAX_STRONG_CHARS = 70;  // Already defined
   let strongCount = 0;
 
@@ -497,13 +698,22 @@ export function splitHtmlIntoBlocks(htmlString, numberOfBlocks = 5) {
   return blocks;
 }
 
-export async function normalizeArticle(article: FeedContentResponse, siteName: string) {
-  let apiServer = await getAppConfig();
+export async function normalizeArticle(
+  article: FeedContentResponse,
+  siteName: string
+): Promise<FeedContentResponse> {
+
+  const apiServer = await getAppConfig();
+
   return {
+    ...article, // ✅ KEEP ALL REQUIRED FIELDS
+
+    // ---- Normalize / override only what you want ----
     id: article.id ?? "",
     title: article.title ?? "",
     subTitle: article.subTitle ?? "",
     description: article.description ?? "",
+    htmlData: article.htmlData ?? "",
     lang: article.lang ?? apiServer.defaultLanguage,
 
     // Images
@@ -547,6 +757,7 @@ export async function normalizeArticle(article: FeedContentResponse, siteName: s
     howToSchema: article.howToSchema ?? null,
   };
 }
+
 
 
 

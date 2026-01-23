@@ -26,7 +26,7 @@
     <meta name="amp-story-generator-version" content="0.1" />
 
     <link rel="canonical" href="{{canonicalUrl}}" />
-     <!-- {{{hreflangLinks}}} -->
+    <!-- {{{hreflangLinks}}} -->
 
     <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap&subset=arabic"
         rel="stylesheet">
@@ -47,7 +47,7 @@
     <script async custom-element="amp-story-auto-ads"
         src="https://cdn.ampproject.org/v0/amp-story-auto-ads-0.1.js"></script>
     <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
-    <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+    <!-- <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script> -->
     <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
     <script async custom-element="amp-selector" src="https://cdn.ampproject.org/v0/amp-selector-0.1.js"></script>
     <script async custom-element="amp-story-interactive"
@@ -386,7 +386,7 @@
             cursor: pointer;
             font-weight: bold
         }
-        
+
         .intro-center {
             display: flex;
             align-items: center;
@@ -496,28 +496,28 @@
         </amp-story-auto-ads>
         <amp-analytics type="gtag" data-credentials="include">
             <script type="application/json">
-                    {
-                        "vars": {
-                        "gtag_id": "G-KSSCTHQE28",
-                        "config": {
-                            "G-KSSCTHQE28": { "groups": "default" }
-                        }
-                        },
-                        "triggers": {
-                        "quizResponse": {
-                            "on": "amp-story-interactive-submit",
-                            "selector": "amp-story-interactive-quiz",
-                            "request": "event",
-                            "vars": {
-                            "event_name": "quiz_response",
-                            "quiz_id": "${interactive-id}",
-                            "quiz_question": "${interactive-question-text}",
-                            "quiz_answer": "${interactive-response-text}"
-                            }
-                        }
-                        }
-                    }
-            </script>
+    {
+      "vars": {
+        "gtag_id": "G-KSSCTHQE28",
+        "config": {
+          "G-KSSCTHQE28": { "groups": "default" }
+        }
+      },
+      "triggers": {
+        "quizResponse": {
+          "on": "amp-story-interactive-response",
+          "selector": "amp-story-interactive-quiz",
+          "request": "event",
+          "vars": {
+            "event_name": "quiz_response",
+            "quiz_id": "${interactive-id}",
+            "quiz_question": "${interactive-question-text}",
+            "quiz_answer": "${interactive-response-text}"
+          }
+        }
+      }
+    }
+  </script>
         </amp-analytics>
     </amp-story>
 

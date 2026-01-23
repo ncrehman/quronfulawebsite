@@ -151,35 +151,65 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 `;
   const backendEndpoint = `${apiServer.websiteUrl}api/quiz-proxy`;
 
-  function generateDynamicQuizSlide(slide: QuizSlide, bgImage: string, index: number, id: string, icon: string) {
+   function generateDynamicQuizSlide(
+    slide: QuizSlide,
+    bgImage: string,
+    index: number,
+    id: string,
+    icon: string
+  ) {
     const options = slide.options.slice(0, 4);
-    const correctIndex = Math.max(0, options.findIndex(
-      o => o.trim().toLowerCase() === slide.answer.trim().toLowerCase()
-    ));
+
+    const correctIndex = Math.max(
+      0,
+      options.findIndex(
+        o => o.trim().toLowerCase() === slide.answer.trim().toLowerCase()
+      )
+    );
 
     const optionAttrs = options.map((opt, i) => {
-      const safeOpt = opt.replace(/"/g, '&quot;'); // AMP-safe escaping
-      const base = `option-${i + 1}-text="${safeOpt}"`;
-      const isCorrect = i === correctIndex ? `option-${i + 1}-correct option-${i + 1}-confetti="${icon}"` : "";
-      return [base, isCorrect].filter(Boolean).join(" ");
+      const safeOpt = opt.replace(/"/g, '&quot;');
+
+      const base = [
+        `option-${i + 1}-text="${safeOpt}"`
+      ];
+
+      const isCorrect =
+        i === correctIndex
+          ? [
+            `option-${i + 1}-correct`,
+            `option-${i + 1}-confetti="${icon}"`
+          ]
+          : [];
+
+      return [...base, ...isCorrect].join(' ');
     });
 
     return `
 <amp-story-page id="slide-${index}">
   <amp-story-grid-layer template="fill">
-    <amp-img src="${bgImage}" layout="fill" object-fit="cover" alt="Background image"></amp-img>
+    <amp-img
+      src="${bgImage}"
+      layout="fill"
+      object-fit="cover"
+      alt="Background image">
+    </amp-img>
   </amp-story-grid-layer>
+
   <amp-story-grid-layer template="vertical" class="quiz-center">
     <div class="quiz-wrapper" animate-in="scale-fade-up">
       <h2 class="quiz-question">${slide.question}</h2>
+
       <amp-story-interactive-quiz
         id="${slide.id}-${id}"
         class="center"
         prompt-size="medium"
         chip-style="transparent"
-        on="optionSelected:AMP.setState({quiz:{total:quiz.total+1,correct:quiz.correct+(event.correct?1:0),percentage:((quiz.correct+(event.correct?1:0))/(quiz.total+1))*100}})"
+        endpoint="${backendEndpoint}"
         ${optionAttrs.join(" ")}
-      ></amp-story-interactive-quiz>
+      >
+      </amp-story-interactive-quiz>
+
     </div>
   </amp-story-grid-layer>
 </amp-story-page>
@@ -193,43 +223,90 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     return generateDynamicQuizSlide(slide, bgImage, i, quiz.id, icon);
   }).join('');
 
-  function generateResultPage(commonBg: string, result?: QuizResultMeterResponse[]) {
-    const resultsToRender = (result?.length ? result : [
-      { category: "Beginner", text: "Don’t worry! Every expert was once a beginner.", threshold: "0" },
-      { category: "Intermediate", text: "Good effort! You’re learning fast.", threshold: "50" },
-      { category: "Expert", text: "Great job! You really know your stuff.", threshold: "80" },
-      { category: "Master", text: "Outstanding! You’re a true master 🎉", threshold: "95" }
-    ]);
+ function generateResultPage(
+    commonBg: string,
+    result?: QuizResultMeterResponse[]
+  ) {
+    const resultsToRender =
+      Array.isArray(result) && result.length > 0
+        ? result
+        : [
+          {
+            category: "Beginner",
+            text: "Don’t worry! Every expert was once a beginner.",
+            threshold: "0",
+          },
+          {
+            category: "Intermediate",
+            text: "Good effort! You’re learning fast.",
+            threshold: "50",
+          },
+          {
+            category: "Expert",
+            text: "Great job! You really know your stuff.",
+            threshold: "80",
+          },
+          {
+            category: "Master",
+            text: "Outstanding! You’re a true master 🎉",
+            threshold: "95",
+          },
+        ];
 
-    const ampResultsAttributes = resultsToRender.map((r, idx) => `
-      option-${idx + 1}-results-category="${r.category}"
-      option-${idx + 1}-text="${r.text.replace(/"/g, '&quot;')}"
-      option-${idx + 1}-results-threshold="${r.threshold}"
-    `).join("\n");
+    const hasResults = resultsToRender.length > 0;
+
+    const ampResultsAttributes = hasResults
+      ? resultsToRender
+        .map(
+          (r, idx) => `
+          option-${idx + 1}-results-category="${r.category}"
+          option-${idx + 1}-text="${r.text.replace(/"/g, "&quot;")}"
+          option-${idx + 1}-results-threshold="${r.threshold}"
+        `
+        )
+        .join("\n")
+      : "";
 
     return `
 <amp-story-page id="results-page">
   <amp-story-grid-layer template="fill">
-    <amp-img src="${commonBg}" layout="fill" object-fit="cover" alt="Results Background"></amp-img>
+    <amp-img
+      src="${commonBg}"
+      layout="fill"
+      object-fit="cover"
+      alt="Results Background">
+    </amp-img>
     <div class="overlay"></div>
   </amp-story-grid-layer>
+
   <amp-story-grid-layer template="vertical" class="quiz-center">
     <div class="result-wrapper">
-      <h3>
-        <amp-story-interactive-results
-          id="results-1"
-          prompt-text=""
-          ${ampResultsAttributes}
-          style="--interactive-background-color: rgba(255,255,255,0.05); --interactive-font-color: #fff; --interactive-border-radius: 16px;">
-        </amp-story-interactive-results>
-      </h3>
-      <p>Celebrate your knowledge! Share your score with friends or try again to improve.</p>
+
+      ${hasResults
+        ? `
+          <amp-story-interactive-results
+            id="results-1"
+            prompt-text="Your Quiz Result"
+            ${ampResultsAttributes}
+            style="
+              --interactive-background-color: rgba(255,255,255,0.05);
+              --interactive-font-color: #fff;
+              --interactive-border-radius: 16px;
+            ">
+          </amp-story-interactive-results>
+        `
+        : ""
+      }
+
+      <p>
+        Celebrate your knowledge! Share your score with friends or try again to improve.
+      </p>
+
     </div>
   </amp-story-grid-layer>
 </amp-story-page>
 `;
   }
-
    function introPage(quiz: QuizStoryResponse) {
     if (quiz.intro) {
       const [c1, c2] = gradients[gradients.length - 1];

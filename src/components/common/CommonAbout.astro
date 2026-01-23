@@ -11,6 +11,7 @@ import type { ResponseModel } from "@lib/pojo/responsemodel/ResponseModel";
 import {
     apiCalls,
     buildLangUrl,
+    cleanHtmlString,
     detectDevice,
     generateBreadcrumb,
 } from "@lib/postmethodService";
@@ -105,6 +106,8 @@ let metaObj: MetaObject = generateSeo(
     language,
     device,
 );
+const cleanHtml = cleanHtmlString(dataObj.description);
+
 ---
 
 <SEO
@@ -127,7 +130,7 @@ let metaObj: MetaObject = generateSeo(
             <h1 class="text-4xl font-bold mb-8 text-center">
                 {dataObj?.metaTitle}
             </h1>
-            <div set:html={dataObj?.description} />
+            <div set:html={cleanHtml} />
         </main>
     </section>
 </Layout>

@@ -1,10 +1,10 @@
 ---
 import {
-    apiCalls,
-    buildLangUrl,
-    detectDevice,
-    generateBreadcrumb,
-    generateItemList,
+  apiCalls,
+  buildLangUrl,
+  detectDevice,
+  generateBreadcrumb,
+  generateItemList,
 } from "@lib/postmethodService";
 import { EndPointPaths } from "@lib/EndPointPaths";
 import { RequestModel } from "@lib/pojo/requestmodel/RequestModel";
@@ -27,30 +27,30 @@ const { lang } = Astro.props;
 const categoryCache: Map<string, CatResponse[]> = new Map();
 
 async function getCategory(lang: string): Promise<CatResponse[] | null> {
-    const cacheKey = `${lang}_${"category"}`;
-    if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey)!;
+  const cacheKey = `${lang}_${"category"}`;
+  if (categoryCache.has(cacheKey)) return categoryCache.get(cacheKey)!;
 
-    const request = new RequestModel();
-    request.lang = lang;
+  const request = new RequestModel();
+  request.lang = lang;
 
-    try {
-        const response: ApiResponse = await apiCalls(
-            request,
-            EndPointPaths.getallcategories,
-        );
-        if (response.status !== 0) return null;
-        const resp: ResponseModel = response.data;
-        if (resp.statusCode == 0) {
-            const catData: Array<CatResponse> = resp.respList;
-            categoryCache.set(cacheKey, catData);
-            return catData;
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        return null;
+  try {
+    const response: ApiResponse = await apiCalls(
+      request,
+      EndPointPaths.getallcategories,
+    );
+    if (response.status !== 0) return null;
+    const resp: ResponseModel = response.data;
+    if (resp.statusCode == 0) {
+      const catData: Array<CatResponse> = resp.respList;
+      categoryCache.set(cacheKey, catData);
+      return catData;
+    } else {
+      return null;
     }
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return null;
+  }
 }
 
 const categories: Array<CatResponse> = await getCategory(lang);
@@ -58,119 +58,145 @@ const categories: Array<CatResponse> = await getCategory(lang);
 const langPrefix = await getLangPrefix(lang);
 const apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl = baseUrl+'category';
+const canonicalUrl = baseUrl + "category";
 const siteName = metaConfig.siteName[lang];
 let title = "";
 let description = "";
 if (lang === "ar") {
-    title = "التصنيفات - مدونة سطور | مقالات تقنية وبرمجة بالعربية";
-    description =
-        "استكشف مقالات معمقة عن الثقافة، الاتجاهات، أسلوب الحياة، الإبداع، والسرد الحديث مع رؤى ملهمة تُحدّث باستمرار.";
+  title = "تصنيفات المقالات - قرنفلة | الصحة، الجمال، ونمط الحياة";
+  description =
+    "تصفح جميع تصنيفات مقالات قرنفلة التي تغطي الصحة، الجمال، نمط الحياة، السفر، الاقتصاد، والهجرة مع محتوى عربي محدث يوميًا.";
 } else {
-    title = "Categories - Sutoor Blog | Tech, Programming & Web Development";
-    description =
-        "Explore in-depth articles on culture, trends, lifestyle, creativity, and modern storytelling-fresh insights and inspiration, updated regularly.";
+  title = "Article Categories - Quronfula | Lifestyle, Health & Daily Life";
+  description =
+    "Browse all Quronfula article categories covering health, beauty, lifestyle, travel, economy, migration, and everyday life—updated daily with meaningful insights.";
 }
 
 const jsonLd = [];
 
 const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
-    {
-        name: lang === "ar" ? "الرئيسية" : "Home",
-        url: baseUrl,
-    },
-    {
-        name: lang === "ar" ? "فئة" : "Category",
-        url: baseUrl + "category/",
-    },
+  {
+    name: lang === "ar" ? "الرئيسية" : "Home",
+    url: baseUrl,
+  },
+  {
+    name: lang === "ar" ? "فئة" : "Category",
+    url: baseUrl + "category/",
+  },
 ]);
 jsonLd.push(breadCrumb);
 
 if (categories) {
-    const itemListJson = generateItemList({
-        name: "Quronfula Categories Collection",
-        description:description,
-        baseUrl: baseUrl + "category/",
-        listUrl: baseUrl + "category/",
-        items: categories.map((a) => ({
-            title: a.title,
-            slug: a.slug,
-            image: a.bannerImage,
-            type: "Category",
-        })),
-        creatorName: siteName,
-        creatorUrl: apiServer.websiteUrl,
-    });
-    jsonLd.push(itemListJson);
+  const itemListJson = generateItemList({
+    name: "Quronfula Categories Collection",
+    description: description,
+    baseUrl: baseUrl + "category/",
+    listUrl: baseUrl + "category/",
+    items: categories.map((a) => ({
+      title: a.title,
+      slug: a.slug,
+      image: a.bannerImage,
+      type: "Category",
+    })),
+    creatorName: siteName,
+    creatorUrl: apiServer.websiteUrl,
+  });
+  jsonLd.push(itemListJson);
 }
 const ua = Astro.request.headers.get("user-agent");
 const device = detectDevice(ua);
 const language: any = lang;
-let metaObj: MetaObject = generateSeo(
-    title,
-    description,
-    language,
-    device,
-);
+let metaObj: MetaObject = generateSeo(title, description, language, device);
 ---
 
 <SEO
-    title={metaObj.title}
-    description={metaObj.metaDesc}
-    image={baseUrl + "categoryog.webp"}
-    url={canonicalUrl}
-    lang={lang}
-    canonical={canonicalUrl}
-    noindex={false}
-    type={"WebSite"}
-    jsonLd={jsonLd}
+  title={metaObj.title}
+  description={metaObj.metaDesc}
+  image={baseUrl + "categoryog.webp"}
+  url={canonicalUrl}
+  lang={lang}
+  canonical={canonicalUrl}
+  noindex={false}
+  type={"WebSite"}
+  jsonLd={jsonLd}
 />
 <Layout>
   <main>
     <>
-     <section>
-			 <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
-		</section>
-      {categories ? (
-        <section>
-          <h1 class="page-title">
-            {lang === "ar" ? "فئات" : "Categories"}
-          </h1>
-
-          <section class="articles-grid">
-            {categories.length ? (
-              categories.map((item: CatResponse) => (
-                <article class="article-card">
-                  <a
-                    href={`/${langPrefix}category/${item.slug}`}
-                    class="card-link"
-                  >
-                    <div class="card-image">
-                      <Image
-                        src={item.bannerImage}
-                        alt={item.imageAlt || item.title}
-                        loading="lazy"
-                        width="400"
-                        height="225"
-                      />
-                    </div>
-
-                    <div class="card-content">
-                      <h2>{item.title}</h2>
-                    </div>
-                  </a>
-                </article>
-              ))
-            ) : (
-              <p class="no-articles">
+      <section>
+        <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
+      </section>
+      {
+        categories ? (
+          <section>
+            <div class="w-full bg-gradient-to-br from-orange-50 to-white rounded-2xl p-8 mb-10 text-center shadow-sm">
+              <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
                 {lang === "ar"
-                  ? "لا توجد فئة متاحة."
-                  : "No category available."}
-              </p>
-            )}
+                  ? "تصنيفات مقالات الحياة اليومية في قرنفلة"
+                  : "Explore Article Categories on Quronfula"}
+              </h1>
+
+              <div class="w-20 h-1 bg-orange-500 mx-auto rounded-full mb-6" />
+
+              {lang === "ar" ? (
+                <p class="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
+                  تصفح جميع{" "}
+                  <span class="text-orange-500 font-semibold">
+                    تصنيفات مقالات قرنفلة
+                  </span>
+                  ، التي تغطي موضوعات متنوعة مثل الصحة، الجمال، نمط الحياة،
+                  السفر، الاقتصاد، والهجرة. اختر التصنيف الذي يهمك واكتشف محتوى
+                  محدثًا يساعدك على فهم الحياة اليومية بشكل أعمق وأكثر وعيًا.
+                </p>
+              ) : (
+                <p class="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
+                  Browse all{" "}
+                  <span class="text-orange-500 font-semibold">
+                    Quronfula article categories
+                  </span>
+                  , covering a wide range of topics including health, beauty,
+                  lifestyle, travel, economy, and migration. Choose a category
+                  and explore updated content designed to enrich your everyday
+                  life with meaningful insights.
+                </p>
+              )}
+            </div>
+
+            <section class="articles-grid">
+              {categories.length ? (
+                categories.map((item: CatResponse) => (
+                  <article class="article-card">
+                    <a
+                      href={`/${langPrefix}category/${item.slug}`}
+                      class="card-link"
+                    >
+                      <div class="card-image">
+                        <Image
+                          src={item.bannerImage}
+                          alt={item.imageAlt || item.title}
+                          loading="lazy"
+                          width="400"
+                          height="225"
+                        />
+                      </div>
+
+                      <div class="card-content">
+                        <h2>{item.title}</h2>
+                      </div>
+                    </a>
+                  </article>
+                ))
+              ) : (
+                <p class="no-articles">
+                  {lang === "ar"
+                    ? "لا توجد فئة متاحة."
+                    : "No category available."}
+                </p>
+              )}
+            </section>
           </section>
-        </section>
-      ) : null}
+        ) : null
+      }
 
       <style>
         /* =========================
@@ -195,7 +221,9 @@ let metaObj: MetaObject = generateSeo(
         .article-card {
           border-radius: 12px;
           overflow: hidden;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
         }
 
         .article-card:hover {

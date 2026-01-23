@@ -190,10 +190,13 @@ if (subCategoryObj) {
                     style={`background-image: url('${subCategoryObj.bannerImage}')`}
                 >
                 </div>
-
+               
                 <div class="category-hero-content">
-                    <h1 class="category-title">{subCategoryObj.title}</h1>
-
+                  
+                    <h1 class="category-title">{subCategoryObj.metaTitle}</h1>
+                <h2 class="category-label text-sm uppercase tracking-wide text-white-500 mb-2">
+                {subCategoryObj.title}
+                </h2>
                     <p class="category-description">
                         {subCategoryObj.description}
                     </p>

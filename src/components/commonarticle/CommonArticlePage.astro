@@ -107,7 +107,7 @@ const apiServer = await getAppConfig();
 const siteName = metaConfig.siteName[lang];
 // let article: FeedContentResponse = await loadContent("article", slug, lang);
 // if (!article) {
-let article;
+let article:FeedContentResponse;
   let articleObj = await getArticles(lang, slug);
   if (!articleObj) {
      Astro.response.status = 404;
@@ -123,18 +123,19 @@ const publisherId=apiServer.websiteUrl+'#organization';
 const ampUrl = canonicalUrl + "/amp";
 
 const jsonLd = [];
-
+let cleanHtml:any;
 let keywords = [];
 let relatedArticle: Array<ArticleResponse>;
-let cleanHtml: any;
 let blocksWithAds: any;
 let ogImages = [];
 let metaObj:MetaObject;
 let updated;
 let showUpdated;
 if (!!article) {
-  
-  cleanHtml = cleanHtmlString(article.description);
+cleanHtml =
+  article.htmlData?.trim()
+    ? article.htmlData
+    : cleanHtmlString(article.description || "");
   const ua = Astro.request.headers.get("user-agent");
 const device = detectDevice(ua);
     const language:any=lang;
@@ -347,22 +348,22 @@ showUpdated =
 
 }
 
-  function addAltToImages(html: string, fallbackAlt: string): string {
-  if (!html) return html;
+//   function addAltToImages(html: string, fallbackAlt: string): string {
+//   if (!html) return html;
 
-  return html.replace(
-    /<img([^>]*?)>/gi,
-    (match, attrs) => {
-      // If alt already exists → keep it
-      if (/alt\s*=/i.test(attrs)) {
-        return `<img${attrs}>`;
-      }
+//   return html.replace(
+//     /<img([^>]*?)>/gi,
+//     (match, attrs) => {
+//       // If alt already exists → keep it
+//       if (/alt\s*=/i.test(attrs)) {
+//         return `<img${attrs}>`;
+//       }
 
-      // Inject alt
-      return `<img${attrs} alt="${fallbackAlt}">`;
-    }
-  );
-}
+//       // Inject alt
+//       return `<img${attrs} alt="${fallbackAlt}">`;
+//     }
+//   );
+// }
 ---
 
 {
@@ -492,12 +493,12 @@ showUpdated =
           <div id="container-7538bd9c37b3bc6235c127a4b18d2e6c"></div>
 
           <div class="article-content">
-            {blocksWithAds.map((block, idx) => (
+            {blocksWithAds.map((block:any, idx:number) => (
               <div style={{ marginBottom: "1.5rem" }}>
                 {block.type === "content" ? (
-                  <div
+                  <div style="white-space: pre-wrap; " 
                     class="text-[clamp(16px,2vw,20px)] max-w-full leading-[1.6] text-justify"
-                      set:html={addAltToImages(block.html, article.title)}
+                      set:html={block.html}
                   />
                 ) : (
                   <div class="ad-inline-wrapper">

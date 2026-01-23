@@ -234,11 +234,14 @@ metaObj= generateSeo(
             </div>
 
             <div class="category-hero-content">
-                <h1 class="category-title">{categoryObj.title}</h1>
+                <h1 class="category-title">{categoryObj.metaTitle}</h1>
+                <h2 class="category-label text-sm uppercase tracking-wide text-white-500 mb-2">
+                {categoryObj.title}
+                </h2>
 
-                <p class="category-description">
+                <h2 class="category-description">
                     {categoryObj.description}
-                </p>
+                </h2>
 
                 <!-- Subcategories -->
                 <div class="subcat-wrapper">
@@ -558,9 +561,10 @@ metaObj= generateSeo(
   <!-- Content -->
   <div class="relative z-10 max-w-lg text-center px-6">
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-      {lang === "en"
-        ? "Category Not Found"
-        : "القسم غير موجود"}
+     {lang === "en"
+  ? "Article Category Not Found on Quronfula"
+  : "عذرًا، لم يتم العثور على تصنيف المقالات في قرنفلة"}
+
     </h1>
 
     <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">

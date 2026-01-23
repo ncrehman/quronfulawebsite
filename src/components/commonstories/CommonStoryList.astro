@@ -1,6 +1,7 @@
 ---
 import {
     apiCalls,
+    buildLangPath,
     buildLangUrl,
     checkForDecode,
     detectDevice,
@@ -68,86 +69,102 @@ async function getStories(
     }
 }
 
-const storyList: Array<WebStoryResponse> = await getStories(lang, null, null);
-
-const langPrefix = await getLangPrefix(lang);
-const apiServer = await getAppConfig();
+let apiServer = await getAppConfig();
 const baseUrl = await buildLangUrl(lang);
-const canonicalUrl =
-    currentPage === 1
-        ? `${baseUrl}stories`
-        : `${baseUrl}stories?page=${currentPage}`;
-const siteName = metaConfig.siteName[lang];
+let canonicalUrl: string;
 const storiesBaseHeading =
     lang === "ar"
         ? "مجموعة قصص حديثة – محتوى ممتع وملهم"
         : "Stories Collection – Fun & Engaging Stories";
 
-const isPageOne = currentPage === 1;
+let title: string =
+    lang === "ar"
+        ? `${storiesBaseHeading} – الصفحة ${currentPage}`
+        : `${storiesBaseHeading} – Page ${currentPage}`;
 
-const title = isPageOne
-    ? storiesBaseHeading
-    : lang === "ar"
-      ? `${storiesBaseHeading} – الصفحة ${currentPage}`
-      : `${storiesBaseHeading} – Page ${currentPage}`;
-
-const description = isPageOne
-    ? lang === "ar"
+let description: string =
+    lang === "ar"
         ? "استكشف قصصًا ممتعة وجذابة على كورونفولا في مجالات الثقافة وأسلوب الحياة والإبداع وغيرها. اكتشف أفكارًا جديدة ورؤى ملهمة."
-        : "Explore fun, engaging stories on Quronfula across culture, lifestyle, creativity, and more. Discover new ideas and inspiring insights."
-    : lang === "ar"
-      ? `تصفح المزيد من القصص الممتعة على كورونفولا. انتقل إلى الصفحة ${currentPage} من مجموعة القصص واكتشف محتوى جديدًا.`
-      : `Browse more fun and engaging stories on Quronfula. Explore page ${currentPage} of our stories collection and discover new content.`;
+        : "Explore fun, engaging stories on Quronfula across culture, lifestyle, creativity, and more. Discover new ideas and inspiring insights.";
+let jsonLd = [];
+let metaObj: MetaObject;
+const storyList: Array<WebStoryResponse> = await getStories(lang, null, null);
+const hasStories = Array.isArray(storyList) && storyList.length > 0;
+if (hasStories) {
+    canonicalUrl =
+        currentPage === 1
+            ? `${baseUrl}stories`
+            : `${baseUrl}stories?page=${currentPage}`;
+    const siteName = metaConfig.siteName[lang];
 
-const jsonLd = [];
+    const isPageOne = currentPage === 1;
 
-const itemListJson = generateItemList({
-    name: title,
-    description: description,
-    baseUrl: canonicalUrl,
-    listUrl: canonicalUrl,
-    items: storyList.map((a) => ({
-        title: a.title,
-        slug: a.slug,
-        image: a.landScapeBanner,
-        authorName: a.author_name,
-        authorSlug: a.author_slug,
-        type: "WebStory",
-    })),
-    creatorName: siteName,
-    creatorUrl: apiServer.websiteUrl,
-});
+    title = isPageOne
+        ? storiesBaseHeading
+        : lang === "ar"
+          ? `${storiesBaseHeading} – الصفحة ${currentPage}`
+          : `${storiesBaseHeading} – Page ${currentPage}`;
 
-const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
-    {
-        name: lang === "ar" ? "الرئيسية" : "Home",
-        url: baseUrl,
-    },
-    {
-        name: lang === "ar" ? "قصة الويب" : "Web Story",
-        url: baseUrl + "stories/",
-    },
-]);
+    description = isPageOne
+        ? lang === "ar"
+            ? "استكشف قصصًا ممتعة وجذابة على كورونفولا في مجالات الثقافة وأسلوب الحياة والإبداع وغيرها. اكتشف أفكارًا جديدة ورؤى ملهمة."
+            : "Explore fun, engaging stories on Quronfula across culture, lifestyle, creativity, and more. Discover new ideas and inspiring insights."
+        : lang === "ar"
+          ? `تصفح المزيد من القصص الممتعة على كورونفولا. انتقل إلى الصفحة ${currentPage} من مجموعة القصص واكتشف محتوى جديدًا.`
+          : `Browse more fun and engaging stories on Quronfula. Explore page ${currentPage} of our stories collection and discover new content.`;
 
-jsonLd.push(breadCrumb);
-jsonLd.push(itemListJson);
-const ua = Astro.request.headers.get("user-agent");
-const device = detectDevice(ua);
-const language: any = lang;
-let metaObj: MetaObject = generateSeo(title, description, language, device);
+    const itemListJson = generateItemList({
+        name: title,
+        description: description,
+        baseUrl: canonicalUrl,
+        listUrl: canonicalUrl,
+        items: storyList.map((a) => ({
+            title: a.title,
+            slug: a.slug,
+            image: a.landScapeBanner,
+            authorName: a.author_name,
+            authorSlug: a.author_slug,
+            type: "WebStory",
+        })),
+        creatorName: siteName,
+        creatorUrl: apiServer.websiteUrl,
+    });
+
+    const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
+        {
+            name: lang === "ar" ? "الرئيسية" : "Home",
+            url: baseUrl,
+        },
+        {
+            name: lang === "ar" ? "قصة الويب" : "Web Story",
+            url: baseUrl + "stories/",
+        },
+    ]);
+
+    jsonLd.push(breadCrumb);
+    jsonLd.push(itemListJson);
+    const ua = Astro.request.headers.get("user-agent");
+    const device = detectDevice(ua);
+    const language: any = lang;
+    metaObj = generateSeo(title, description, language, device);
+}
 ---
 
-<SEO
-    title={metaObj.title}
-    description={metaObj.metaDesc}
-    image={baseUrl + "storiesog.webp"}
-    url={canonicalUrl}
-    lang={lang}
-    canonical={canonicalUrl}
-    noindex={false}
-    type={"CollectionPage"}
-    jsonLd={jsonLd}
-/>
+{
+    hasStories && (
+        <SEO
+            title={metaObj.title}
+            description={metaObj.metaDesc}
+            image={baseUrl + "storiesog.webp"}
+            url={canonicalUrl}
+            lang={lang}
+            canonical={canonicalUrl}
+            noindex={false}
+            type={"CollectionPage"}
+            jsonLd={jsonLd}
+        />
+    )
+}
 <Layout>
     <main>
         <section>
@@ -206,11 +223,14 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
             <!-- Wrapper must exist for JS -->
             <section class="articles-grid">
                 {
-                    storyList?.length ? (
+                    hasStories && storyList?.length ? (
                         storyList.map((item) => (
                             <article class="article-card">
                                 <a
-                                    href={`/${langPrefix}stories/${item.slug}`}
+                                    href={buildLangPath(
+                                        lang,
+                                        `stories/${item.slug}`,
+                                    )}
                                     class="card-link"
                                 >
                                     <div class="card-image">
@@ -255,7 +275,10 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                 {
                     currentPage > 1 && (
                         <a
-                            href={`/${langPrefix}stories?page=${currentPage - 1}`}
+                           href={buildLangPath(
+                                lang,
+                                `stories?page=${currentPage - 1}`,
+                            )}
                             rel="prev"
                             class="pagination-btn"
                         >
@@ -275,7 +298,10 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                 {
                     storyList.length === limit && (
                         <a
-                            href={`/${langPrefix}stories?page=${currentPage + 1}`}
+                            href={buildLangPath(
+                                lang,
+                                `stories?page=${currentPage + 1}`,
+                            )}
                             rel="next"
                             class="pagination-btn"
                         >
