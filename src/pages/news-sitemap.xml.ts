@@ -8,7 +8,7 @@ export async function GET() {
   /* ---------------------------------
      CONFIG
   ---------------------------------- */
-  const DEFAULT_LANG = "ar";
+  const DEFAULT_LANG = "en";
   const NEWS_WINDOW_HOURS = 48;
   const now = new Date();
   const cutoffTime = new Date(
@@ -27,7 +27,6 @@ export async function GET() {
   );
 
   const items: SiteMapData[] = resp?.data?.respList || [];
-
   /* ---------------------------------
      FILTER: LAST 48 HOURS ONLY
   ---------------------------------- */
@@ -38,26 +37,37 @@ export async function GET() {
   /* ---------------------------------
      BUILD NEWS URLS (Default CANONICAL ONLY)
   ---------------------------------- */
-  const newsUrlsXml = recentItems.map(item => {
-    const loc = item.url
-      ? item.url.replace(/\/$/, "")
-      : item.url.replace(/\/$/, "");
-
+  const newsUrlsXml = recentItems
+  .flatMap(item => {
     const publicationDate = new Date(item.lastModified).toISOString();
 
-    return `
+    // Safety: if hrefLangs missing, fallback to default
+    const hrefLangs = item.hrefLangs?.length
+      ? item.hrefLangs
+      : [{
+          lang: DEFAULT_LANG,
+          title: item.title,
+          url: item.url
+        }];
+
+    return hrefLangs.map(href => {
+      const loc = href.url.replace(/\/$/, "");
+
+      return `
   <url>
     <loc>${loc}</loc>
     <news:news>
       <news:publication>
-        <news:name>QuronFula</news:name>
-        <news:language>ar</news:language>
+        <news:name>Quronfula</news:name>
+        <news:language>${href.lang}</news:language>
       </news:publication>
       <news:publication_date>${publicationDate}</news:publication_date>
-      <news:title><![CDATA[${item.title || ""}]]></news:title>
+      <news:title><![CDATA[${href.title || item.title || ""}]]></news:title>
     </news:news>
   </url>`;
-  }).join("");
+    });
+  })
+  .join("");
 
   /* ---------------------------------
      FINAL XML (ALWAYS RETURN VALID XML)
