@@ -62,6 +62,7 @@ export default async function ArticleAmpRenderer({ article, lang }: ArticleAmpRe
   cleanHtml = convertIframeToAmpIframe(cleanHtml);
   let metaObj: MetaObject = generateSeo(article.title,
     cleanHtml)
+  metaObj.title = metaObj.title + ' | ' + apiServer.title
   const canonicalUrl = `${baseUrl}article/${article.slug}`.replace(/\/$/, "");
   const ampUrl = `${canonicalUrl}/amp`;
   const siteName = metaConfig.siteName[lang];

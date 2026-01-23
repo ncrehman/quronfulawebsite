@@ -62,7 +62,7 @@ const isHomePage = path === "/" || path === "/en";
   {p.noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
 
 
-  {
+  <!-- {
     isHomePage && (
       <link
         rel="alternate"
@@ -70,7 +70,7 @@ const isHomePage = path === "/" || path === "/en";
         href="https://www.quronfula.com"
       />
     )
-  }
+  } -->
   {p.media?.amphtml && <link rel="amphtml" href={p.media.amphtml} />}
   {p.author && <meta name="author" content={p.author} />}
   {

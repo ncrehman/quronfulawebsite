@@ -156,12 +156,12 @@ export function generateItemList({
     "itemListOrder": "Ascending",
     "numberOfItems": items.length,
 
-    "provider": {
-      "@type": "Organization",
-      "@id": creatorUrl + "#organization",
-      "name": creatorName,
-      "url": creatorUrl
-    },
+    // "provider": {
+    //   "@type": "Organization",
+    //   "@id": creatorUrl + "#organization",
+    //   "name": creatorName,
+    //   "url": creatorUrl
+    // },
 
     "itemListElement": items.map((item, index) => {
       const itemUrl = baseUrl + item.slug + '/';

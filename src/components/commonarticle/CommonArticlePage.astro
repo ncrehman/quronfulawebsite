@@ -28,7 +28,6 @@ import type { ArticleResponse } from "@lib/pojo/responsemodel/ArticleResponse";
 // import RelatedArticleGrid from "./RelatedArticleGrid.astro";
 import SocialShare from "@components/common/SocialShare.astro";
 import AdPlaceholder from "@components/AdPlaceholder.astro";
-import { loadContent } from "@lib/contentLoader";
 import RelatedArticlesCarousel from "./RelatedArticlesCarousel.astro";
 import { generateSeo } from "@lib/MetaDescriptionUtil";
 import type { MetaObject } from "@lib/MetaObject";
@@ -141,6 +140,7 @@ const device = detectDevice(ua);
     const language:any=lang;
     metaObj=generateSeo( article.title,
   cleanHtml,language,device )
+  metaObj.title=metaObj.title+' | '+apiServer.title;
   const blocks = splitHtmlIntoBlocks(cleanHtml);
   
   blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
@@ -264,8 +264,10 @@ const about = [
 
         inLanguage: article.lang || apiServer.defaultLanguage,
         wordCount: article.wordCount || 1200,
-        readingTime:
-          article.readingTime || Math.ceil((article.wordCount || 1200) / 200),
+        timeRequired: `PT${article.readingTime || Math.ceil((article.wordCount || 1200) / 200)}M`,
+
+        // readingTime:
+        //   article.readingTime || Math.ceil((article.wordCount || 1200) / 200),
         image: {
           "@id": `${canonicalUrl}#primaryimage`,
         },
