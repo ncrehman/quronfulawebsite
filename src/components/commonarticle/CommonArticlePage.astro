@@ -140,7 +140,7 @@ const device = detectDevice(ua);
     const language:any=lang;
     metaObj=generateSeo( article.title,
   cleanHtml,language,device )
-  metaObj.title=metaObj.title+' | '+apiServer.title;
+  metaObj.title=metaObj.title;
   const blocks = splitHtmlIntoBlocks(cleanHtml);
   
   blocksWithAds = insertAdsBetweenBlocks(blocks, 2);
