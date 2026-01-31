@@ -307,7 +307,6 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 </amp-story-page>
 `;
   }
-  
    function introPage(quiz: QuizStoryResponse) {
     if (quiz.intro) {
       const [c1, c2] = gradients[gradients.length - 1];
