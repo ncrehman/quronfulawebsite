@@ -10,7 +10,7 @@ Disallow: /cgi-bin/
 Disallow: /wp-*
 Disallow: /*.php$
 
-# Explicitly allow public content sections (Discover-safe)
+
 Allow: /stories/
 Allow: /en/stories/
 Allow: /article/
@@ -24,4 +24,3 @@ Allow: /en/quiz/
 
 # Sitemaps
 Sitemap: https://www.quronfula.com/sitemap.xml
-Sitemap: https://www.quronfula.com/news-sitemap.xml
