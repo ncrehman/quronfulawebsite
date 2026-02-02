@@ -8,74 +8,96 @@ export async function GET() {
   /* ---------------------------------
      CONFIG
   ---------------------------------- */
-  const DEFAULT_LANG = "en";
+  const SITE_LANGUAGE = "en";
+  const PUBLICATION_NAME = "Quronfula";
   const NEWS_WINDOW_HOURS = 48;
+
   const now = new Date();
   const cutoffTime = new Date(
     now.getTime() - NEWS_WINDOW_HOURS * 60 * 60 * 1000
   );
 
   /* ---------------------------------
-     FETCH NEWS DATA (DEFAULT LANGUAGE ONLY)
+     FETCH NEWS DATA (SINGLE LANGUAGE)
   ---------------------------------- */
   const request = new RequestModel();
-  request.lang = DEFAULT_LANG;
+  request.lang = SITE_LANGUAGE;
 
   const resp: ApiResponse = await apiCalls(
     request,
-    EndPointPaths.generatenewssitemap
+    EndPointPaths.getnewssitemapdata
   );
 
   const items: SiteMapData[] = resp?.data?.respList || [];
+
   /* ---------------------------------
      FILTER: LAST 48 HOURS ONLY
   ---------------------------------- */
   const recentItems = items.filter(
-    item => new Date(item.lastModified) >= cutoffTime
+    item =>
+      item.lastModified &&
+      new Date(item.lastModified) >= cutoffTime
   );
 
   /* ---------------------------------
-     BUILD NEWS URLS (Default CANONICAL ONLY)
+     BUILD NEWS URLS (CANONICAL ONLY)
   ---------------------------------- */
-  const newsUrlsXml = recentItems
-  .flatMap(item => {
-    const publicationDate = new Date(item.lastModified).toISOString();
+const newsUrlsXml = recentItems
+    .map(item => {
+      const loc = (item.defaultUrl || item.url || "").replace(/\/$/, "").trim();
+      if (!loc) return "";
 
-    // Safety: if hrefLangs missing, fallback to default
-    const hrefLangs = item.hrefLangs?.length
-      ? item.hrefLangs
-      : [{
-          lang: DEFAULT_LANG,
-          title: item.title,
-          url: item.url
-        }];
+      const title = (item.title || "").trim();
+      if (!title) return "";
 
-    return hrefLangs.map(href => {
-      const loc = href.url.replace(/\/$/, "");
+      const publicationDate = new Date(item.lastModified)
+        .toISOString()
+        .split("T")[0]; // YYYY-MM-DD (Google News safe)
 
-      return `
-  <url>
+      /* IMAGE PRIORITY: landscape → square → default */
+      const images = [
+        item.landScapeBanner,
+        item.squareBanner,
+        item.bannerImage,
+      ]
+        .filter(Boolean)
+        .filter((v, i, a) => a.indexOf(v) === i);
+
+      const imageXml = images
+        .map(
+          img => `    <image:image>
+      <image:loc>${img}</image:loc>
+    </image:image>`
+        )
+        .join("\n");
+
+      return `  <url>
     <loc>${loc}</loc>
+
     <news:news>
       <news:publication>
-        <news:name>Quronfula</news:name>
-        <news:language>${href.lang}</news:language>
+        <news:name>${PUBLICATION_NAME}</news:name>
+        <news:language>${SITE_LANGUAGE}</news:language>
       </news:publication>
+
       <news:publication_date>${publicationDate}</news:publication_date>
-      <news:title><![CDATA[${href.title || item.title || ""}]]></news:title>
+      <news:title><![CDATA[${title}]]></news:title>
     </news:news>
+
+${imageXml}
   </url>`;
-    });
-  })
-  .join("");
+    })
+    .filter(Boolean)
+    .join("\n");
 
   /* ---------------------------------
-     FINAL XML (ALWAYS RETURN VALID XML)
+     FINAL XML
   ---------------------------------- */
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${newsUrlsXml}
 </urlset>`;
 

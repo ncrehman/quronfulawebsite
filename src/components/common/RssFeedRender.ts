@@ -4,7 +4,6 @@ import { EndPointPaths } from '@lib/EndPointPaths';
 import { RequestModel } from '@lib/pojo/requestmodel/RequestModel';
 import type { ApiResponse } from '@lib/pojo/responsemodel/ApiResponse';
 import { apiCalls } from '@lib/postmethodService';
-import type { APIRoute } from 'astro';
 export async function RssFeedRender(lang?: string, type?: string, limit?: number) {
 
   const apiServer = await getAppConfig();

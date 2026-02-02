@@ -5,6 +5,8 @@ export class EndPointPaths {
   public static getfeaturedarticle = 'getfeaturedarticle';
 
   public static getauthorbyslug = 'getauthorbyslug';
+  public static getnewssitemapdata = 'getnewssitemapdata';
+  public static getsitemapdata = 'getsitemapdata';
   public static generatesitemap = 'generatesitemap';
   public static generatenewssitemap = 'generatenewssitemap';
   public static generaterssfeed = 'generaterssfeed';
@@ -42,13 +44,7 @@ export class EndPointPaths {
   public static addcomment = 'addcomment';
   public static addlike = 'addlike';
   public static getcommentbyarticle = 'getcommentbyarticle';
-  public static getcategoryjsonld = 'getcategoryjsonld';
-  public static getquotesbycategoryslug = 'getquotesbycategoryslug';
-  public static getlatestquotes = 'getlatestquotes';
-  public static getquotesbysubcategoryslug = 'getquotesbysubcategoryslug';
   // public static getarticlesbyauthor = 'getquotesbyauthor';
-  public static getrelatedquotes = 'getrelatedquotes';
-  public static getcommentbyquotes = 'getcommentbyquotes';
   public static subscribetotopic = 'subscribetotopic';
 
 }

@@ -680,6 +680,26 @@ export function insertAdsBetweenBlocks(blocks, interval = 2) {
 }
 
 
+export function staticPages() {
+ const STATIC_PAGES = [
+    { path: "", changeFreq: "daily", priority: "1.0" },
+    { path: "about", changeFreq: "daily", priority: "0.9" },
+    { path: "stories", changeFreq: "daily", priority: "0.9" },
+    { path: "quiz", changeFreq: "daily", priority: "0.9" },
+    { path: "category", changeFreq: "daily", priority: "0.9" },
+    { path: "article", changeFreq: "daily", priority: "0.9" },
+    { path: "contact", changeFreq: "daily", priority: "0.9" },
+    { path: "privacy-policy", changeFreq: "daily", priority: "0.9" },
+    { path: "terms-and-conditions", changeFreq: "daily", priority: "0.9" },
+    { path: "disclaimer", changeFreq: "daily", priority: "0.9" },
+    { path: "correction-policy", changeFreq: "daily", priority: "0.9" },
+    { path: "code-of-ethics", changeFreq: "daily", priority: "0.9" },
+    { path: "fact-checking-policy", changeFreq: "daily", priority: "0.9" },
+    { path: "author/mohammed-anjar-ahsan", changeFreq: "weekly", priority: "0.6" },
+  ];
+
+  return STATIC_PAGES;
+}
 export function splitHtmlIntoBlocks(htmlString, numberOfBlocks = 5) {
   // console.log('cleanHtml:' + htmlString);
   const allBlocks = htmlString
