@@ -24,13 +24,18 @@ export interface Props {
   readingTime?: any;
 }
 const p = Astro.props;
-let apiServer= await getAppConfig();
+let apiServer = await getAppConfig();
 const alternateAr = p.url.replace("/en/", "/");
 const pathname = new URL(p.url).pathname.replace(/\/$/, "");
 const alternateEn =
   p.lang === "en"
     ? p.url.replace(/\/$/, "")
     : `https://www.quronfula.com/en${pathname}`;
+
+const rssUrl =
+  p.lang === "en"
+    ? "https://www.quronfula.com/en-rss.xml"
+    : "https://www.quronfula.com/rss.xml";
 
 const siteName = "Quronfula";
 const canonical = ensureTrailingSlash(p.canonical);
@@ -60,7 +65,6 @@ const isHomePage = path === "/" || path === "/en";
   {canonical && <link rel="canonical" href={canonical} />}
 
   {p.noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
-
 
   <!-- {
     isHomePage && (
@@ -236,5 +240,10 @@ const isHomePage = path === "/" || path === "/en";
   }
 
   <!-- OPTIONAL: RSS FEED -->
-  <link rel="alternate" type="application/rss+xml" title="Quronfula RSS" href="https://www.quronfula.com/rss.xml" />
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="Quronfula RSS"
+    href={rssUrl}
+  />
 </head>

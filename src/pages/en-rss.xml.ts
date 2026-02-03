@@ -4,7 +4,7 @@ import { getAppConfig } from "@lib/AppConfig";
 // ✅ MUST be named export called GET
 export async function GET() {
 const apiServer = await getAppConfig();
-  return RssFeedRender('ar', 'article',30);
+  return RssFeedRender('en', 'article',30);
 
 }
 
