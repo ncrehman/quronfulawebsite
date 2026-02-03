@@ -696,6 +696,7 @@ export function staticPages() {
     { path: "code-of-ethics", changeFreq: "daily", priority: "0.9" },
     { path: "fact-checking-policy", changeFreq: "daily", priority: "0.9" },
     { path: "author/mohammed-anjar-ahsan", changeFreq: "weekly", priority: "0.6" },
+    { path: "rss.xml", changeFreq: "daily", priority: "0.9" },
   ];
 
   return STATIC_PAGES;
