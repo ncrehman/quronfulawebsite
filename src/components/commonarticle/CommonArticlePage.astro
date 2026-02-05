@@ -395,6 +395,23 @@ showUpdated =
     />
   )
 }
+<script
+			async
+			type="application/javascript"
+			src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+		<script is:inline define:vars={{ lang }}>
+			(self.SWG_BASIC = self.SWG_BASIC || []).push(
+				(basicSubscriptions) => {
+					basicSubscriptions.init({
+						type: "NewsArticle",
+						isPartOfType: ["Product"],
+						isPartOfProductId: "CAowhpzEDA:openaccess",
+						clientOptions: { theme: "light", lang: lang },
+					});
+				},
+			);
+		</script>
+
 <Layout>
   {
     article ? (
