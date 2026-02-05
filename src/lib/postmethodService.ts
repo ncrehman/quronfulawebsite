@@ -125,7 +125,7 @@ export function generateBreadcrumb(menuName: string, menuItems: BreadcrumbItem[]
     "@type": "ListItem",
     position: index + 1,
     name: item.name,
-    item: item.url.endsWith('/') ? item.url : item.url + '/'
+    item: item.url.replace(/\/$/, "")
   }));
   return {
     "@context": "https://schema.org",
@@ -164,7 +164,7 @@ export function generateItemList({
     // },
 
     "itemListElement": items.map((item, index) => {
-      const itemUrl = baseUrl + item.slug + '/';
+      const itemUrl = baseUrl + item.slug;
 
       return {
         "@type": "ListItem",
