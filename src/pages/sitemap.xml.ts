@@ -23,9 +23,16 @@ export async function GET() {
     <loc>https://www.quronfula.com/ar-news-sitemap.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
-
   <sitemap>
     <loc>https://www.quronfula.com/ar-sitemap.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.quronfula.com/ar-submitted-sitemap.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.quronfula.com/en-submitted-sitemap.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
  

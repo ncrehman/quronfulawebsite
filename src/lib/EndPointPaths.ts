@@ -6,6 +6,7 @@ export class EndPointPaths {
 
   public static getauthorbyslug = 'getauthorbyslug';
   public static getnewssitemapdata = 'getnewssitemapdata';
+  public static getsubmittedsitemapdata = 'getsubmittedsitemapdata';
   public static getsitemapdata = 'getsitemapdata';
   public static generatesitemap = 'generatesitemap';
   public static generatenewssitemap = 'generatenewssitemap';
