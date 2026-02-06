@@ -32,11 +32,11 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
   //   ar: `${website}/stories/${story.slug}`,
   //   en: `${website}/en/stories/${story.slug}`
   // };
-//   const alternatesLanguages = {
-//   "x-default": `${website}/stories/${story.slug}`,
-//   ar: `${website}/stories/${story.slug}`,
-//   en: `${website}/en/stories/${story.slug}`,
-// };
+  //   const alternatesLanguages = {
+  //   "x-default": `${website}/stories/${story.slug}`,
+  //   ar: `${website}/stories/${story.slug}`,
+  //   en: `${website}/en/stories/${story.slug}`,
+  // };
   // const hreflangLinks = Object.entries(alternatesLanguages)
   //   .map(
   //     ([lang, url]) =>
@@ -81,7 +81,7 @@ export default async function WebStoryAmpRenderer({ story, lang }: WebStoryAmpRe
 
   const storyJsonLd = {
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
+    "@type": "Article",
     "headline": story.title,
     "description": story.metaDescription,
     "image": [
@@ -271,7 +271,7 @@ ${story.cta && story.cta.trim() !== "" ? `
 
       ${i === story.slides.length - 1 && story.referenceLink
         ? `<amp-story-page-outlink layout="nodisplay">
-                <a href="${story.referenceLink}">Read more</a>
+                <a href="${story.referenceLink}">${lang === 'en' ? 'Read more' : 'اقرأ المزيد'}</a>
             </amp-story-page-outlink>`
         : ''
       }
@@ -297,6 +297,7 @@ ${story.cta && story.cta.trim() !== "" ? `
     rssUrl,
     storyTitle: story.title,
     posterImage: story.bannerImage,
+    imageAlt: story.imageAlt || story.title,
     posterSqaure: story.squareBanner,
     posterPortrait: story.bannerImage,
     posterLandScape: story.landScapeBanner,
