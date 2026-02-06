@@ -13,6 +13,8 @@ export class FeedContent {
     public secondary_subTitle: string;
     public en_description: string;
     public secondary_description: string;
+    public en_html: string;
+    public secondary_html: string;
     public en_metaTitle: string;
     public secondary_metaTitle: string;
     public en_metaDescription: string;
@@ -20,6 +22,8 @@ export class FeedContent {
     public en_slug: string;
     public secondary_slug: string;
     public en_keyword: string;
+    public en_primary_keyword: string;
+    public secondary_primary_keyword: string;
     public secondary_keyword: string;
     public likeCounts: number = 0;
     public readCounts: number = 0;

@@ -17,6 +17,8 @@ export class WebStory {
     public secondary_keyword: string;
     public canonicalUrl: string;
     public referenceLink: string;
+    public en_referenceLink: string;
+    public secondary_referenceLink: string;
     public outBoundLink: string;
     public bannerImage: string;
     public squareBanner: string;

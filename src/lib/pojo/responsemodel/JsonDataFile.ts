@@ -13,6 +13,7 @@ export class JsonDataFile {
     public imageAlt: string;
     public imageCaption: string;
     public keywords: string;
+    public primary_keyword: string;
     public howToSchema: HowToSchema;
     public faqSchema: Array<FaqSchema>;
 }

@@ -29,17 +29,17 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
   //   ar: `${website}/quiz/${quiz.slug}`,
   //   en: `${website}/en/quiz/${quiz.slug}`
   // };
-//   const alternatesLanguages = {
-//   "x-default": `${website}/quiz/${quiz.slug}`,
-//   ar: `${website}/quiz/${quiz.slug}`,
-//   en: `${website}/en/quiz/${quiz.slug}`,
-// };
-//   const hreflangLinks = Object.entries(alternatesLanguages)
-//     .map(
-//       ([lang, url]) =>
-//         `<link rel="alternate" hreflang="${lang}" href="${url}" />`
-//     )
-//     .join("\n");
+  //   const alternatesLanguages = {
+  //   "x-default": `${website}/quiz/${quiz.slug}`,
+  //   ar: `${website}/quiz/${quiz.slug}`,
+  //   en: `${website}/en/quiz/${quiz.slug}`,
+  // };
+  //   const hreflangLinks = Object.entries(alternatesLanguages)
+  //     .map(
+  //       ([lang, url]) =>
+  //         `<link rel="alternate" hreflang="${lang}" href="${url}" />`
+  //     )
+  //     .join("\n");
   const rssUrl = `${baseUrl}quiz/rss.xml`;
   const siteName = metaConfig.siteName[lang];
   const description = metaConfig.description[lang];
@@ -68,9 +68,14 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 
   const storyJsonLd = {
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
+    "@type": "Article",
     "headline": quiz.title,
+    "articleSection": quiz.cat_name + " Quiz",
     "description": quiz.metaDescription,
+    "about": {
+      "@type": "Thing",
+      "name": quiz.sub_catTitle
+    },
     "image": [quiz.bannerImage, quiz.landScapeBanner, quiz.squareBanner].filter(Boolean),
     "datePublished": new Date(quiz.publishDate).toISOString(),
     "dateModified": new Date(quiz.publishDate).toISOString(),
@@ -151,7 +156,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 `;
   const backendEndpoint = `${apiServer.websiteUrl}api/quiz-proxy`;
 
-   function generateDynamicQuizSlide(
+  function generateDynamicQuizSlide(
     slide: QuizSlide,
     bgImage: string,
     index: number,
@@ -223,10 +228,11 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     return generateDynamicQuizSlide(slide, bgImage, i, quiz.id, icon);
   }).join('');
 
- function generateResultPage(
+  function generateResultPage(
     commonBg: string,
     result?: QuizResultMeterResponse[]
   ) {
+    const resultTitle=lang==='en'?"Your Quiz Result":"نتيجة اختبارك"
     const resultsToRender =
       Array.isArray(result) && result.length > 0
         ? result
@@ -286,7 +292,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
         ? `
           <amp-story-interactive-results
             id="results-1"
-            prompt-text="Your Quiz Result"
+            prompt-text="${resultTitle}"
             ${ampResultsAttributes}
             style="
               --interactive-background-color: rgba(255,255,255,0.05);
@@ -307,7 +313,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
 </amp-story-page>
 `;
   }
-   function introPage(quiz: QuizStoryResponse) {
+  function introPage(quiz: QuizStoryResponse) {
     if (quiz.intro) {
       const [c1, c2] = gradients[gradients.length - 1];
       const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
@@ -337,10 +343,81 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     }
 
   }
+  function meaningSlide(quiz: QuizStoryResponse) {
+    console.log('qiz: '+JSON.stringify(quiz))
+    if (quiz.finalSlide) {
+      const [c1, c2] = gradients[gradients.length - 2];
+      const bgImage = `/api/gradient?c1=${encodeURIComponent(c1)}&c2=${encodeURIComponent(c2)}`;
+
+      return `<amp-story-page id="meaning-slide">
+              <amp-story-grid-layer template="fill">
+                <amp-img src="${bgImage}"
+                        layout="fill"
+                        alt="${quiz.title}"></amp-img>
+              </amp-story-grid-layer>
+
+              <amp-story-grid-layer template="vertical" class="quiz-center">
+                <div class="quiz-wrapper">
+                  <h2>${quiz.finalSlide.title}</h2>
+                  <p>
+                   ${quiz.finalSlide.textOne}
+                  </p>
+                  <p>
+                    ${quiz.finalSlide.textTwo}
+                  </p>
+                </div>
+              </amp-story-grid-layer>
+            </amp-story-page>`;
+    } else {
+      return '';
+    }
+
+  }
+
+   const relatedStoriesHtml =
+    quiz.relatedStories?.length
+      ? `
+<div class="block related-stories-container">
+  ${quiz.relatedStories
+        .map(
+          rel => `
+      <a class="related-story-block" href="${baseUrl + "stories/" + rel.slug}">
+        <amp-img width="138" height="184" layout="responsive" class="img-fill"
+                 src="${rel.bannerImage}" alt="${rel.title}">
+        </amp-img>
+        <span class="related-story-title">${rel.title}</span>
+      </a>
+  `
+        )
+        .join("")}
+</div>
+
+${quiz.cta && quiz.cta.trim() !== "" ? `
+<div class="cta-section">
+  <a href="${apiServer.websiteUrl}stories"
+     class="cta-button"
+     target="_blank" rel="noopener noreferrer">
+     ${quiz.cta} →
+  </a>
+</div>
+` : ""}
+`
+      : `
+${quiz.cta && quiz.cta.trim() !== "" ? `
+<div class="cta-section">
+  <a href="${apiServer.websiteUrl}stories"
+     class="cta-button"
+     target="_blank" rel="noopener noreferrer">
+     ${quiz.cta} →
+  </a>
+</div>
+` : ""}
+`;
+
 
 
   const commonBg = `/api/gradient?c1=${encodeURIComponent('#FF7E5F')}&c2=${encodeURIComponent('#FEB47B')}`;
-  const allPages = firstPage +introPage(quiz)+ slideHtml + generateResultPage(commonBg, quiz.result);
+  const allPages = firstPage + introPage(quiz) + slideHtml + generateResultPage(commonBg, quiz.result) + meaningSlide(quiz);
 
   const templatePath = path.join(process.cwd(), "src/components/commonquiz/quiz.html");
   const templateSource = fs.readFileSync(templatePath, "utf-8");
@@ -352,6 +429,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     lang: lang,
     title: quiz.title,
     metaTitle: quiz.metaTitle || quiz.title,
+    imageAlt: quiz.imageAlt || quiz.title,
     metaDescription: quiz.metaDescription,
     canonicalUrl,
     // hreflangLinks,
@@ -370,12 +448,7 @@ export default async function QuizAmpRenderer({ quiz, lang }: QuizAmpRendererPro
     orgJsonLd: orgJsonLd ? JSON.stringify(orgJsonLd) : null,
     breadcrumbJson: breadCrumb ? JSON.stringify(breadCrumb) : null,
     itemJsonLd: itemListJson ? JSON.stringify(itemListJson) : null,
-    relatedStoriesHtml: quiz.relatedStories?.slice(0, 5).map(rel => `
-      <a class="related-story-block" href="${baseUrl + "quiz/" + rel.slug}">
-        <amp-img width="138" height="184" layout="responsive" class="img-fill" src="${rel.bannerImage}" alt="${rel.title}"></amp-img>
-        <span class="related-story-title">${rel.title}</span>
-      </a>
-    `).join('') || '',
+    relatedStoriesHtml,
     bgImage,
     relatedStories: quiz.relatedStories || [],
   });

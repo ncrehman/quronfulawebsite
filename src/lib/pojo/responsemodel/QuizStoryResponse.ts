@@ -1,4 +1,5 @@
 import { QuizIntro } from './QuizIntro';
+import { QuizFinal } from './QuizFinal';
 import { QuizSlide } from './QuizSlide';
 import { QuizResultMeterResponse } from './QuizResultMeterResponse';
 import { RelatedQuizStoryResponse } from './RelatedQuizStoryResponse';
@@ -11,12 +12,16 @@ export class QuizStoryResponse {
     public lang: string;
     public slug: string;
     public intro: Array<QuizIntro>;
+    public finalSlide: QuizFinal;
     public keywords: string;
     public likeCounts: number = 0;
     public viewCounts: number = 0;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;
+    public bannerImage_title: string;
+    public squareBanner_title: string;
+    public landScapeBanner_title: string;
     public imageAlt: string;
     public sub_catId: string;
     public sub_catTitle: string;

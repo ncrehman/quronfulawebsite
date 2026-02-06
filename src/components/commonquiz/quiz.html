@@ -11,6 +11,7 @@
     <meta property="keywords" name="{{keywords}}">
     <meta property="news_keywords" name="{{keywords}}">
     <meta property="og:title" content="{{metaTitle}}">
+    <meta property="og:image:alt" content="{{imageAlt}}">
     <meta property="og:image" content="{{posterLandScape}}">
     <meta property="og:url" content="{{canonicalUrl}}">
     <meta property="og:type" content="article">
@@ -20,7 +21,7 @@
     <meta property="og:site_name" content="{{siteName}}">
     <meta name="twitter:title" content="{{metaTitle}}">
     <meta name="twitter:description" content="{{metaDescription}}">
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{posterLandScape}}">
     <meta name="amp-story-generator-name" content="{{siteName}}">
     <meta name="amp-story-generator-version" content="0.1" />
@@ -212,12 +213,13 @@
             background: linear-gradient(135deg, #CC4144, #bd686a);
         }
 
-        .related-title {
+         .related-title {
             font-size: 22px;
             font-weight: bold;
             color: white;
             display: block;
             margin-bottom: 16px;
+            font-family: 'Merriweather', serif;
             text-align: center;
         }
 
@@ -234,6 +236,7 @@
             text-align: center;
             cursor: pointer;
             text-decoration: none;
+            font-family: 'Merriweather', serif;
         }
 
 
@@ -249,9 +252,9 @@
             display: block;
             font-size: 14px;
             color: white;
+            font-family: "Merriweather", serif;
             margin-top: 4px;
         }
-
 
 
         #results-page .result-wrapper {

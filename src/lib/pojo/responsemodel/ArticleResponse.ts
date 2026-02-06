@@ -16,5 +16,6 @@ export class ArticleResponse {
     public imageAlt: string;
     public authorName: string;
     public authorSlug: string;
+    public author_profile: string;
     public publishDate: Date;
 }

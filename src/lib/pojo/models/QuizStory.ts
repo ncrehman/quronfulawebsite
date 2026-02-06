@@ -1,4 +1,5 @@
 import { QuizIntro } from '../responsemodel/QuizIntro';
+import { QuizFinal } from '../responsemodel/QuizFinal';
 import { QuizSlide } from '../responsemodel/QuizSlide';
 import { QuizResultMeter } from '../responsemodel/QuizResultMeter';
 import { SubCategory } from './SubCategory';
@@ -19,6 +20,8 @@ export class QuizStory {
     public secondary_keyword: string;
     public canonicalUrl: string;
     public referenceLink: string;
+    public en_referenceLink: string;
+    public secondary_referenceLink: string;
     public bannerImage: string;
     public squareBanner: string;
     public landScapeBanner: string;
@@ -30,6 +33,8 @@ export class QuizStory {
     public secondary_imageAlt: string;
     public en_intro: Array<QuizIntro>;
     public secondary_intro: Array<QuizIntro>;
+    public en_finalSlide: QuizFinal;
+    public secondary_finalSlide: QuizFinal;
     public en_slides: Array<QuizSlide>;
     public secondary_slides: Array<QuizSlide>;
     public resultMeter: Array<QuizResultMeter>;
