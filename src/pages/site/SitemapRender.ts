@@ -4,24 +4,19 @@ import type { ApiResponse } from "@lib/pojo/responsemodel/ApiResponse";
 import type { SiteMapData } from "@lib/pojo/responsemodel/SiteMapData";
 import { apiCalls } from "@lib/postmethodService";
 
-export async function GET() {
-  /* ---------------------------------
-     FETCH DYNAMIC SITEMAP DATA (AR)
-  ---------------------------------- */
+export async function SitemapRender(lang?: string, name?: string) {
   const request = new RequestModel();
-  request.lang = "en";
+  request.lang = lang;
   request.extraVariable = "normal";
+  request.searchKey = name;
 
   const resp: ApiResponse = await apiCalls(
     request,
-    EndPointPaths.getsubmittedsitemapdata
+    EndPointPaths.getsitemapdata
   );
 
   const items: SiteMapData[] = resp?.data?.respList || [];
 
-  /* ---------------------------------
-     BUILD URL XML
-  ---------------------------------- */
   const urlsXml = items
     .map(item => {
       const lastmod = new Date(item.lastModified).toISOString();
