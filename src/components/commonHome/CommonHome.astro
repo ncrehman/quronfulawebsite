@@ -50,6 +50,7 @@ async function getArticle(language: string): Promise<ArticleResponse[] | null> {
 	request.lang = language;
 	request.offset = 0;
 	request.limit = 12;
+	request.extraVariable = "";
 	const response = await apiCalls(request, EndPointPaths.getlatestarticle);
 	if (response.status !== 0) return null;
 	const articleList = response.data?.respList;
@@ -194,12 +195,20 @@ const breadCrumb = generateBreadcrumb("Home Page Breadcrumbs", [
 	},
 ]);
 jsonLd.push(breadCrumb);
+const name =
+	lang === "en"
+		? "Quronfula Digital Literacy Articles"
+		: "مقالات كورونفولا في المعرفة الرقمية";
+
+const itemDesc =
+	lang === "en"
+		? "A curated collection of educational articles focused on digital literacy, online safety, app awareness, and technology alerts to help users understand and navigate the digital world safely."
+		: "مجموعة مختارة من المقالات التعليمية التي تركز على المعرفة الرقمية، الأمان عبر الإنترنت، وعي التطبيقات، والتنبيهات التقنية لمساعدة المستخدمين على فهم العالم الرقمي واستخدامه بأمان.";
 
 if (articles) {
 	const itemListJson = generateItemList({
-		name: "Quronfula Article Collection",
-		description:
-			"Explore our collection of in-depth articles covering culture, trends, lifestyle, creativity, and modern storytelling. Updated regularly with fresh insights and inspiration.",
+		name: name,
+		description: itemDesc,
 		baseUrl: baseUrl + "article/",
 		listUrl: baseUrl + "article/",
 		items: articles.map((a) => ({
@@ -218,25 +227,25 @@ if (articles) {
 
 const content = {
 	en: {
-		title: "Quronfula – Articles, Web Stories, Quizes & Daily Insights",
-		h1: "Latest Articles, Web Stories, Quizes & Daily Insights from Quronfula",
+		title: "Quronfula – Education & Digital Literacy Alerts",
+		h1: "Digital Literacy, Online Safety & Technology Alerts",
 
-		p1: "Quronfula is your premier digital platform for the latest articles, web stories, quizes, and daily insights that shape modern life. Every day, we publish thoughtfully curated content covering culture, lifestyle, knowledge, technology, wellness, and contemporary issues.",
+		p1: "Quronfula is an educational digital platform focused on digital literacy, online safety, and technology awareness. We publish clear and practical articles that help users understand how apps, platforms, and digital systems affect everyday online behavior.",
 
-		p2: "Through meticulously researched articles, interactive quizes, and authentic storytelling, Quronfula delivers meaningful daily insights that help readers understand the world better. Whether you are looking for in-depth analysis, inspiring stories, practical life advice, or fresh perspectives, our content is designed to inform, engage, and empower.",
+		p2: "Our content explains app changes, digital risks, online scams, privacy concerns, and technology alerts in a simple and accessible way. Through educational articles and timely digital warnings, Quronfula helps users make safer and more informed decisions in the digital world.",
 
-		p3: "Join a growing global community that visits Quronfula daily to explore the latest articles, web stories, and quizes. Stay updated with trusted insights, discover new ideas, and navigate modern life with clarity, confidence, and purpose.",
+		p3: "Join readers who visit Quronfula to stay informed about digital literacy, online safety updates, and important technology alerts. Learn how to navigate apps, protect your data, and understand digital changes with clarity and confidence.",
 	},
 
 	ar: {
-		title: "قرنفلة – مقالات، قصص ويب، مسابقات ومعلومات يومية",
-		h1: "أحدث المقالات وقصص الويب والمسابقات والمعلومات اليومية من قرنفلة",
+		title: "قرنفلة – التعليم والمعرفة الرقمية والتنبيهات التقنية",
+		h1: "التعليم والمعرفة الرقمية والأمان عبر الإنترنت",
 
-		p1: "قرنفلة منصة رقمية تقدم أحدث المقالات وقصص الويب والمسابقات والمعلومات اليومية التي تواكب الحياة المعاصرة. ننشر يوميًا محتوى متنوعًا يشمل الثقافة، ونمط الحياة، والمعرفة، والتكنولوجيا، والصحة، وقضايا المجتمع.",
+		p1: "قرنفلة منصة تعليمية رقمية تركز على المعرفة الرقمية، الأمان عبر الإنترنت، والتوعية التقنية. نقدم محتوى يشرح للمستخدمين تأثير التطبيقات والمنصات الرقمية على سلوكهم اليومي بطريقة مبسطة وعملية.",
 
-		p2: "من خلال مقالات مدروسة بعمق، ومسابقات تفاعلية، وسرد قصصي أصيل، تقدم قرنفلة معلومات يومية ورؤى معرفية تساعد القراء على فهم العالم من حولهم. سواء كنتم تبحثون عن تحليلات معمقة، أو قصص ملهمة، أو نصائح عملية للحياة اليومية، فإن محتوى قرنفلة صُمم ليكون موثوقًا وهادفًا.",
+		p2: "نغطي في قرنفلة التغييرات التقنية، مخاطر الاستخدام الرقمي، التنبيهات الأمنية، وعمليات الاحتيال المنتشرة عبر الإنترنت. من خلال مقالات تعليمية وتنبيهات رقمية، نساعد المستخدمين على اتخاذ قرارات أكثر أمانًا ووعيًا في العالم الرقمي.",
 
-		p3: "انضموا إلى مجتمع قرنفلة المتنامي الذي يزور المنصة يوميًا لاكتشاف أحدث المقالات وقصص الويب والمسابقات. تابعوا المعلومات اليومية، واستلهموا أفكارًا جديدة، وابقوا على اطلاع دائم بما يساعدكم على مواجهة تحديات الحياة الحديثة بثقة ووعي.",
+		p3: "انضموا إلى قرّاء قرنفلة لمتابعة أحدث التنبيهات التقنية ومحتوى المعرفة الرقمية. تعلّموا كيفية استخدام التطبيقات بوعي، حماية بياناتكم، وفهم التغيرات الرقمية بثقة واطمئنان.",
 	},
 };
 
@@ -264,8 +273,11 @@ let metaObj: MetaObject = generateSeo(title, description, lang, device);
 			<HeroFeatured articles={featureList} lang={lang} />
 			<!-- <section><CategoryFeature lang={lang} /> -->
 			<h2 class="sr-only">
-				Explore the latest articles, stories, and insights on culture,
-				lifestyle, and modern living
+				{
+					lang === "en"
+						? "Explore educational articles on digital literacy, online safety,app awareness, and technology alerts"
+						: "  استكشف مقالات تعليمية حول المعرفة الرقمية، الأمان عبر الإنترنت، وعي التطبيقات، والتنبيهات التقنية"
+				}
 			</h2>
 		</>
 		<section>
@@ -275,7 +287,9 @@ let metaObj: MetaObject = generateSeo(title, description, lang, device);
 			articles ? (
 				<section>
 					<div style="font-weight:700;">
-						{lang === "ar" ? "مقالات جديدة" : "Latest Articles"}
+						{lang === "ar"
+							? "أحدث مقالات المعرفة الرقمية"
+							: "Latest Digital Literacy Articles"}
 					</div>
 					<section class="articles-grid">
 						{articles?.length ? (
@@ -334,8 +348,8 @@ let metaObj: MetaObject = generateSeo(title, description, lang, device);
 				<section>
 					<div style="font-weight:700;">
 						{lang === "ar"
-							? "أحدث قصص الويب"
-							: "Latest Web Stories"}
+							? "تنبيهات رقمية حديثة"
+							: "Latest Digital Alerts"}
 					</div>
 					<section class="articles-grid">
 						{stories?.length ? (
@@ -393,7 +407,9 @@ let metaObj: MetaObject = generateSeo(title, description, lang, device);
 			quizes ? (
 				<section>
 					<div style="font-weight:700;">
-						{lang === "ar" ? "أحدث المسابقات" : "Latest Quizes"}
+						{lang === "ar"
+							? "توعية رقمية محدثة"
+							: "Updated Digital Awareness"}
 					</div>
 					<section class="articles-grid">
 						{quizes?.length ? (

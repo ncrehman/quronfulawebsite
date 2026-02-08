@@ -1,181 +1,107 @@
 {
-    "en": [
-        {
-            "keyword": "latest articles",
-            "title": "Latest Articles & Fresh Reads",
-            "description": "Discover the latest articles featuring fresh perspectives, trending topics, and thoughtfully written content updated regularly."
-        },
-        {
-            "keyword": "blog posts",
-            "title": "Insightful Blog Posts",
-            "description": "Read engaging blog posts covering lifestyle, culture, wellness, and everyday topics that matter."
-        },
-        {
-            "keyword": "AMP web stories",
-            "title": "AMP Web Stories Collection",
-            "description": "Explore fast-loading AMP web stories designed for an immersive, visual storytelling experience."
-        },
-        {
-            "keyword": "AMP quizes",
-            "title": "Interactive AMP Quizes",
-            "description": "Take interactive AMP quizes that are quick, engaging, and designed to test your knowledge in fun ways."
-        },
-        {
-            "keyword": "quiz challenges",
-            "title": "Fun Quiz Challenges",
-            "description": "Challenge yourself with quizes across multiple topics, from knowledge tests to entertaining trivia."
-        },
-        {
-            "keyword": "visual stories",
-            "title": "Visual Stories & Experiences",
-            "description": "Enjoy visually rich stories that combine images, short text, and smooth storytelling formats."
-        },
-        {
-            "keyword": "health articles",
-            "title": "Health & Wellness Articles",
-            "description": "Read reliable health articles focused on well-being, balance, and practical lifestyle choices."
-        },
-        {
-            "keyword": "beauty tips",
-            "title": "Beauty Tips & Self-Care",
-            "description": "Discover simple beauty tips and self-care advice for everyday routines and confidence."
-        },
-        {
-            "keyword": "lifestyle blogs",
-            "title": "Lifestyle Blogs & Inspiration",
-            "description": "Explore lifestyle blogs offering inspiration on daily living, habits, and personal growth."
-        },
-        {
-            "keyword": "food recipes",
-            "title": "Food Recipes & Cooking Ideas",
-            "description": "Find easy-to-follow food recipes and cooking ideas suitable for everyday meals."
-        },
-        {
-            "keyword": "culture stories",
-            "title": "Culture Stories & Traditions",
-            "description": "Learn about culture through stories that highlight traditions, creativity, and modern perspectives."
-        },
-        {
-            "keyword": "wellness guides",
-            "title": "Wellness Guides & Practices",
-            "description": "Browse wellness guides designed to support mental clarity, healthy habits, and balanced living."
-        },
-        {
-            "keyword": "jobs and opportunities",
-            "title": "Jobs & Career Opportunities",
-            "description": "Explore job-related content, career tips, and opportunities to support professional growth."
-        },
-        {
-            "keyword": "self improvement",
-            "title": "Self Improvement & Personal Growth",
-            "description": "Discover self-improvement ideas focused on mindset, skills, and everyday motivation."
-        },
-        {
-            "keyword": "fashion & beauty trends",
-            "title": "Fashion & Beauty Trends",
-            "description": "Stay updated with fashion and beauty trends that blend style, comfort, and individuality."
-        },
-        {
-            "keyword": "travel experiences",
-            "title": "Travel Experiences & Stories",
-            "description": "Read travel experiences that share insights, destinations, and meaningful journeys."
-        },
-        {
-            "keyword": "entertainment facts",
-            "title": "Entertainment Facts & Insights",
-            "description": "Explore interesting entertainment facts and behind-the-scenes insights from popular culture."
-        },
-        {
-            "keyword": "daily insights",
-            "title": "Daily Insights & Ideas",
-            "description": "Get daily insights designed to inform, inspire, and add value to your everyday reading."
-        }
-    ],
-    "ar": [
-        {
-            "keyword": "مقالات",
-            "title": "أحدث المقالات",
-            "description": "اطّلع على أحدث المقالات التي تقدم محتوى متجددًا وأفكارًا متنوعة تناسب اهتماماتك اليومية."
-        },
-        {
-            "keyword": "مدونة",
-            "title": "مقالات المدونة",
-            "description": "اقرأ مقالات مدونة تغطي مواضيع نمط الحياة، الثقافة، والصحة بأسلوب واضح ومفيد."
-        },
-        {
-            "keyword": "قصص ويب AMP",
-            "title": "قصص ويب AMP السريعة",
-            "description": "استمتع بقصص ويب AMP المصممة لتجربة قراءة سريعة وسلسة على جميع الأجهزة."
-        },
-        {
-            "keyword": "اختبارات تفاعلية",
-            "title": "اختبارات تفاعلية ممتعة",
-            "description": "شارك في اختبارات تفاعلية تجمع بين المتعة والمعرفة في مواضيع متعددة."
-        },
-        {
-            "keyword": "قصص مرئية",
-            "title": "قصص مرئية ملهمة",
-            "description": "اكتشف قصصًا مرئية تجمع بين الصور والنصوص القصيرة لتجربة قراءة جذابة."
-        },
-        {
-            "keyword": "مقالات صحية",
-            "title": "مقالات الصحة والعافية",
-            "description": "اقرأ مقالات صحية تركز على العافية، التوازن، ونمط الحياة الصحي."
-        },
-        {
-            "keyword": "نصائح الجمال",
-            "title": "نصائح الجمال والعناية",
-            "description": "تعرف على نصائح الجمال والعناية اليومية بأسلوب بسيط وعملي."
-        },
-        {
-            "keyword": "نمط الحياة",
-            "title": "محتوى نمط الحياة",
-            "description": "استكشف محتوى نمط الحياة الذي يساعدك على تحسين روتينك اليومي."
-        },
-        {
-            "keyword": "وصفات الطعام",
-            "title": "وصفات طعام سهلة",
-            "description": "اطلع على وصفات طعام سهلة التحضير تناسب مختلف الأذواق."
-        },
-        {
-            "keyword": "قصص ثقافية",
-            "title": "قصص ثقافية ومعرفية",
-            "description": "تعرف على قصص ثقافية تسلط الضوء على التراث والأفكار المعاصرة."
-        },
-        {
-            "keyword": "دليل العافية",
-            "title": "أدلة العافية والصحة",
-            "description": "استخدم أدلة العافية لدعم صحتك النفسية والجسدية بأسلوب متوازن."
-        },
-        {
-            "keyword": "وظائف وفرص",
-            "title": "وظائف وفرص مهنية",
-            "description": "استكشف محتوى يركز على الوظائف والفرص المهنية وتطوير المسار الوظيفي."
-        },
-        {
-            "keyword": "تطوير الذات",
-            "title": "تطوير الذات والنمو الشخصي",
-            "description": "اطلع على محتوى تطوير الذات الذي يساعدك على بناء مهاراتك وثقتك بنفسك."
-        },
-        {
-            "keyword": "الموضة والجمال",
-            "title": "الموضة والجمال",
-            "description": "تابع مواضيع الموضة والجمال بأسلوب عصري ومتوازن يناسب جميع الأذواق."
-        },
-        {
-            "keyword": "تجارب السفر",
-            "title": "تجارب السفر والرحلات",
-            "description": "اقرأ تجارب سفر ملهمة تقدم أفكارًا ونصائح لرحلات مميزة."
-        },
-        {
-            "keyword": "معلومات ترفيهية",
-            "title": "معلومات ترفيهية ممتعة",
-            "description": "استمتع بمعلومات ترفيهية خفيفة ومفيدة من عالم الثقافة والترفيه."
-        },
-        {
-            "keyword": "حقائق يومية",
-            "title": "حقائق يومية مفيدة",
-            "description": "اكتشف حقائق يومية تضيف معرفة بسيطة ومفيدة إلى قراءتك اليومية."
-        }
-    ]
+  "en": [
+    {
+      "keyword": "digital literacy articles",
+      "title": "Digital Literacy Articles",
+      "description": "Explore educational articles that explain digital literacy concepts, online behavior, and safe technology usage."
+    },
+    {
+      "keyword": "online safety alerts",
+      "title": "Online Safety Alerts",
+      "description": "Stay informed with alerts about online risks, scams, and digital safety issues affecting users today."
+    },
+    {
+      "keyword": "app awareness",
+      "title": "App Awareness & Permissions",
+      "description": "Learn how apps work in the background, what permissions they use, and how they affect your data and privacy."
+    },
+    {
+      "keyword": "technology alerts",
+      "title": "Technology Alerts & Updates",
+      "description": "Read important technology alerts and updates that impact how users interact with digital platforms."
+    },
+    {
+      "keyword": "scam warnings",
+      "title": "Scam Warnings & Digital Fraud",
+      "description": "Understand common online scams, phishing attempts, and digital fraud tactics targeting users."
+    },
+    {
+      "keyword": "mobile safety",
+      "title": "Mobile Safety & Awareness",
+      "description": "Discover how mobile phones and operating systems can affect privacy, security, and daily digital habits."
+    },
+    {
+      "keyword": "privacy awareness",
+      "title": "Privacy & Data Awareness",
+      "description": "Learn how personal data is collected online and how users can make informed privacy decisions."
+    },
+    {
+      "keyword": "digital education",
+      "title": "Digital Education & Awareness",
+      "description": "Educational content designed to improve digital understanding, awareness, and responsible technology use."
+    },
+    {
+      "keyword": "app updates explained",
+      "title": "App Updates Explained",
+      "description": "Simple explanations of app changes and updates that users often miss or misunderstand."
+    },
+    {
+      "keyword": "internet safety",
+      "title": "Internet Safety Guides",
+      "description": "Practical guides that help users navigate the internet safely and avoid common digital mistakes."
+    }
+  ],
+
+  "ar": [
+    {
+      "keyword": "المعرفة الرقمية",
+      "title": "مقالات المعرفة الرقمية",
+      "description": "اطّلع على مقالات تعليمية تشرح مفاهيم المعرفة الرقمية وسلوك المستخدم الآمن عبر الإنترنت."
+    },
+    {
+      "keyword": "الأمان الرقمي",
+      "title": "تنبيهات الأمان الرقمي",
+      "description": "تابع تنبيهات حول المخاطر الرقمية وعمليات الاحتيال التي قد تؤثر على المستخدمين."
+    },
+    {
+      "keyword": "وعي التطبيقات",
+      "title": "وعي التطبيقات والأذونات",
+      "description": "تعرّف على طريقة عمل التطبيقات في الخلفية وتأثير الأذونات على الخصوصية والبيانات."
+    },
+    {
+      "keyword": "تنبيهات تقنية",
+      "title": "تنبيهات وتحديثات تقنية",
+      "description": "اقرأ تنبيهات تقنية وتحديثات مهمة تؤثر على استخدام المنصات الرقمية."
+    },
+    {
+      "keyword": "تحذيرات الاحتيال",
+      "title": "تحذيرات من الاحتيال الرقمي",
+      "description": "تعرّف على أساليب الاحتيال الإلكتروني ورسائل التصيّد التي تستهدف المستخدمين."
+    },
+    {
+      "keyword": "أمان الهواتف",
+      "title": "أمان الهواتف الذكية",
+      "description": "محتوى يشرح تأثير الهواتف الذكية وأنظمة التشغيل على الخصوصية والأمان الرقمي."
+    },
+    {
+      "keyword": "الخصوصية الرقمية",
+      "title": "الخصوصية وحماية البيانات",
+      "description": "مقالات توعوية تشرح كيفية جمع البيانات الشخصية وكيفية اتخاذ قرارات واعية لحمايتها."
+    },
+    {
+      "keyword": "التعليم الرقمي",
+      "title": "التعليم والتوعية الرقمية",
+      "description": "محتوى تعليمي يهدف إلى رفع الوعي الرقمي وتعزيز الاستخدام المسؤول للتقنية."
+    },
+    {
+      "keyword": "تحديثات التطبيقات",
+      "title": "شرح تحديثات التطبيقات",
+      "description": "توضيح مبسّط للتحديثات والتغييرات في التطبيقات التي قد لا ينتبه لها المستخدم."
+    },
+    {
+      "keyword": "سلامة الإنترنت",
+      "title": "إرشادات سلامة الإنترنت",
+      "description": "إرشادات عملية تساعد المستخدمين على تجنب الأخطاء الرقمية الشائعة واستخدام الإنترنت بأمان."
+    }
+  ]
 }

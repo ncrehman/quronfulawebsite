@@ -5,34 +5,11 @@ export const metaConfig = {
     },
 
     title: {
-        en: "Quronfula - Latest Articles, Stories & Insights",
-        ar: "قرنفلة - أحدث المقالات والقصص ومعلومات الحياة اليومية"
+        en: "Education & Digital Literacy – Online Safety, App Awareness & Alerts",
+        ar: "قرنفلة - التعليم والمعرفة الرقمية – التنبيهات التقنية والأمان الرقمي"
     },
-
-    keywordsMap: {
-        en: [
-            "latest articles", "blog posts", "AMP web stories",
-            "AMP quizes", "quiz challenges", "visual stories",
-            "health articles", "beauty tips", "lifestyle blogs",
-            "food recipes", "culture stories", "wellness guides",
-            "jobs and opportunities", "self improvement",
-            "fashion & beauty trends", "travel experiences",
-            "entertainment facts", "daily insights"
-        ],
-
-        ar: [
-            "مقالات", "مدونة", "قصص ويب AMP",
-            "اختبارات تفاعلية", "قصص مرئية",
-            "مقالات صحية", "نصائح الجمال", "نمط الحياة",
-            "وصفات الطعام", "قصص ثقافية", "دليل العافية",
-            "وظائف وفرص", "تطوير الذات",
-            "الموضة والجمال", "تجارب السفر",
-            "معلومات ترفيهية", "حقائق يومية"
-        ]
-    },
-
     description: {
-        en: "Explore daily updates on health, beauty, lifestyle, economy, migration, travel, and everyday life with meaningful insights and engaging, useful stories.",
-        ar: "اكتشف أحدث المقالات والقصص في الصحة والجمال ونمط الحياة والاقتصاد والهجرة والسفر واليوميات، مع محتوى محدث يوميًا يقدم لك الفائدة والمتعة بأسلوب شيق وموثوق."
+        en: "Practical education on digital literacy, online safety, app behavior, and scam awareness to help users stay informed and protected online.",
+        ar: "محتوى تعليمي يركز على المعرفة الرقمية، الأمان عبر الإنترنت، سلوك التطبيقات، والتنبيهات التقنية لمساعدة المستخدمين على حماية أنفسهم رقمياً."
     }
 };

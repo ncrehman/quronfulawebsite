@@ -107,7 +107,7 @@ const itemListJson = generateItemList({
     description: description,
     baseUrl: canonicalUrl,
     listUrl: canonicalUrl,
-    items: quizList.map((a) => ({
+    items: quizList?.map((a) => ({
         title: a.title,
         slug: a.slug,
         image: a.landScapeBanner,
@@ -303,7 +303,7 @@ let metaObj: MetaObject = generateSeo(title, description, language, device);
                 </span>
 
                 {
-                    quizList.length === limit && (
+                   quizList!=null && quizList.length === limit && (
                         <a
                             href={`/${langPrefix}quiz?page=${currentPage + 1}`}
                             rel="next"
